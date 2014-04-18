@@ -7,6 +7,7 @@ package utilities.exceptions;
  */
 public class InvalidStateException extends RuntimeException
 {
+  private static final long serialVersionUID = 2357289L;
   
   /**
    * Constructs a new invalid state exception with the specified detail message.
