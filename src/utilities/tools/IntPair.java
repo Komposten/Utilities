@@ -2,9 +2,9 @@ package utilities.tools;
 
 /**
  * @author Komposten
- * @version 1.1
+ * @version 1.1.1
  */
-public class IntPair
+public final class IntPair
 {
   private int first_;
   private int second_;

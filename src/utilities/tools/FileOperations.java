@@ -18,10 +18,11 @@ import utilities.exceptions.InvalidStateException;
 
 /**
  * @version
- * <b>1.2.0</b> <br />
+ * <b>1.2.1</b> <br />
  * <ul>
  * <li>Added <code>copyFile(File, File)</code></li>
  * <li>Added <code>copyFile(String, String)</code></li>
+ * <li>Removed redundant null checks from <code>copyFile(String, String)</code></li>
  * </ul>
  * <b>Older</b> <br />
  * 1.1.0  <br />
@@ -527,10 +528,8 @@ public final class FileOperations //TODO Consider removing "static" from the met
       
       target.transferFrom(source, 0, source.size());
       
-      if (source != null)
-        source.close();
-      if (target != null)
-      	target.close();
+      source.close();
+    	target.close();
     }
     catch (IOException e)
     {

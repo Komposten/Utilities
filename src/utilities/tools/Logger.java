@@ -28,7 +28,7 @@ public final class Logger
   public  static final String CREATEERROR = "CREATION ERROR";
   private static final String CAUSED_BY   = "Caused by: ";
 	
-	protected static final String[] MONTHS = { "Jan", "Feb", "Mar", "Apr", "May",
+	private static final String[] MONTHS = { "Jan", "Feb", "Mar", "Apr", "May",
 						"Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 	
 	private static String newLine = System.getProperty("line.separator");
@@ -56,8 +56,8 @@ public final class Logger
     {
       String msg = "An unexpected exception ocurred while reading the game's .jar-archive's path.";
       
-      Logger.log(Logger.LOADERROR, msg, e, true);
-      JOptionPane.showMessageDialog(null, msg + "\nThe game cannot start without this information!" + 
+      Logger.log(Logger.LOADERROR, msg, e, true); //FIXME Can't use Logger here, the error ocurred while creating its file path!
+      JOptionPane.showMessageDialog(null, msg + "\nThe game cannot start without this information!" +  //FIXME Maybe it shouldn't shut down the entire system...
       "\nConsult log.txt for further information!", "Load Error", JOptionPane.ERROR_MESSAGE);
       
       System.exit(0);
