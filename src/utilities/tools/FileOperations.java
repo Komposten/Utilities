@@ -18,13 +18,17 @@ import utilities.exceptions.InvalidStateException;
 
 /**
  * @version
- * <b>1.2.1</b> <br />
+ * <b>1.2.2</b> <br />
+ * <ul>
+ * <li>Removed "static" from all writing methods.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.2.1 <br />
  * <ul>
  * <li>Added <code>copyFile(File, File)</code></li>
  * <li>Added <code>copyFile(String, String)</code></li>
  * <li>Removed redundant null checks from <code>copyFile(String, String)</code></li>
  * </ul>
- * <b>Older</b> <br />
  * 1.1.0  <br />
  * <ul>
  * <li>Added <code>createWriter(File, boolean)</code></li> <br />
@@ -33,7 +37,7 @@ import utilities.exceptions.InvalidStateException;
  * </ul>
  * @author Jakob Hjelm
  */
-public final class FileOperations //TODO Consider removing "static" from the methods.
+public final class FileOperations
 {
 //  public  static final boolean shouldEncrypt = false;
   
@@ -41,14 +45,18 @@ public final class FileOperations //TODO Consider removing "static" from the met
   private static final int     keyRange = 127;
   private static final int     keyStart = 0;
   
-  private static int  encodingKeyIndex = 0;
-  private static int  decodingKeyIndex = 0;
+  private int  encodingKeyIndex = 0;
+  private int  decodingKeyIndex = 0;
   
   private static FileWriter writer_;
   
   
   
-  private FileOperations() {}
+  /**
+   * Creates a new instance of <code>FileOperations</code> to use for file writing
+   * and text encryption.
+   */
+  public FileOperations() {}
   
   
   
@@ -57,7 +65,7 @@ public final class FileOperations //TODO Consider removing "static" from the met
    * @param file - The file to print to.
    * @param append - If the printed data should be appended to the contents of the file, or if it should overwrite it.
    */
-  public static void createWriter(File file, boolean append)
+  public void createWriter(File file, boolean append)
   {
     try
     {
@@ -78,7 +86,7 @@ public final class FileOperations //TODO Consider removing "static" from the met
   /**
    * Closes the active <code>FileWriter</code>.
    */
-  public static void closeWriter()
+  public void closeWriter()
   {
     if (writer_ != null)
     {
@@ -111,7 +119,7 @@ public final class FileOperations //TODO Consider removing "static" from the met
    * @param encrypt - If the data should be encrypted or not.
    * @return True if the writing succeeded, false otherwise.
    */
-  public static boolean printData(String data, boolean encrypt)
+  public boolean printData(String data, boolean encrypt)
   {
     if (writer_ == null)
       throw new InvalidStateException("Must call createWriter(File, boolean) before using printData(String, boolean)!");
@@ -153,7 +161,7 @@ public final class FileOperations //TODO Consider removing "static" from the met
    * @param encrypt - If the data should be encrypted or not.
    * @return True if the writing succeeded, false otherwise.
    */
-  public static boolean printData(File file, String data, boolean append, boolean encrypt)
+  public boolean printData(File file, String data, boolean append, boolean encrypt)
   {
     FileWriter    out = null;
     boolean       success;
@@ -201,8 +209,8 @@ public final class FileOperations //TODO Consider removing "static" from the met
   
   
 
-  public static void setEncodingKeyIndex(int i) { encodingKeyIndex = i; }
-  public static void setDecodingKeyIndex(int i) { decodingKeyIndex = i; }
+  public void setEncodingKeyIndex(int i) { encodingKeyIndex = i; }
+  public void setDecodingKeyIndex(int i) { decodingKeyIndex = i; }
   
   
   
@@ -213,7 +221,7 @@ public final class FileOperations //TODO Consider removing "static" from the met
    * key, or from the current index.
    * @return An encrypted representation of the provided <code>String</code>
    */
-  public static String encryptData(String data, boolean startFromBeginningOfKey)
+  public String encryptData(String data, boolean startFromBeginningOfKey)
   {
     byte[] input  = data.getBytes();
     byte[] key    = otpKey.getBytes();
@@ -272,7 +280,7 @@ public final class FileOperations //TODO Consider removing "static" from the met
    * key, or from the current index.
    * @return An encrypted representation of the provided <code>String</code>
    */
-  public static String decodeData(String data, boolean startFromBeginningOfKey)
+  public String decodeData(String data, boolean startFromBeginningOfKey)
   {
     byte[] input  = data.getBytes();
     byte[] key    = otpKey.getBytes();

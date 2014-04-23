@@ -65,7 +65,7 @@ public class MathOps
    * @param y2 The second coordinate.
    * @return The angle between the line through the two points and the x-axis in radians.
    */
-  public static float angle(float x1, float y1, float x2, float y2) //TODO Make this more efficient.
+  public static float angle(float x1, float y1, float x2, float y2)
   {
     float dX = x2 - x1;
     float dY = y2 - y1;

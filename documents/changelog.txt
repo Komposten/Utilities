@@ -1,0 +1,6 @@
+2014-04-23
+-OTHER: Added a change log.
+-CODE: Removed "static" from all methods related to writing and encrypting in FileOperations.
+-CODE: Removed a TODO from MathOps.
+
+Earlier
