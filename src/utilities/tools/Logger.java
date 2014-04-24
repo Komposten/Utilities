@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 /**
  * This class holds a static method for logging exceptions in the file "log.txt"
  * (which is created at the top of the classpath).
- * 
+ * @version 1.0.1
  */
 public final class Logger
 {
@@ -22,9 +22,13 @@ public final class Logger
    */
 	public static final String FILEPATH = getProgramDir() + File.separator + "log.txt";
 
+	/** Error type constant. */
   public  static final String LOADERROR   = "LOAD ERROR";
+  /** Error type constant. */
   public  static final String READERROR   = "READ ERROR";
+  /** Error type constant. */
   public  static final String WRITEERROR  = "WRITE ERROR";
+  /** Error type constant. */
   public  static final String CREATEERROR = "CREATION ERROR";
   private static final String CAUSED_BY   = "Caused by: ";
 	
@@ -54,13 +58,12 @@ public final class Logger
     }
     catch (IOException e)
     {
-      String msg = "An unexpected exception ocurred while reading the game's .jar-archive's path.";
+      String msg = "An unexpected exception ocurred while reading the program's .jar-archive's path.";
       
-      Logger.log(Logger.LOADERROR, msg, e, true); //FIXME Can't use Logger here, the error ocurred while creating its file path!
-      JOptionPane.showMessageDialog(null, msg + "\nThe game cannot start without this information!" +  //FIXME Maybe it shouldn't shut down the entire system...
-      "\nConsult log.txt for further information!", "Load Error", JOptionPane.ERROR_MESSAGE);
+      System.out.println("Logger - getProgramDir(): " + msg);
+      System.out.println(e.getMessage());
       
-      System.exit(0);
+      JOptionPane.showMessageDialog(null, msg + "\nThe logger may not work properly without this information!", "Load Error", JOptionPane.ERROR_MESSAGE);
     }
     
     return path;
