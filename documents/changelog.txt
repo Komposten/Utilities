@@ -1,3 +1,8 @@
+2014-04-25
+-FEATURE: Added a log()-method with a className parameter in order to specify the class in the first line of the error.
+-CODE: Marked the old log()-method as deprecated.
+-CODE: Added syso-call to the catch-clause in Logger.log().
+
 2014-04-24
 -CODE: Fixed the exception handling in Logger's getProgramDir().
 

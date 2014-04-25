@@ -13,7 +13,30 @@ import javax.swing.JOptionPane;
 /**
  * This class holds a static method for logging exceptions in the file "log.txt"
  * (which is created at the top of the classpath).
- * @version 1.0.1
+ * @version
+ * <b>1.1.0</b> <br />
+ * <ul>
+ * <li>Added a <code>log()</code> method with a <code>className</code> parameter.</li>
+ * <li>Marked old<code>log()</code> as deprecated.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.0.2 <br />
+ * <ul>
+ * <li>Improved exception handling.</li>
+ * </ul>
+ * 1.0.1 <br />
+ * <ul>
+ * <li>Removed a call to <code>log()</code> from the catch clause in <code>getProgramDir()</code>.</li>
+ * </ul>
+ * 1.0.0  <br />
+ * <ul>
+ * <li>Updated the look of the logged data.</li>
+ * </ul>
+ * 0.5.0  <br />
+ * <ul>
+ * <li>Created the class, the <code>log()</code> method and the error constants.</li>
+ * <li>Added support for nested throwables.</li>
+ * </ul>
  */
 public final class Logger
 {
@@ -68,6 +91,26 @@ public final class Logger
     
     return path;
 	}
+  
+  
+  
+  /**
+   * Logs the given <code>Exception</code> (which can be <code>null</code>) together with the time and message in 
+   * the file specified by <code>Logger.FILEPATH</code>.
+   * @param errorType - A <code>String</code> saying what kind of error occurred (e.g. "WRITE ERROR"). A set 
+   * of standard messages can be found as constants in this class.
+   * @param errorMsg  - The message to be displayed after the error type.
+   * @param e         - An <code>Exception</code> (can be <code>null</code>), from which additional information of the error 
+   * will be taken.
+   * @param exceptionMsgOnly - If only the <code>Exception</code>'s message should be written, and not the 
+   * entire stack trace.
+   * @return True if the message was successfully logged, false otherwise.
+   */
+	@Deprecated
+  public static boolean log(String errorType, String errorMsg, Exception e, boolean exceptionMsgOnly)
+  {
+    return log(errorType, "<unspecified>", errorMsg, e, exceptionMsgOnly);
+  }
 	
 	
 	
@@ -76,6 +119,7 @@ public final class Logger
 	 * the file specified by <code>Logger.FILEPATH</code>.
 	 * @param errorType - A <code>String</code> saying what kind of error occurred (e.g. "WRITE ERROR"). A set 
 	 * of standard messages can be found as constants in this class.
+	 * @param className - The name of the class within which the error occurred.
 	 * @param errorMsg  - The message to be displayed after the error type.
 	 * @param e         - An <code>Exception</code> (can be <code>null</code>), from which additional information of the error 
 	 * will be taken.
@@ -83,7 +127,7 @@ public final class Logger
 	 * entire stack trace.
 	 * @return True if the message was successfully logged, false otherwise.
 	 */
-	public static boolean log(String errorType, String errorMsg, Exception e, boolean exceptionMsgOnly)
+	public static boolean log(String errorType, String className, String errorMsg, Exception e, boolean exceptionMsgOnly)
 	{
 		try
 		{
@@ -111,7 +155,7 @@ public final class Logger
 				second = "0" + second;
 			
 			logMsg.append(newLine + "/=|" + month + " " + day +
-					", " + year + " " + hour + ":" + minute + ":" + second + "│");
+					", " + year + " " + hour + ":" + minute + ":" + second + " - Class: " + className + "|");
 			logMsg.append(newLine + "|-|" + errorType.toUpperCase() + ":");
 			logMsg.append(" " + errorMsg);
 			
@@ -173,6 +217,8 @@ public final class Logger
 		}
 		catch (IOException ioe)
 		{
+		  System.out.println("Logger encountered an exception while writing to \"" + FILEPATH + "\": ");
+		  ioe.printStackTrace();
 			return false;
 		}
 		
