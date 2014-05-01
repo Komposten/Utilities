@@ -1,4 +1,4 @@
-package image;
+package komposten.utilities.programs;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

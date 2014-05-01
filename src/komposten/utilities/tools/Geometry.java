@@ -1,4 +1,4 @@
-package utilities.tools;
+package komposten.utilities.tools;
 
 import com.badlogic.gdx.math.Polygon;
 

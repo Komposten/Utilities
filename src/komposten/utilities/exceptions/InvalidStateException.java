@@ -1,4 +1,4 @@
-package utilities.exceptions;
+package komposten.utilities.exceptions;
 
 /**
  * 

@@ -1,4 +1,4 @@
-package utilities.tools;
+package komposten.utilities.tools;
 
 import java.text.DecimalFormat;
 
