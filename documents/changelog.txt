@@ -1,3 +1,7 @@
+2014-05-07
+-FEATURE: Added logMsg(String) and logMsg(String, String) to Logger.
+-CODE: log() will not print "- Class: " if className is null or doesn't contain any text.
+
 2014-05-01
 -OTHER: Renamed the package "images" to "utilities.programs".
 -OTHER: Added the prefix "komposten" to all packages.

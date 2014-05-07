@@ -14,12 +14,16 @@ import javax.swing.JOptionPane;
  * This class holds a static method for logging exceptions in the file "log.txt"
  * (which is created at the top of the classpath).
  * @version
- * <b>1.1.0</b> <br />
+ * <b>1.2.0</b> <br />
+ * <ul>
+ * <li>Added <code>logMsg(String)</code> and <code>logMsg(String, String)</code>.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.1.0 <br />
  * <ul>
  * <li>Added a <code>log()</code> method with a <code>className</code> parameter.</li>
  * <li>Marked old<code>log()</code> as deprecated.</li>
  * </ul>
- * <b>Older</b> <br />
  * 1.0.2 <br />
  * <ul>
  * <li>Improved exception handling.</li>
@@ -119,7 +123,7 @@ public final class Logger
 	 * the file specified by <code>Logger.FILEPATH</code>.
 	 * @param errorType - A <code>String</code> saying what kind of error occurred (e.g. "WRITE ERROR"). A set 
 	 * of standard messages can be found as constants in this class.
-	 * @param className - The name of the class within which the error occurred.
+	 * @param className - The name of the class within which the error occurred (can be null or zero-length).
 	 * @param errorMsg  - The message to be displayed after the error type.
 	 * @param e         - An <code>Exception</code> (can be <code>null</code>), from which additional information of the error 
 	 * will be taken.
@@ -155,7 +159,10 @@ public final class Logger
 				second = "0" + second;
 			
 			logMsg.append(newLine + "/=|" + month + " " + day +
-					", " + year + " " + hour + ":" + minute + ":" + second + " - Class: " + className + "|");
+					", " + year + " " + hour + ":" + minute + ":" + second);
+			if (className != null && className.length() > 0)
+			  logMsg.append(" - Class: " + className);
+			logMsg.append("|");
 			logMsg.append(newLine + "|-|" + errorType.toUpperCase() + ":");
 			logMsg.append(" " + errorMsg);
 			
@@ -223,5 +230,30 @@ public final class Logger
 		}
 		
 		return true;
+	}
+	
+	
+	
+	/**
+	 * Prints the specified message to the log file (see {@link #FILEPATH}).
+	 * @param message The message to log.
+	 * @return True if the message was logged, false otherwise.
+	 */
+	public static boolean logMsg(String message)
+	{
+	  return log("INFO", "", message, null, true);
+	}
+	
+	
+	
+	/**
+   * Prints the specified message to the log file (see {@link #FILEPATH}).
+   * @param message The message to log.
+   * @param label The label for the message (e.g. "INFO" or "WARNING").
+   * @return True if the message was logged, false otherwise.
+	 */
+	public static boolean logMsg(String label, String message)
+	{
+	  return log(label, "", message, null, true);
 	}
 }

@@ -1,7 +1,3 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import komposten.utilities.tools.Logger;
 
 
@@ -18,24 +14,27 @@ public class Test
 //    AudioPlayer ap = new AudioPlayer("/C:\\Users\\Public\\Music\\Sample Music", true, false);
   }
   
-  @SuppressWarnings("deprecation")
   public static void main(String[] args)
   {
 //    new Test();
+//    
+//    FileWriter fw;
+//    try
+//    {
+//      fw = new FileWriter(new File("test.txt"));
+//    
+//      fw.write("Testing, testing!");
+//      fw.flush();
+//      fw.close();
+//    }
+//    catch (IOException e)
+//    {
+//      Logger.log(Logger.WRITEERROR, "Test", "Could not write to test.txt", e, false);
+//      Logger.log(Logger.WRITEERROR, "Could not write to test.txt", e, false);
+//    }
     
-    FileWriter fw;
-    try
-    {
-      fw = new FileWriter(new File("test.txt"));
-    
-      fw.write("Testing, testing!");
-      fw.flush();
-      fw.close();
-    }
-    catch (IOException e)
-    {
-      Logger.log(Logger.WRITEERROR, "Test", "Could not write to test.txt", e, false);
-      Logger.log(Logger.WRITEERROR, "Could not write to test.txt", e, false);
-    }
+    Logger.logMsg("Program started");
+    Logger.log("RANDOM ERROR", "Test", "An exception occured", new NullPointerException("Not null pointer exception"), false);
+    Logger.logMsg("WARNING", "Shutdown imminent!");
   }
 }
