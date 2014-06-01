@@ -1,3 +1,6 @@
+2014-06-01
+-OTHER: Added copyright info to all utility classes.
+
 2014-05-07
 -FEATURE: Added logMsg(String) and logMsg(String, String) to Logger.
 -CODE: log() will not print "- Class: " if className is null or doesn't contain any text.
