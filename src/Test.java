@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+
+import komposten.utilities.tools.IntPair;
 import komposten.utilities.tools.Logger;
 import komposten.utilities.tools.MathOps;
 
@@ -35,39 +38,72 @@ public class Test
 //    }
     
 //    Logger.logMsg("Program started");
-//    Logger.log("RANDOM ERROR", "Test", "An exception occurred", new NullPointerException("Not null pointer exception"), false);
+//    Logger.log("RANDOM ERROR", "Test", "An exception occured", new NullPointerException("Not null pointer exception"), false);
 //    Logger.logMsg("WARNING", "Shutdown imminent!");
-    
-    int   limit = Integer.MAX_VALUE;
-    float x1    = 3;
-    float y1    = 8;
-    float x2    = 2;
-    float y2    = 13;
-    
-    float time  = System.nanoTime();
-    
-    System.out.println("Testing MathOps.distance()");
-    
-    for (int i = 0; i < limit; i++)
-    {
-      MathOps.distance(x1, y1, x2, y2);
-      if (i % 500000000 == 0)
-        System.out.println("--index: " + i + "/" + limit);
-    }
-    
-    System.out.println("MathOps.distance(): time = " + (System.nanoTime() - time));
-    System.out.println("Testing Math.hypot()");
 
-    time = System.nanoTime();
+    System.out.println("Comparing Math.max() with math algorithm!");
+    ArrayList<long[]> times = new ArrayList<long[]>();
     
+    for (int i = 0; i < 100; i++)
+      times.add(printLoop());
+    
+    System.out.println();
+    System.out.println("Math.max()\tMath algorithm");
+    
+    for (long[] l : times)
+    {
+      String val1 = "" + l[0];
+      while (val1.length() < 9)
+        val1 = " " + val1;
+      String val2 = "" + l[1];
+      while (val2.length() < 9)
+        val2 = " " + val2;
+      System.out.println(val1 + "\t" + val2);
+    }
+  }
+  
+  
+  
+  private static long[] printLoop()
+  {
+    int   limit = 1000000;
+    int   a     = 54;//(int) (Math.random() * 100);
+    int   b     = 67;//(int) (Math.random() * 100);
+    int   c;
+    long  time1 = 0;
+    long  time2 = 0;
+    long  time  = 0;
+
+    a     = (int) (Math.random() * 100);
+    b     = (int) (Math.random() * 100);
+    time1 = 0;
+    time2 = 0;
+    
+    time  = System.nanoTime();
     for (int i = 0; i < limit; i++)
     {
-      Math.hypot(x2-x1, y2-y1);
-      if (i % 500000000 == 0)
-        System.out.println("--index: " + i + "/" + limit);
+      Math.max(a, b);
+      c = a;
+      a = b;
+      b = c;
     }
+    time1 = System.nanoTime() - time;
     
-    System.out.println("Math.hypot(): time = " + (System.nanoTime() - time));
     
+    time  = System.nanoTime();
+    for (int k = 0; k < limit; k++)
+    {
+      max(a, b);
+      c = a;
+      a = b;
+      b = c;
+    }
+    time2 = System.nanoTime() - time;
+    
+    return new long[] { time1, time2 };
   }
+  
+  
+  
+  private static int max(int a, int b) { return (a + b + Math.abs(a - b)) / 2; }
 }
