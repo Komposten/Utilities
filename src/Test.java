@@ -1,4 +1,5 @@
 import komposten.utilities.tools.Logger;
+import komposten.utilities.tools.MathOps;
 
 
 
@@ -33,8 +34,40 @@ public class Test
 //      Logger.log(Logger.WRITEERROR, "Could not write to test.txt", e, false);
 //    }
     
-    Logger.logMsg("Program started");
-    Logger.log("RANDOM ERROR", "Test", "An exception occured", new NullPointerException("Not null pointer exception"), false);
-    Logger.logMsg("WARNING", "Shutdown imminent!");
+//    Logger.logMsg("Program started");
+//    Logger.log("RANDOM ERROR", "Test", "An exception occurred", new NullPointerException("Not null pointer exception"), false);
+//    Logger.logMsg("WARNING", "Shutdown imminent!");
+    
+    int   limit = Integer.MAX_VALUE;
+    float x1    = 3;
+    float y1    = 8;
+    float x2    = 2;
+    float y2    = 13;
+    
+    float time  = System.nanoTime();
+    
+    System.out.println("Testing MathOps.distance()");
+    
+    for (int i = 0; i < limit; i++)
+    {
+      MathOps.distance(x1, y1, x2, y2);
+      if (i % 500000000 == 0)
+        System.out.println("--index: " + i + "/" + limit);
+    }
+    
+    System.out.println("MathOps.distance(): time = " + (System.nanoTime() - time));
+    System.out.println("Testing Math.hypot()");
+
+    time = System.nanoTime();
+    
+    for (int i = 0; i < limit; i++)
+    {
+      Math.hypot(x2-x1, y2-y1);
+      if (i % 500000000 == 0)
+        System.out.println("--index: " + i + "/" + limit);
+    }
+    
+    System.out.println("Math.hypot(): time = " + (System.nanoTime() - time));
+    
   }
 }
