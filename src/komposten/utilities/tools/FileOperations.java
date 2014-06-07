@@ -78,7 +78,7 @@ public final class FileOperations
     catch (IOException e)
     {
       String msg1 = "Could not open a stream to \"" + file.getPath() + "\".";
-      Logger.log("INPUT ERROR", "FileOperations", msg1, e, false);
+      LogUtils.log("INPUT ERROR", "FileOperations", msg1, e, false);
       
       if (writer_ != null)
         closeWriter();
@@ -101,7 +101,7 @@ public final class FileOperations
       catch (IOException e)
       {
         String msg1 = "Could not close the Writer.";
-        Logger.log("INPUT ERROR", "FileOperations", msg1, e, false);
+        LogUtils.log("INPUT ERROR", "FileOperations", msg1, e, false);
         
         return;
       }
@@ -143,7 +143,7 @@ public final class FileOperations
     catch (IOException e)
     {
       String msg1 = "Could not write the data to the file.";
-      Logger.log(Logger.WRITEERROR, "FileOperations", msg1, e, false);
+      LogUtils.log(Logger.WRITEERROR, "FileOperations", msg1, e, false);
       
       success = false;
     }
@@ -194,7 +194,7 @@ public final class FileOperations
       
 //      String[] msgs = new String[] { msg1, msg2, msg3, msg4 };
 
-      Logger.log(Logger.WRITEERROR, "FileOperations", msg1, e, false);
+      LogUtils.log(Logger.WRITEERROR, "FileOperations", msg1, e, false);
       
 //      SOptionPane.showConfirmDialog("Write Error", null, msgs);
       
@@ -374,7 +374,7 @@ public final class FileOperations
     }
     catch (FileNotFoundException e)
     {
-      Logger.log(Logger.LOADERROR, "FileOperations", "Could not find the Editor config-file", null, false);
+      LogUtils.log(Logger.LOADERROR, "FileOperations", "Could not find the Editor config-file", null, false);
       return null;
     }
     
@@ -446,7 +446,7 @@ public final class FileOperations
     }
     catch (IOException e)
     {
-      Logger.log(Logger.WRITEERROR, "FileOperations", "Could not create the file \"" + file.getAbsolutePath() + "\"", e, true);
+      LogUtils.log(Logger.WRITEERROR, "FileOperations", "Could not create the file \"" + file.getAbsolutePath() + "\"", e, true);
       return false;
     }
   }
@@ -486,7 +486,7 @@ public final class FileOperations
     
     if (!file.delete())
     {
-      Logger.log("File Deletion Error", "FileOperations", "Could not delete \"" + file.getAbsolutePath() + "\"!", null, true);
+      LogUtils.log("File Deletion Error", "FileOperations", "Could not delete \"" + file.getAbsolutePath() + "\"!", null, true);
       return false;
     }
     
@@ -545,7 +545,7 @@ public final class FileOperations
     }
     catch (IOException e)
     {
-      Logger.log(Logger.WRITEERROR, "FileOperations", "Could not copy the file \"" + file.getAbsolutePath() + "\"" +
+      LogUtils.log(Logger.WRITEERROR, "FileOperations", "Could not copy the file \"" + file.getAbsolutePath() + "\"" +
       		" to \"" + dest.getAbsolutePath() + "\"!", e, false);
       
       return false;

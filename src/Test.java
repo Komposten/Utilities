@@ -1,8 +1,4 @@
-import java.util.ArrayList;
-
-import komposten.utilities.tools.IntPair;
 import komposten.utilities.tools.Logger;
-import komposten.utilities.tools.MathOps;
 
 
 
@@ -10,7 +6,7 @@ public class Test
 {
   static
   {
-    System.out.println("AP Created!");
+//    System.out.println("AP Created!");
   }
 
   public Test()
@@ -37,29 +33,31 @@ public class Test
 //      Logger.log(Logger.WRITEERROR, "Could not write to test.txt", e, false);
 //    }
     
-//    Logger.logMsg("Program started");
-//    Logger.log("RANDOM ERROR", "Test", "An exception occured", new NullPointerException("Not null pointer exception"), false);
-//    Logger.logMsg("WARNING", "Shutdown imminent!");
+    Logger logger = new Logger(System.out);
+    
+    logger.logMsg("Program started");
+    logger.log("RANDOM ERROR", "Test", "An exception occured", new NullPointerException("Not null pointer exception"), false);
+    logger.logMsg("WARNING", "Shutdown imminent!");
 
-    System.out.println("Comparing Math.max() with math algorithm!");
-    ArrayList<long[]> times = new ArrayList<long[]>();
-    
-    for (int i = 0; i < 100; i++)
-      times.add(printLoop());
-    
-    System.out.println();
-    System.out.println("Math.max()\tMath algorithm");
-    
-    for (long[] l : times)
-    {
-      String val1 = "" + l[0];
-      while (val1.length() < 9)
-        val1 = " " + val1;
-      String val2 = "" + l[1];
-      while (val2.length() < 9)
-        val2 = " " + val2;
-      System.out.println(val1 + "\t" + val2);
-    }
+//    System.out.println("Comparing Math.max() with math algorithm!");
+//    ArrayList<long[]> times = new ArrayList<long[]>();
+//    
+//    for (int i = 0; i < 100; i++)
+//      times.add(printLoop());
+//    
+//    System.out.println();
+//    System.out.println("Math.max()\tMath algorithm");
+//    
+//    for (long[] l : times)
+//    {
+//      String val1 = "" + l[0];
+//      while (val1.length() < 9)
+//        val1 = " " + val1;
+//      String val2 = "" + l[1];
+//      while (val2.length() < 9)
+//        val2 = " " + val2;
+//      System.out.println(val1 + "\t" + val2);
+//    }
   }
   
   

@@ -7,7 +7,12 @@ import java.text.DecimalFormat;
 
 /**
  * @version
- * <b>1.1.0</b> <br />
+ * <b>1.2.0</b><br />
+ * <ul>
+ * <li>Added isPOT(int) and isPOT(long).</li>
+ * </ul>
+ * <b>Older</b><br />
+ * 1.1.0
  * <ul>
  * <li>Changed <code>twoDecimals(double)</code> to <code>round(double, int)</code></li>
  * </ul>
@@ -84,5 +89,29 @@ public class MathOps
 //      angle =  (float) (Math.PI * 2 + angle);
     
     return angle;
+  }
+  
+  
+  
+  /**
+   * Returns whether <code>value</code> is a power of two or not.
+   * @param value A value
+   * @return True if <code>value</code> is a power of two, false otherwise.
+   */
+  public static boolean isPOT(int value)
+  {
+    return Integer.toBinaryString(value).matches("0*10*");
+  }
+  
+  
+  
+  /**
+   * Returns whether <code>value</code> is a power of two or not.
+   * @param value A value
+   * @return True if <code>value</code> is a power of two, false otherwise.
+   */
+  public static boolean isPOT(long value)
+  {
+    return Long.toBinaryString(value).matches("0*10*");
   }
 }
