@@ -18,17 +18,24 @@ import javax.swing.JOptionPane;
 /**
  * A utility class for logging messages and exceptions to either a file or a stream.
  * @see {@link LogUtils}
+ * @author Jakob Hjelm
  * @version
- * <b>1.3.0</b> <br />
+ * <b>1.3.1</b> <br />
+ * <ul>
+ * <li>Replaced <code>Exception</code> with <code>Throwable</code>.</li>
+ * <li>Added support for newlines in the exception message.</li>
+ * <li>The first line of each cause is now always written.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.3.0 <br />
  * <ul>
  * <li>Removed <code>static</code> from all log methods.</li>
  * <li>Added support for changing log file, or to use a stream.</li>
  * <li>Added <code>write(String, String, OutputStream)</code>.</li>
- * <li>Added <code>writeToFile(String)</code> and <code>writeToStream(OutputStream)</code>.
- * <li>Added <code>dispose()</code>.
- * <li>Updated JavaDoc to match the new system.
+ * <li>Added <code>writeToFile(String)</code> and <code>writeToStream(OutputStream)</code>.</li>
+ * <li>Added <code>dispose()</code>.</li>
+ * <li>Updated JavaDoc to match the new system.</li>
  * </ul>
- * <b>Older</b> <br />
  * 1.2.0 <br />
  * <ul>
  * <li>Added <code>logMsg(String)</code> and <code>logMsg(String, String)</code>.</li>
@@ -170,17 +177,17 @@ public final class Logger
    * the log file or stream.
    * @param errorType - A <code>String</code> saying what kind of error occurred (e.g. "WRITE ERROR"). A set 
    * of standard messages can be found as constants in this class.
-   * @param errorMsg  - The message to be displayed after the error type.
-   * @param e         - An <code>Exception</code> (can be <code>null</code>), from which additional information of the error 
-   * will be taken.
-   * @param exceptionMsgOnly - If only the <code>Exception</code>'s message should be written, and not the 
+   * @param errorMsg  - The message to be displayed after the error type  (may contain new lines).
+   * @param t         - A <code>Throwable</code> from which additional information of the error 
+   * will be taken. (May be <code>null</code>)
+   * @param throwableMsgOnly - If only the <code>Throwable</code>'s message should be written, and not the 
    * entire stack trace.
    * @return True if the message was successfully logged, false otherwise.
    */
 	@Deprecated
-  public boolean log(String errorType, String errorMsg, Exception e, boolean exceptionMsgOnly)
+  public boolean log(String errorType, String errorMsg, Throwable t, boolean throwableMsgOnly)
   {
-    return log(errorType, "<unspecified>", errorMsg, e, exceptionMsgOnly);
+    return log(errorType, "<unspecified>", errorMsg, t, throwableMsgOnly);
   }
 	
 	
@@ -191,14 +198,14 @@ public final class Logger
 	 * @param errorType - A <code>String</code> saying what kind of error occurred (e.g. "WRITE ERROR"). A set 
 	 * of standard messages can be found as constants in this class.
 	 * @param className - The name of the class within which the error occurred (can be null or zero-length).
-	 * @param errorMsg  - The message to be displayed after the error type.
-	 * @param e         - An <code>Exception</code> (can be <code>null</code>), from which additional information of the error 
-	 * will be taken.
-	 * @param exceptionMsgOnly - If only the <code>Exception</code>'s message should be written, and not the 
+	 * @param errorMsg  - The message to be displayed after the error type (may contain new lines).
+	 * @param t         - A <code>Throwable</code> from which additional information of the error 
+	 * will be taken. (May be <code>null</code>)
+	 * @param throwableMsgOnly - If only the <code>Throwable</code>'s message should be written, and not the 
 	 * entire stack trace.
 	 * @return True if the message was successfully logged, false otherwise.
 	 */
-	public boolean log(String errorType, String className, String errorMsg, Exception e, boolean exceptionMsgOnly)
+	public boolean log(String errorType, String className, String errorMsg, Throwable t, boolean throwableMsgOnly)
 	{
 		StringBuilder logMsg = new StringBuilder();
 		Calendar      date   = Calendar.getInstance();
@@ -223,54 +230,42 @@ public final class Logger
 		  logMsg.append(" - Class: " + className);
 		logMsg.append("|");
 		logMsg.append(newLine + "|-|" + errorType.toUpperCase() + ":");
-		logMsg.append(" " + errorMsg);
+		logMsg.append(" " + errorMsg.replaceAll("\n\r|\r\n|\r|\n|" + newLine + "", newLine + "|----|"));
 		
-		if (e != null)
+		if (t != null)
 		{
-			logMsg.append(newLine + "|-|" + e.toString());
+			logMsg.append(newLine + "|-|" + t.toString());
 			
-			if (!exceptionMsgOnly)
+			if (!throwableMsgOnly)
 			{
-				for (StackTraceElement st : e.getStackTrace())
+				for (StackTraceElement st : t.getStackTrace())
 					logMsg.append(newLine + "|---->" + st.toString());
 				
-				while (e.getCause() != null)
+				while (t.getCause() != null)
 				{
-				  if ((e.getCause() instanceof Exception))
-				  {
-					  e = (Exception) e.getCause();
-					  
-					  logMsg.append(newLine + "|-|" + CAUSED_BY);
-					  logMsg.append(newLine + "|-|" + e.toString());
-					  
-					  for (StackTraceElement st : e.getStackTrace())
-					    logMsg.append(newLine + "|---->" + st.toString());
-				  }
-				  else
-				  {
-            logMsg.append(newLine + "|-|" + CAUSED_BY);
-            logMsg.append(newLine + "|-|" + e.getCause().toString());
-            
-            for (StackTraceElement st : e.getCause().getStackTrace())
-              logMsg.append(newLine + "|----->" + st.toString());
-            
-            break;
-				  }
+				  t = t.getCause();
+				  
+				  logMsg.append(newLine + "|-|" + CAUSED_BY);
+				  logMsg.append(newLine + "|-|" + t.toString());
+				  
+				  for (StackTraceElement st : t.getStackTrace())
+				    logMsg.append(newLine + "|---->" + st.toString());
 				}
 			}
 			else
 			{
-			  while (e.getCause() != null)
+        logMsg.append(newLine + "|---->" + t.getStackTrace()[0]);
+        
+			  while (t.getCause() != null)
 			  {
-			    e = (Exception) e.getCause();
+			    t = t.getCause();
 			    logMsg.append(newLine);
 	        logMsg.append("|-|" + CAUSED_BY);
 	        logMsg.append(newLine);
-          logMsg.append("|-|" + e.toString());
-          logMsg.append("|");
+          logMsg.append("|-|" + t.toString());
+          logMsg.append(newLine + "|---->" + t.getStackTrace()[0]);
 			  }
 			  
-			  logMsg.append(newLine + "---->At: " + e.getStackTrace()[0]);
 			}
 		}
 		

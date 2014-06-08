@@ -1,3 +1,7 @@
+2014-06-08
+-FEATURE: Added support for new lines in the log message.
+-CODE: Changed Logger's Exception parameter to Throwable.
+
 2014-06-07
 -FEATURE: Made it possible to set Logger's target (either a file or an outputstream).
 -CODE: Removed "static" from Logger's method.
