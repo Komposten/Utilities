@@ -33,8 +33,8 @@ public class Test
 //    }
 //    catch (IOException e)
 //    {
-//      Logger.log(Logger.WRITEERROR, "Test", "Could not write to test.txt", e, false);
-//      Logger.log(Logger.WRITEERROR, "Could not write to test.txt", e, false);
+//      LogUtils.log(Logger.WRITEERROR, "Test", "Could not write to test.txt", e, false);
+//      LogUtils.log(Logger.WRITEERROR, "Could not write to test.txt", e, false);
 //    }
     
     Logger logger = new Logger(System.out);
