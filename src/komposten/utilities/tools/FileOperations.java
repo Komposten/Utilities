@@ -65,7 +65,9 @@ public final class FileOperations
   
   
   /**
-   * Creates a <code>FileWriter</code> for writing to the specified file
+   * Creates a <code>FileWriter</code> for writing to the specified file.
+   * <br ><b>Note:</b> This method does not close any existing writer! That has
+   * to be done manually using {@link #closeWriter()}.
    * @param file - The file to print to.
    * @param append - If the printed data should be appended to the contents of the file, or if it should overwrite it.
    */
@@ -78,7 +80,7 @@ public final class FileOperations
     catch (IOException e)
     {
       String msg1 = "Could not open a stream to \"" + file.getPath() + "\".";
-      LogUtils.log("INPUT ERROR", "FileOperations", msg1, e, false);
+      LogUtils.log("I/O ERROR", "FileOperations", msg1, e, false);
       
       if (writer_ != null)
         closeWriter();
@@ -101,7 +103,7 @@ public final class FileOperations
       catch (IOException e)
       {
         String msg1 = "Could not close the Writer.";
-        LogUtils.log("INPUT ERROR", "FileOperations", msg1, e, false);
+        LogUtils.log("I/O ERROR", "FileOperations", msg1, e, false);
         
         return;
       }

@@ -1,3 +1,8 @@
+2014-06-28
+-FEATURE: Added Regex.
+-CODE: Replaced "INPUT" in FileOperation's error messages with "I/O".
+-OTHER: Improved javadoc in FileOperations.
+
 2014-06-08
 -FEATURE: Added support for new lines in the log message.
 -CODE: Changed Logger's Exception parameter to Throwable.
