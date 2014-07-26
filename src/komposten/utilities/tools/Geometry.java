@@ -7,6 +7,10 @@ import com.badlogic.gdx.math.Polygon;
 
 
 /**
+ * This class holds methods for different geometrical operations.
+ * <br />
+ * <br />
+ * <b>Note:</b> Some methods on this class requires LibGDX.
  * @version
  * <b>1.0.0</b> <br />
  * <ul>

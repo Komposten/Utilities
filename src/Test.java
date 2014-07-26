@@ -2,6 +2,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.naming.NoPermissionException;
 
+import komposten.utilities.tools.LogUtils;
 import komposten.utilities.tools.Logger;
 
 
@@ -15,8 +16,27 @@ public class Test
 
   public Test()
   {
+    LogUtils.writeToStream(System.out);
 //    AudioPlayer ap = new AudioPlayer("/C:\\Users\\Public\\Music\\Sample Music", true, false);
+    
+    try
+    {
+      throwException();
+    }
+    catch (NullPointerException e)
+    {
+      LogUtils.log("ERROR", "Test", "Random null pointer", e, false);
+    }
   }
+  
+  
+  
+  public void throwException()
+  {
+    throw new NullPointerException("Random null pointer");
+  }
+  
+  
   
   public static void main(String[] args)
   {
@@ -45,6 +65,7 @@ public class Test
     logger.log("MESSAGE", "Test - main(String)", "Some message", null, true);
     logger.log("MESSAGE", "Test - main(String)", "Possible causes:\nBad coding\nBugs\nToo much sugar", new InvocationTargetException(new NullPointerException("Exception")), true);
     logger.logMsg("WARNING", "Shutdown imminent!");
+    new Test().throwException();
 //    System.out.println("Comparing Math.max() with math algorithm!");
 //    ArrayList<long[]> times = new ArrayList<long[]>();
 //    

@@ -7,12 +7,16 @@ import java.util.regex.Pattern;
 
 /**
  * @version
- * <b>1.0.0</b><br />
+ * <b>1.1.0</b><br />
+ * <ul>
+ * <li>Added getMatchCount(String, String).</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.0.0
  * <ul>
  * <li>Added getMatcher(String, String).</li>
  * <li>Added getMatches(String, String).</li>
  * </ul>
- * <b>Older</b> <br />
  * @author Jakob Hjelm
  */
 public class Regex
@@ -49,5 +53,24 @@ public class Regex
       matches.add(matcher.group());
     
     return matches.toArray(new String[0]);
+  }
+  
+  
+  
+  /**
+   * Returns the amount of matches for the specified regex in the provided <code>String</code>.
+   * @param regex The regex to match in the string.
+   * @param input The input string.
+   * @return The match count for <code>regex</code> in <code>input</code>.
+   */
+  public static int getMatchCount(String regex, String input)
+  {
+    Matcher matcher = Pattern.compile(regex).matcher(input);
+    
+    int count = 0;
+    while (matcher.find())
+      count++;
+    
+    return count;
   }
 }

@@ -1,3 +1,8 @@
+2014-07-26
+-FEATURE: Added getMatchCount(String, String) to Regex.
+-FEATURE: Added InputMapper and StringInputMapper.
+-OTHER: Removed the external javadoc and added doc to .gitignore.
+
 2014-06-28
 -FEATURE: Added Regex.
 -CODE: Replaced "INPUT" in FileOperation's error messages with "I/O".
