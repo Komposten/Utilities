@@ -1,7 +1,18 @@
+2014-08-31
+-FEATURE: Changed GraphFrame's main method to accept parameters to load files on start-up.
+-FEATURE: Added support for parameters "-?" and "/?" for GraphFrame.
+-FEATURE: Changed GraphFrame's file extension (used when saving graphs) to .graph.
+-FEATURE: Added the name of the graph file to GraphFrame's title.
+
+2014-08-27
+-FEATURE: Changed GraphList's grid to have a static size (always TARGET_GRID_SIZE).
+-FEATURE: Added padding to the top and the right of the graph/grid.
+
 2014-07-26
 -FEATURE: Added getMatchCount(String, String) to Regex.
 -FEATURE: Added InputMapper and StringInputMapper.
 -OTHER: Removed the external javadoc and added doc to .gitignore.
+-CODE: Changed all getMappings-methods in InputMapper to return empty arrays rather than null if no actions are bound to the provided input code.
 
 2014-06-28
 -FEATURE: Added Regex.

@@ -204,17 +204,17 @@ public class LinesOfCode
   
   public void printResults()
   {
-    System.out.println("Amount of folders:\t"    + searchedFolders_    );
-    System.out.println("Amount of files:\t"      + searchedFiles_      );
-    System.out.println("Amount of lines:\t"      + linesWithContent_   );
-    System.out.println("Amount of characters:\t" + charactersOfContent_);
+    System.out.println("Amount of folders:    " + searchedFolders_    );
+    System.out.println("Amount of files:      " + searchedFiles_      );
+    System.out.println("Amount of lines:      " + linesWithContent_   );
+    System.out.println("Amount of characters: " + charactersOfContent_);
     System.out.println();
-    System.out.println("Amount of A4-pages:\t"   + (linesWithContent_    / 28)   + " (With 28 lines per page)");
-    System.out.println("Amount of A4-pages:\t"   + (charactersOfContent_ / 3000) + " (With 3000 characters per page)");
+    System.out.println("Amount of A4-pages:   " + (linesWithContent_    / 28)   + " (With 28 lines per page)");
+    System.out.println("Amount of A4-pages:   " + (charactersOfContent_ / 3000) + " (With 3000 characters per page)");
     System.out.println();
     System.out.println();
-    System.out.println("File with the most lines of code:\t\"" + mostLinesFileName_ + "\", with " + linesInMostLines_ + " (" + (linesInMostLines_ / 28) + " A4-pages)");
-    System.out.println("File with the most characters:   \t\"" + mostCharsFileName_ + "\", with " + charsInMostChars_ + " (" + (charsInMostChars_ / 3000) + " A4-pages)");
+    System.out.println("File with the most lines of code: \"" + mostLinesFileName_ + "\", with " + linesInMostLines_ + " (" + (linesInMostLines_ / 28) + " A4-pages)");
+    System.out.println("File with the most characters:    \"" + mostCharsFileName_ + "\", with " + charsInMostChars_ + " (" + (charsInMostChars_ / 3000) + " A4-pages)");
   }
   
   

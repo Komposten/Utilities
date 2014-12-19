@@ -24,7 +24,9 @@ public class GraphList
 {
   private static final Color BACKGROUND       = Color.WHITE;
   private static final Color GRID_COLOUR      = new Color(192, 192, 192);
-  private static final int   TARGET_GRID_SIZE = 20;
+  private static final int   TARGET_GRID_SIZE = 16;
+  
+  private static final int   GRAPH_PADDING   = 16;
   
   private Map<String, GraphData> data_;
   
@@ -161,62 +163,94 @@ public class GraphList
   
   
   
+  /**
+   * Returns the width of the grid (the space between two grid lines along the x-axis).
+   * @param drawWidth The width of the area the full grid should span. Unused in the current implementation.
+   * @return The width of the grid.
+   */
   private int getGridWidth(int drawWidth)
   {
-    int magnitude = (int) Math.pow(10, Integer.toString(maxX_).length()) - 1;
+//    int magnitude = (int) Math.pow(10, Integer.toString(maxX_).length()) - 1;
+//    
+//    if (magnitude < 1)
+//      magnitude = 1;
+//    
+//    int gridWidth = (int) (maxX_ / (maxX_ / (float)TARGET_GRID_SIZE) % magnitude);
+//    
+//    gridWidth = (int) (gridWidth * (drawWidth / (float)maxX_));
+//    
+//    return gridWidth < 1 ? 1 : gridWidth;
     
-    if (magnitude < 1)
-      magnitude = 1;
-    
-    int gridWidth = (int) (maxX_ / (maxX_ / (float)TARGET_GRID_SIZE) % magnitude);
-    
-    gridWidth = (int) (gridWidth * (drawWidth / (float)maxX_));
-    
-    return gridWidth < 1 ? 1 : gridWidth;
+    return TARGET_GRID_SIZE;
   }
   
   
   
+  /**
+   * Returns the height of the grid (the space between two grid lines along the y-axis).
+   * @param drawHeight The height of the area the full grid should span. Unused in the current implementation.
+   * @return The height of the grid.
+   */
   private int getGridHeight(int drawHeight)
   {
-    int magnitude  = (int) Math.pow(10, Integer.toString(TARGET_GRID_SIZE).length()) - 1;
+//    int magnitude  = (int) Math.pow(10, Integer.toString(TARGET_GRID_SIZE).length()) - 1;
+//    
+//    if (magnitude < 1)
+//      magnitude = 1;
+//    
+//    int gridHeight = (int) (graphHeight_ / (graphHeight_ / (float)TARGET_GRID_SIZE) % magnitude);
+//    
+//    gridHeight = (int) (gridHeight * (drawHeight / (float)graphHeight_));
+//    
+//    return gridHeight < 1 ? 1 : gridHeight;
     
-    if (magnitude < 1)
-      magnitude = 1;
-    
-    int gridHeight = (int) (graphHeight_ / (graphHeight_ / (float)TARGET_GRID_SIZE) % magnitude);
-    
-    gridHeight = (int) (gridHeight * (drawHeight / (float)graphHeight_));
-    
-    return gridHeight < 1 ? 1 : gridHeight;
+    return TARGET_GRID_SIZE;
   }
   
   
   
-  private int getGridStepX()
+  /**
+   * Returns the value difference between two lines in the grid along the x-axis.
+   * @param drawWidth The width of the area the full grid should span.
+   * @return The value difference between two lines in the grid along the x-axis.
+   */
+  private float getGridStepX(int drawWidth)
   {
-    int magnitude = (int) Math.pow(10, Integer.toString(maxX_).length()) - 1;
+//    int magnitude = (int) Math.pow(10, Integer.toString(maxX_).length()) - 1;
+//    
+//    if (magnitude < 1)
+//      magnitude = 1;
+//    
+//    int gridStepX = (int) (maxX_ / (maxX_ / (float)TARGET_GRID_SIZE) % magnitude);
+//    
+//    return gridStepX;
     
-    if (magnitude < 1)
-      magnitude = 1;
+    float valuesPerPixel = maxX_ / (float)drawWidth;
     
-    int gridWidth = (int) (maxX_ / (maxX_ / (float)TARGET_GRID_SIZE) % magnitude);
-    
-    return gridWidth;
+    return getGridWidth(drawWidth) * valuesPerPixel;
   }
   
   
-  
-  private int getGridStepY()
+
+  /**
+   * Returns the value difference between two lines in the grid along the y-axis.
+   * @param drawHeight The height of the area the full grid should span. 
+   * @return The value difference between two lines in the grid along the y-axis.
+   */
+  private float getGridStepY(int drawHeight)
   {
-    int magnitude  = (int) Math.pow(10, Integer.toString(graphHeight_).length()) - 1;
+//    int magnitude  = (int) Math.pow(10, Integer.toString(graphHeight_).length()) - 1;
+//    
+//    if (magnitude < 1)
+//      magnitude = 1;
+//    
+//    int gridStepY = (int) (graphHeight_ / (graphHeight_ / (float)TARGET_GRID_SIZE) % magnitude);
+//    
+//    return gridStepY;
     
-    if (magnitude < 1)
-      magnitude = 1;
+    float valuesPerPixel = graphHeight_ / (float)drawHeight;
     
-    int gridHeight = (int) (graphHeight_ / (graphHeight_ / (float)TARGET_GRID_SIZE) % magnitude);
-    
-    return gridHeight;
+    return getGridHeight(drawHeight) * valuesPerPixel;
   }
   
   
@@ -228,8 +262,8 @@ public class GraphList
     
     int numberWidth  = g2.getFontMetrics().stringWidth(Integer.toString(graphHeight_)) + 20;
     int numberHeight = (g2.getFontMetrics().getHeight() + 10) * (data_.size() + 1);
-    int graphWidth   = width  - numberWidth;
-    int graphHeight  = height - numberHeight;
+    int graphWidth   = width  - numberWidth  - GRAPH_PADDING;
+    int graphHeight  = height - numberHeight - GRAPH_PADDING;
 
     if (width <= numberWidth + 10 || height <= numberHeight + 10)
       return;
@@ -243,13 +277,14 @@ public class GraphList
 
     g2.setColor(BACKGROUND);
     g2.fillRect(0, 0, width, height);
+    g2.translate(0, GRAPH_PADDING);
     
     //*** Draw the number labels
     g2.setColor(Color.BLACK);
     for (int y = 0; y < gridRows + 1; y+=5)
     {
       int    y2     = graphHeight - gridHeight * y;
-      String number = Integer.toString(getGridStepY() * y);
+      String number = Integer.toString((int)(getGridStepY(graphHeight) * y));
       
       g2.drawString(number, numberWidth - g2.getFontMetrics().stringWidth(number) - 5,
           y2 + g2.getFontMetrics().getDescent());
@@ -259,7 +294,7 @@ public class GraphList
     {
       int    x2     = numberWidth + gridWidth * x;
       int    y      = graphHeight + g2.getFontMetrics().getAscent() + 2;
-      String number = Integer.toString(getGridStepX() * x);
+      String number = Integer.toString((int)(getGridStepX(graphWidth) * x));
       
       g2.drawString(number, x2 - g2.getFontMetrics().stringWidth(number) / 2, y);
     }
@@ -286,7 +321,7 @@ public class GraphList
     for (int y = 0; y < gridRows + 1; y++)
     {
       int y2 = graphHeight - gridHeight * y;
-      g2.drawLine(numberWidth, y2, width, y2);
+      g2.drawLine(numberWidth, y2, numberWidth + graphWidth, y2);
     }
     
     for (int x = 0; x < gridCols + 1; x++)
@@ -296,7 +331,7 @@ public class GraphList
     
     g2.setColor(Color.BLACK);
     g2.setStroke(new BasicStroke(2));
-    g2.drawLine(numberWidth, graphHeight, width, graphHeight);
+    g2.drawLine(numberWidth, graphHeight, numberWidth + graphWidth, graphHeight);
     g2.drawLine(numberWidth, 0, numberWidth, graphHeight);
     g2.setStroke(new BasicStroke(1));
     
@@ -425,6 +460,8 @@ public class GraphList
           data_.put(name, GraphData.fromJSON(data));
         }
       }
+      
+      
     }
     catch (FileNotFoundException e)
     {

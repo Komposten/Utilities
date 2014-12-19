@@ -351,12 +351,17 @@ public class InputMapper
    * Returns the actions mapped to the specified key code.
    * 
    * @param keyCode The key code for the pressed key.
-   * @return Returns the actions mapped to the specified key code, or null if no
-   *         such mappings were found.
+   * @return Returns the actions mapped to the specified key code, or an empty array
+   *         if no such mappings were found.
    */
   public Integer[] getKeyMapping(int keyCode)
   {
-    return mappings_.get(Integer.valueOf(keyCode));
+    Integer[] actions = mappings_.get(Integer.valueOf(keyCode));
+    
+    if (actions == null)
+      actions = new Integer[0];
+    
+    return actions;
   }
 
 
@@ -375,12 +380,17 @@ public class InputMapper
    *          the <code>MOUSE_BUTTON</code> constants in {@link SEvent}.
    *          Combinations of several button codes are not supported.
    * @return Returns the actions mapped to the specified mouse button code, or
-   *         null if no such mappings were found.
+   *         an empty array if no such mappings were found.
    * @see #getMouseButtonCode(int)
    */
   public Integer[] getMouseMapping(int buttonCode)
   {
-    return mappings_.get(getMouseButtonCode(buttonCode));
+    Integer[] actions = mappings_.get(getMouseButtonCode(buttonCode));
+    
+    if (actions == null)
+      actions = new Integer[0];
+    
+    return actions;
   }
 
 
@@ -401,11 +411,16 @@ public class InputMapper
    *          the user, and positive values if the mouse wheel was rotated down
    *          or towards the user).
    * @return Returns the actions mapped to the specified mouse button code, or
-   *         null if no such mappings were found.
+   *         an empty array if no such mappings were found.
    * @see #getMouseWheelCode(int);
    */
   public Integer[] getMouseWheelMapping(int direction)
   {
-    return mappings_.get(getMouseWheelCode(direction));
+    Integer[] actions =  mappings_.get(getMouseWheelCode(direction));
+    
+    if (actions == null)
+      actions = new Integer[0];
+    
+    return actions;
   }
 }

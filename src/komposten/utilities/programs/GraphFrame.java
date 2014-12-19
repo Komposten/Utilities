@@ -9,6 +9,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -91,7 +92,28 @@ public class GraphFrame extends JFrame
   
   
   
-  public void setGraphs(GraphList graph) { graph_ = graph; }
+  public void setGraphs(GraphList graph)
+  {
+    graph_ = graph;
+  }
+  
+  
+  
+  public void loadGraphsFromFile(String filePath)
+  {
+    graph_.loadFromFile(filePath);
+    
+    addFileNameToTitle(filePath);
+  }
+  
+  
+  
+  private void addFileNameToTitle(String filePath)
+  {
+    int    beginIndex = filePath.lastIndexOf(File.separatorChar) + 1;
+    String fileName   = filePath.substring(beginIndex);
+    setTitle("Graph - \"" + fileName + "\"");
+  }
   
   
   
@@ -110,9 +132,11 @@ public class GraphFrame extends JFrame
         {
           String path = chooser.getSelectedFile().getPath();
           
-          if (!path.endsWith(".json"))
-            path = path.concat(".json");
+          if (!path.endsWith(".graph"))
+            path = path.concat(".graph");
           graph_.printToFile(path);
+          
+          addFileNameToTitle(path);
         }
       }
       else if (arg0.getActionCommand().equalsIgnoreCase("load"))
@@ -138,31 +162,55 @@ public class GraphFrame extends JFrame
 
 	public static void main(String[] args)
 	{
-	  GraphFrame graph = new GraphFrame();
-	  
-	  GraphList graphs = new GraphList();
-    
-    graphs.addGraph("Graph1");
-    
-    int y = (int) (Math.random() * graph.getHeight() / 2) + graph.getHeight() / 4;
-    for (int x = 0; x < graph.getWidth(); x++)
-    {
-      y += Math.random() > 0.5 ? 1 : -1;
-      graphs.addGraphData("Graph1", x, y);
-    }
+    GraphFrame graph  = new GraphFrame();
+    GraphList  graphs = new GraphList();
 
-    graphs.addGraph("Graph2");
+    graph.setGraphs(graphs);
     
-    y = (int) (Math.random() * graph.getHeight() / 2) + graph.getHeight() / 4;
-    for (int x = 0; x < graph.getWidth(); x++)
+    if (args.length > 0)
     {
-      y += Math.random() > 0.5 ? 1 : -1;
-      graphs.addGraphData("Graph2", x, y);
+  	  if (args.length == 1 && args[0].matches("((/|-)\\?)|(-help)"))
+  	  {
+  	    System.out.println("Usage: GraphFrame.jar\n\t\t(to open an empty GraphFrame)");
+  	    System.out.println("   or  GraphFrame.jar -loadgraph \"path\"\n\t\t(to open the graph denoted by the path)");
+  	    return;
+  	  }
+  	  else if (args.length >= 2 && args[0].equals("-loadgraph"))
+  	  {
+  	    graph.loadGraphsFromFile(args[1]);
+  	  }
+  	  else
+  	  {
+  	    System.out.println("Invalid launch parameter: " + args[0]);
+  	    System.out.println("Use /? or -? to read the help message.");
+  	    return;
+  	  }
     }
     
-	  graph.setGraphs(graphs);
-	  graph.setVisible(true);
-	  
-	  System.out.println(graphs.getGraphHeight());
+    graph.setVisible(true);
+    
+//    graphs.addGraph("Graph1");
+//    
+//    int xValueAmount = 10;//graph.getWidth() / 10;
+//    
+//    int y = (int) (Math.random() * graph.getHeight() / 2) + graph.getHeight() / 4;
+//    
+//    for (int x = 0; x < xValueAmount; x++)
+//    {
+//      y += Math.random() > 0.5 ? 1 : -1;
+//      graphs.addGraphData("Graph1", x, y);
+//    }
+//
+//    graphs.addGraph("Graph2");
+//    
+//    y = (int) (Math.random() * graph.getHeight() / 2) + graph.getHeight() / 4;
+//    for (int x = 0; x < xValueAmount; x++)
+//    {
+//      y += Math.random() > 0.5 ? 1 : -1;
+//      graphs.addGraphData("Graph2", x, y);
+//    }
+//    
+//	  
+//	  System.out.println(graphs.getGraphHeight());
 	}
 }
