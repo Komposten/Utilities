@@ -1,3 +1,18 @@
+2014-12-29
+-FEATURE: Added support for quotation marks around JSON strings and member names.
+-FEATURE: Added quotation marks to member names and string values for JSONObject's toString(JSONObject, int).
+-CODE: Removed all debug prints from JSONReader.
+-CODE: Added IndexOutOfBounds-handling to parsePair(String).
+-FIX: Commas within strings (between quotation marks) are no longer viewed as member dividers.
+
+2014-12-28
+-FEATURE: Added getMemberByName(String) to JSONObject.
+-FEATURE: Added getMembers() to JSONObject.
+-CODE: Migrated JSONObject to its own, public class.
+
+2014-12-27
+-FEATURE: Added JSONReader.java.
+
 2014-08-31
 -FEATURE: Changed GraphFrame's main method to accept parameters to load files on start-up.
 -FEATURE: Added support for parameters "-?" and "/?" for GraphFrame.
