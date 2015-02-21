@@ -1,5 +1,6 @@
 package komposten.utilities.tools;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,7 +15,7 @@ import sbasicgui.events.SEvent;
  * stored together with the key and mouse buttons that should invoke that
  * particular action. When an input event is received passing the key code,
  * mouse button code or mouse wheel rotation from the event to
- * {@link #getKeyMapping(int)} (or the mouse button and mouse wheel equivalents)
+ * {@link #getKeyMappings(int)} (or the mouse button and mouse wheel equivalents)
  * will return all actions associated with that particular input.
  * <br />
  * <br />
@@ -25,8 +26,19 @@ import sbasicgui.events.SEvent;
  * <b>Note:</b> This class is built for SBasicGUI.
  * 
  * @author Jakob Hjelm
+ * @version
+ * <b>1.1.0</b> <br />
+ * <ul>
+ * <li>Made the action code type generic.</li>
+ * <li>Added <code>getMappingsForAction(T)</code>.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.0.0 <br />
+ * <ul>
+ * <li>Initial implementation.</li>
+ * </ul> <br />
  */
-public class InputMapper
+public class InputMapper<T>
 {
   public static final int MOUSE1           = -1;
   public static final int MOUSE2           = -2;
@@ -35,11 +47,11 @@ public class InputMapper
   public static final int MOUSE_WHEEL_DOWN = -5;
   public static final int INVALID_CODE    = -10;
   
-  private HashMap<Integer, Integer[]> mappings_;
+  private HashMap<Integer, ArrayList<T>> mappings_;
   
   
   {
-    mappings_ = new HashMap<Integer, Integer[]>();
+    mappings_ = new HashMap<Integer, ArrayList<T>>();
   }
   
   
@@ -97,7 +109,7 @@ public class InputMapper
    * Returns the map containing all mappings.
    * @return A map containing all mappings.
    */
-  public HashMap<Integer, Integer[]> getMappings()
+  public HashMap<Integer, ArrayList<T>> getMappings()
   {
     return mappings_;
   }
@@ -109,36 +121,25 @@ public class InputMapper
    * @param keyCode The key to map the action to.
    * @param action The action code.
    */
-  public void registerKey(int keyCode, int action)
+  public void registerKey(int keyCode, T action)
   {
     if (keyCode == INVALID_CODE)
       return;
     
-    Integer   key     = Integer.valueOf(keyCode);
-    Integer[] actions = mappings_.get(key);
+    Integer      key     = Integer.valueOf(keyCode);
+    ArrayList<T> actions = mappings_.get(key);
     
-    if (actions == null || actions.length == 0)
+    if (actions == null || actions.size() == 0)
     {
-      mappings_.put(key, new Integer[] { action });
+      actions = new ArrayList<T>();
+      actions.add(action);
+      
+      mappings_.put(key, actions);
     }
     else
     {
-      boolean  actionExists = false;
-      
-      for (Integer s : actions)
-        if (s.intValue() == action)
-          actionExists = true;
-      
-      if (!actionExists) //Only add the action if it is not already mapped to this key.
-      {
-        Integer[] newArray = new Integer[actions.length + 1];
-        
-        for (int i = 0; i < actions.length; i++)
-          newArray[i] = actions[i];
-        newArray[actions.length] = action;
-        
-        mappings_.put(key, newArray);
-      }
+      if (!actions.contains(action))
+        actions.add(action);
     }
   }
   
@@ -158,7 +159,7 @@ public class InputMapper
    * @param buttonCode The mouse button to map the action to.
    * @param action The action code.
    */
-  public void registerMouseButton(int buttonCode, Integer action)
+  public void registerMouseButton(int buttonCode, T action)
   {
     registerKey(getMouseButtonCode(buttonCode), action);
   }
@@ -181,7 +182,7 @@ public class InputMapper
    *          or towards the user).
    * @param action The action code.
    */
-  public void registerMouseWheel(int direction, Integer action)
+  public void registerMouseWheel(int direction, T action)
   {
     registerKey(getMouseWheelCode(direction), action);
   }
@@ -252,49 +253,27 @@ public class InputMapper
   
   /**
    * Removes the specified action from all key/mouse mappings.
-   * @param action The action code associated with the key/mouse button.
+   * @param action The action code associated with the key/mouse button to remove.
    * @return True if a mapping was found and removed, false otherwise.
    */
-  public boolean removeAction(Integer action)
+  public boolean removeAction(T action)
   {
     boolean foundKey = false;
     
-    Map<Integer, Integer[]> updatedEntries = new HashMap<Integer, Integer[]>();
-    
-    Iterator<Entry<Integer, Integer[]>> iterator = mappings_.entrySet().iterator();
+    Iterator<Entry<Integer, ArrayList<T>>> iterator = mappings_.entrySet().iterator();
     
     while (iterator.hasNext())
     {
-      Entry<Integer, Integer[]> entry = iterator.next();
-
-      boolean  contained = false;
+      Entry<Integer, ArrayList<T>> entry = iterator.next();
       
-      for (Integer s : entry.getValue())
-        if (s.intValue() == action.intValue())
-          contained = true;
-      
-      if (contained)
+      if (entry.getValue().remove(action))
       {
-        Integer[] newArray = new Integer[entry.getValue().length - 1];
-        
-        for (int i = 0, j = 0; i < entry.getValue().length; i++, j++)
-        {
-          if (entry.getValue()[i].intValue() != action)
-            newArray[j] = entry.getValue()[i];
-          else
-            j--;
-        }
-        
-        if (newArray.length > 0)
-          updatedEntries.put(entry.getKey(), newArray);
-        else
+        if (entry.getValue().size() <= 0)
           iterator.remove();
         
         foundKey = true;
       }
     }
-    
-    mappings_.putAll(updatedEntries);
     
     return foundKey;
   }
@@ -307,38 +286,18 @@ public class InputMapper
    * @param inputCode The input code for the key/mouse button.
    * @return True if a mapping was found and removed, false otherwise.
    */
-  public boolean removeAction(Integer action, int inputCode)
+  public boolean removeAction(T action, int inputCode)
   {
     boolean foundKey = false;
     
-    Integer[] actions = mappings_.get(Integer.valueOf(inputCode));
+    ArrayList<T> actions = mappings_.get(Integer.valueOf(inputCode));
     
     if (actions != null)
     {
-      boolean contained = false;
-      
-      for (Integer s : actions)
-        if (s.intValue() == action.intValue())
-          contained = true;
-      
-      if (contained)
+      if (actions.remove(action))
       {
-        Integer[] newArray = new Integer[actions.length - 1];
-        
-        for (int i = 0, j = 0; i < actions.length; i++, j++)
-        {
-          if (actions[i].intValue() != action)
-            newArray[j] = actions[i];
-          else
-            j--;
-        }
-        
-        if (newArray.length > 0)
-          mappings_.put(Integer.valueOf(inputCode), newArray);
-        else
+        if (actions.size() <= 0)
           mappings_.remove(Integer.valueOf(inputCode));
-        
-        foundKey = true;
       }
     }
     
@@ -351,15 +310,15 @@ public class InputMapper
    * Returns the actions mapped to the specified key code.
    * 
    * @param keyCode The key code for the pressed key.
-   * @return Returns the actions mapped to the specified key code, or an empty array
+   * @return The actions mapped to the specified key code, or an empty list
    *         if no such mappings were found.
    */
-  public Integer[] getKeyMapping(int keyCode)
+  public ArrayList<T> getKeyMappings(int keyCode)
   {
-    Integer[] actions = mappings_.get(Integer.valueOf(keyCode));
+    ArrayList<T> actions = mappings_.get(Integer.valueOf(keyCode));
     
     if (actions == null)
-      actions = new Integer[0];
+      actions = new ArrayList<T>();
     
     return actions;
   }
@@ -373,22 +332,22 @@ public class InputMapper
    * This is a convenience method to match {@link SEvent}'s
    * <code>MOUSE_BUTTON</code> constants to <code>InputMapper</code>'s
    * <code>MOUSE</code> constants. Mouse button mappings can be retrieved directly
-   * using {@link #getKeyMapping(int)} where the <code>int</code> parameter should
+   * using {@link #getKeyMappings(int)} where the <code>int</code> parameter should
    * be the appropriate <code>MOUSE</code> constant (found in this class).
    * 
    * @param buttonCode The mouse button code for the pressed mouse button (see
    *          the <code>MOUSE_BUTTON</code> constants in {@link SEvent}.
    *          Combinations of several button codes are not supported.
-   * @return Returns the actions mapped to the specified mouse button code, or
-   *         an empty array if no such mappings were found.
+   * @return The actions mapped to the specified mouse button code, or
+   *         an empty list if no such mappings were found.
    * @see #getMouseButtonCode(int)
    */
-  public Integer[] getMouseMapping(int buttonCode)
+  public ArrayList<T> getMouseMappings(int buttonCode)
   {
-    Integer[] actions = mappings_.get(getMouseButtonCode(buttonCode));
+    ArrayList<T> actions = mappings_.get(getMouseButtonCode(buttonCode));
     
     if (actions == null)
-      actions = new Integer[0];
+      actions = new ArrayList<T>();
     
     return actions;
   }
@@ -402,7 +361,7 @@ public class InputMapper
    * This is a convenience method to match mouse wheel rotation to
    * <code>InputMapper</code>'s <code>MOUSE_WHEEL</code> constants. Mouse wheel
    * rotation mappings can be retrieved directly using
-   * {@link #getKeyMapping(int)} where the <code>int</code> parameter should
+   * {@link #getKeyMappings(int)} where the <code>int</code> parameter should
    * be the appropriate <code>MOUSE_WHEEL</code> constant (found in this class).
    * 
    * 
@@ -410,17 +369,73 @@ public class InputMapper
    *          (negative values if the mouse wheel was rotated up or away from
    *          the user, and positive values if the mouse wheel was rotated down
    *          or towards the user).
-   * @return Returns the actions mapped to the specified mouse button code, or
-   *         an empty array if no such mappings were found.
+   * @return The actions mapped to the specified mouse button code, or
+   *         an empty list if no such mappings were found.
    * @see #getMouseWheelCode(int);
    */
-  public Integer[] getMouseWheelMapping(int direction)
+  public ArrayList<T> getMouseWheelMappings(int direction)
   {
-    Integer[] actions =  mappings_.get(getMouseWheelCode(direction));
+    ArrayList<T> actions =  mappings_.get(getMouseWheelCode(direction));
     
     if (actions == null)
-      actions = new Integer[0];
+      actions = new ArrayList<T>();
     
     return actions;
   }
+  
+  
+  
+  /**
+   * Returns all keys and buttons associated with the specified action.
+   * @param action The action.
+   * @return All keys and buttons associated with the specified action.
+   */
+  public ArrayList<Integer> getMappingsForAction(T action)
+  {
+    Iterator<Entry<Integer, ArrayList<T>>> iterator = mappings_.entrySet().iterator();
+    
+    ArrayList<Integer> keysAndButtons = new ArrayList<Integer>();
+    
+    while (iterator.hasNext())
+    {
+      Entry<Integer, ArrayList<T>> entry = iterator.next();
+      
+      if (entry.getValue().contains(action))
+        keysAndButtons.add(entry.getKey());
+    }
+    
+    return keysAndButtons;
+  }
+  
+  
+  
+//  public static void main(String[] args)
+//  {
+//    InputMapper<Integer> mapper = new InputMapper<>();
+//
+//    mapper.registerKey(1, 1);
+//    mapper.registerKey(1, 2);
+//    mapper.registerKey(1, 3);
+//    mapper.registerKey(1, 4);
+//    mapper.registerKey(2, 1);
+//    mapper.registerKey(2, 2);
+//    mapper.registerKey(2, 3);
+//    mapper.registerKey(2, 4);
+//    mapper.registerKey(3, 1);
+//    mapper.registerKey(3, 2);
+//
+//    System.out.println("Registered keys: " + mapper.getMappings().size());
+//    System.out.println("Registered actions for key 1: " + mapper.getKeyMappings(1).size());
+//    System.out.println("Registered actions for key 2: " + mapper.getKeyMappings(2).size());
+//    System.out.println("Removing action 2 from key 1"); mapper.removeAction(2, 1);
+//    System.out.println("Registered actions for key 1: " + mapper.getKeyMappings(1).size());
+//    System.out.println("Adding action 2 to key 1"); mapper.registerKey(1, 2);
+//    System.out.println("Registered actions for key 1: " + mapper.getKeyMappings(1).size());
+//    System.out.println("Removing action 2 from all keys"); mapper.removeAction(2);
+//    System.out.println("Registered actions for key 1: " + mapper.getKeyMappings(1).size());
+//    System.out.println("Registered actions for key 2: " + mapper.getKeyMappings(2).size());
+//    System.out.println("Registered keys for action 3: " + mapper.getMappingsForAction(3).size());
+//    System.out.println("Removing key 1"); mapper.removeKey(1);
+//    System.out.println("Registered actions for key 1: " + mapper.getKeyMappings(1).size());
+//  }
 }

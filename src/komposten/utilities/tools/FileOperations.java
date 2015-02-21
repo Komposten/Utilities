@@ -21,6 +21,8 @@ import komposten.utilities.exceptions.InvalidStateException;
 
 
 /**
+ * A class to perform different operations regarding files, like writing data or creating, copying and deleting files.
+ * <code>FileOperations</code> makes use of {@link LogUtils} to log exceptions if <code>LogUtils</code> has been initialised.
  * @version
  * <b>1.2.2</b> <br />
  * <ul>
@@ -80,7 +82,13 @@ public final class FileOperations
     catch (IOException e)
     {
       String msg1 = "Could not open a stream to \"" + file.getPath() + "\".";
-      LogUtils.log("I/O ERROR", "FileOperations", msg1, e, false);
+      if (LogUtils.hasInitialised())
+        LogUtils.log("I/O ERROR", "FileOperations", msg1, e, false);
+      else
+      {
+        System.err.println("I/O ERROR: " + msg1);
+        e.printStackTrace();
+      }
       
       if (writer_ != null)
         closeWriter();
@@ -103,7 +111,14 @@ public final class FileOperations
       catch (IOException e)
       {
         String msg1 = "Could not close the Writer.";
-        LogUtils.log("I/O ERROR", "FileOperations", msg1, e, false);
+        
+        if (LogUtils.hasInitialised())
+          LogUtils.log("I/O ERROR", "FileOperations", msg1, e, false);
+        else
+        {
+          System.err.println("I/O ERROR: " + msg1);
+          e.printStackTrace();
+        }
         
         return;
       }
@@ -145,7 +160,14 @@ public final class FileOperations
     catch (IOException e)
     {
       String msg1 = "Could not write the data to the file.";
-      LogUtils.log(Logger.WRITEERROR, "FileOperations", msg1, e, false);
+      
+      if (LogUtils.hasInitialised())
+        LogUtils.log(Logger.WRITEERROR, "FileOperations", msg1, e, false);
+      else
+      {
+        System.err.println(Logger.WRITEERROR + ": " + msg1);
+        e.printStackTrace();
+      }
       
       success = false;
     }
@@ -190,15 +212,14 @@ public final class FileOperations
     catch (IOException e)
     {
       String msg1 = "Could not write the data to the file.";
-//      String msg2 = "Try saving again, and if the error persists, contact support!";
-//      String msg3 = " ";
-//      String msg4 = "Consult log.txt for further information!";
-      
-//      String[] msgs = new String[] { msg1, msg2, msg3, msg4 };
 
-      LogUtils.log(Logger.WRITEERROR, "FileOperations", msg1, e, false);
-      
-//      SOptionPane.showConfirmDialog("Write Error", null, msgs);
+      if (LogUtils.hasInitialised())
+        LogUtils.log(Logger.WRITEERROR, "FileOperations", msg1, e, false);
+      else
+      {
+        System.err.println(Logger.WRITEERROR + ": " + msg1);
+        e.printStackTrace();
+      }
       
       try
       {
@@ -376,7 +397,15 @@ public final class FileOperations
     }
     catch (FileNotFoundException e)
     {
-      LogUtils.log(Logger.LOADERROR, "FileOperations", "Could not find the Editor config-file", null, false);
+      String msg1 = "Could not find the Editor config-file";
+
+      if (LogUtils.hasInitialised())
+        LogUtils.log(Logger.LOADERROR, "FileOperations", msg1, null, false);
+      else
+      {
+        System.err.println(Logger.LOADERROR + ": " + msg1);
+        e.printStackTrace();
+      }
       return null;
     }
     
@@ -448,7 +477,13 @@ public final class FileOperations
     }
     catch (IOException e)
     {
-      LogUtils.log(Logger.WRITEERROR, "FileOperations", "Could not create the file \"" + file.getAbsolutePath() + "\"", e, true);
+      String msg1 = "Could not create the file \"" + file.getAbsolutePath() + "\"";
+      
+      if (LogUtils.hasInitialised())
+        LogUtils.log(Logger.WRITEERROR, "FileOperations", msg1, e, true);
+      else
+        System.err.println(Logger.WRITEERROR + ": " + msg1);
+      
       return false;
     }
   }
@@ -488,7 +523,12 @@ public final class FileOperations
     
     if (!file.delete())
     {
-      LogUtils.log("File Deletion Error", "FileOperations", "Could not delete \"" + file.getAbsolutePath() + "\"!", null, true);
+      String msg1 = "Could not delete \"" + file.getAbsolutePath() + "\"!";
+      
+      if (LogUtils.hasInitialised())
+        LogUtils.log("FILE DELETION ERROR", "FileOperations", msg1, null, true);
+      else
+        System.err.println("FILE DELETION ERROR: " + msg1);
       return false;
     }
     
@@ -547,8 +587,16 @@ public final class FileOperations
     }
     catch (IOException e)
     {
-      LogUtils.log(Logger.WRITEERROR, "FileOperations", "Could not copy the file \"" + file.getAbsolutePath() + "\"" +
-      		" to \"" + dest.getAbsolutePath() + "\"!", e, false);
+      String msg1 = "Could not copy the file \"" + file.getAbsolutePath() + "\"" +
+      		" to \"" + dest.getAbsolutePath() + "\"!";
+      
+      if (LogUtils.hasInitialised())
+        LogUtils.log(Logger.WRITEERROR, "FileOperations", msg1, e, false);
+      else
+      {
+        System.err.println(Logger.WRITEERROR + ": " + msg1);
+        e.printStackTrace();
+      }
       
       return false;
 	}

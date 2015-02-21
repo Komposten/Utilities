@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URLDecoder;
+import java.security.ProtectionDomain;
 import java.util.Calendar;
 
 import javax.swing.JOptionPane;
@@ -20,13 +21,18 @@ import javax.swing.JOptionPane;
  * @see {@link LogUtils}
  * @author Jakob Hjelm
  * @version
- * <b>1.3.1</b> <br />
+ * <b>1.3.2</b> <br />
+ * <ul>
+ * <li>Updated <code>Logger.getProgramDir()</code> to check if the <code>ProtectionDomain</code> is null to prevent <code>NullPointerException</code>s when loading the class.</li>
+ * <li>Added null checks to <code>Logger.Logger(String)</code> and <code>Logger.writeToFile(String)</code>.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.3.1 <br />
  * <ul>
  * <li>Replaced <code>Exception</code> with <code>Throwable</code>.</li>
  * <li>Added support for newlines in the exception message.</li>
  * <li>The first line of each cause is now always written.</li>
- * </ul>
- * <b>Older</b> <br />
+ * </ul> <br />
  * 1.3.0 <br />
  * <ul>
  * <li>Removed <code>static</code> from all log methods.</li>
@@ -66,9 +72,12 @@ import javax.swing.JOptionPane;
 public final class Logger
 {
   /**
-   * The path to the default log file utilised by this class.
+   * The path to the default log file utilised by this class. <br />
+   * <b>Note:</b> This path is determined based on the program's installation
+   * directory using {@link Class#getProtectionDomain()}, therefore the path may
+   * be <code>null</code> on some systems (e.g. Android).
    */
-	public static final String FILEPATH = getProgramDir() + File.separator + "log.txt";
+	public static final String FILEPATH;
 
 	/** Error type constant. */
   public  static final String LOADERROR   = "LOAD ERROR";
@@ -89,9 +98,27 @@ public final class Logger
 	private String       filePath_;
 	private OutputStream stream_;
 	
+	
+	static
+	{
+	  String programDir = getProgramDir();
+	  
+	  if (programDir != null && programDir.length() > 0)
+	    FILEPATH = programDir + File.separator + "log.txt";
+	  else
+	    FILEPATH = null;
+	}
+	
+	
+	
 	private static String getProgramDir()
 	{
-    String path = Logger.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+	  ProtectionDomain domain = Logger.class.getProtectionDomain();
+	  
+	  if (domain == null)
+	    return "";
+	  
+    String path = domain.getCodeSource().getLocation().getPath();
     
     try
     {
@@ -112,17 +139,22 @@ public final class Logger
 	}
   
   
-  /**
-   * Creates a new Logger that writes to the default file (see {@link #FILEPATH}}.
-   */
-  public Logger()
-  {
-    this(FILEPATH);
-  }
+
+//  /**
+//   * Creates a new Logger that writes to the default file (see {@link #FILEPATH}
+//   * ). <br />
+//   * <b>Note:</b> As specified the <code>FILEPATH</code>'s documentation, the
+//   * path may be <code>null</code> on some systems (e.g. Android), in which case
+//   * an exception will be thrown when using this constructor.
+//   */
+//  public Logger()
+//  {
+//    this(FILEPATH);
+//  }
   
   /**
-   * Creates a new Logger that writes to the specified file.
-   * @param filePath The path to the file the Logger logs to.
+   * Creates a new Logger that writes to the specified file. Use {@link #FILEPATH} for the default file.
+   * @param filePath The path to the file the Logger writes to.
    */
   public Logger(String filePath)
   {
@@ -143,7 +175,7 @@ public final class Logger
   
   
   /**
-   * Sets this Logger to write to the file with the specified path.
+   * Sets this Logger to write to the file with the specified path. Use {@link #FILEPATH} for the default file.
    * <br /><b>Note:</b> If this Logger previously has been assigned an <code>OutputStream</code>,
    * that stream will not be closed! In order to close it, invoke {@link #dispose()} prior to
    * invoking this method.
@@ -351,7 +383,7 @@ public final class Logger
 	
 	
 	/**
-	 * Closes this Logger's <code>OutputStream</code> if either {@link #Logger2(OutputStream)}
+	 * Closes this Logger's <code>OutputStream</code> if either {@link #Logger(OutputStream)}
 	 * or {@link #writeToStream(OutputStream)} has been used.
 	 */
 	public void dispose()

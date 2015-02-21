@@ -1,3 +1,14 @@
+2015-01-31
+-FEATURE: Added getMappingsForAction(Integer) to InputMapper.
+-FEATURE: Made InputMapper generic.
+-FEATURE: Added hasInitialised() to LogUtils.
+-CODE: Updated some JavaDoc in InputMapper.
+-CODE: Updated Logger.getProgramDir() to check if the ProtectionDomain is null to prevent NullPointerExceptions when loading the class.
+-CODE: Removed Logger.Logger().
+-CODE: Removed the static constructor from LogUtils. Instead the Logger is initialised in writeToFile() and writeToStream().
+-CODE: FileOperations now checks for LogUtils.hasInitialised() before writing to the log file and uses SYSE LogUtils has not been initialised.
+-OTHER: Removed StringInputMapper (use InputMapper<String> instead).
+
 2014-12-29
 -FEATURE: Added support for quotation marks around JSON strings and member names.
 -FEATURE: Added quotation marks to member names and string values for JSONObject's toString(JSONObject, int).

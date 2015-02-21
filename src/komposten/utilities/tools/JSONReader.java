@@ -50,8 +50,6 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
         scanner.close();
     }
     
-    System.out.println("Read json: " + builder.toString());
-    
     jsonObject = parseObject(builder.toString());
     
     return jsonObject;
@@ -61,7 +59,10 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
   
   private JSONObject parseObject(String jsonObject)
   {
-    jsonObject = jsonObject.replaceAll("\\n+", " ");
+    jsonObject = jsonObject.replaceAll("\\n+", " ").trim();
+    
+    if (jsonObject.startsWith("{"))
+      jsonObject = jsonObject.replaceAll("^\\{", "").replaceAll("\\{$", "");
 
     JSONObject object = new JSONObject();
     
@@ -269,6 +270,10 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
     JSONObject object = reader.readFile("resources/json/schedule.json");
     
     System.out.println("----------------------------");
+    System.out.println(object.toMultiLineString());
+    
+    object = new JSONObject();
+    object.addObjectPair("me", object);
     System.out.println(object.toMultiLineString());
   }
 }

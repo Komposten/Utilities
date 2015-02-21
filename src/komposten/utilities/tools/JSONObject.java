@@ -40,6 +40,9 @@ public class JSONObject
   
   public void addObjectPair(String identifier, JSONObject object)
   {
+    if (object == this)
+      throw new IllegalArgumentException("A JSONObject cannot be added to itself!");
+    
     members.put(identifier, object);
   }
   
