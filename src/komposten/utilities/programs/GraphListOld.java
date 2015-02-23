@@ -2,11 +2,8 @@ package komposten.utilities.programs;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -15,37 +12,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Map.Entry;
 
 import komposten.utilities.tools.FileOperations;
 import komposten.utilities.tools.IntPair;
 import komposten.utilities.tools.Regex;
 
-public class GraphList
+public class GraphListOld
 {
-  private static final Color BACKGROUND    = Color.WHITE;
-  private static final Color GRID_COLOUR   = new Color(192, 192, 192);
-  private static final int   GRID_SIZE     = 25; //TODO GraphList2; Make it possible to change grid size.
-  private static final int   GRAPH_PADDING = 25;
+  private static final Color BACKGROUND       = Color.WHITE;
+  private static final Color GRID_COLOUR      = new Color(192, 192, 192);
+  private static final int   TARGET_GRID_SIZE = 16;
   
-  private int gridStepX_ = GRID_SIZE;
-  private int gridStepY_ = GRID_SIZE;
+  private static final int   GRAPH_PADDING   = 16;
   
   private Map<String, GraphData> data_;
-  
-  private String labelX_;
-  private String labelY_;
   
   private int maxX_;
   private int maxY_;
   private int graphHeight_;
-
-  private int clickedX_;
-  private int clickedY_;
-  private int offsetX_;
-  private int offsetY_;
   
   {
     data_ = new HashMap<String, GraphData>();
@@ -55,7 +42,7 @@ public class GraphList
   /**
    * Creates an empty <code>GraphList</code>.
    */
-  public GraphList()
+  public GraphListOld()
   {
   }
   
@@ -65,7 +52,7 @@ public class GraphList
    * @param filePath A file containing graph data in JSON format.
    * @see #printToFile(String)
    */
-  public GraphList(String filePath)
+  public GraphListOld(String filePath)
   {
     loadFromFile(filePath);
   }
@@ -194,7 +181,7 @@ public class GraphList
 //    
 //    return gridWidth < 1 ? 1 : gridWidth;
     
-    return GRID_SIZE;
+    return TARGET_GRID_SIZE;
   }
   
   
@@ -217,59 +204,53 @@ public class GraphList
 //    
 //    return gridHeight < 1 ? 1 : gridHeight;
     
-    return GRID_SIZE;
+    return TARGET_GRID_SIZE;
   }
   
   
   
   /**
-   * Returns the distance between two lines in the grid along the x-axis.
-   * @return The distance between two lines in the grid along the x-axis.
+   * Returns the value difference between two lines in the grid along the x-axis.
+   * @param drawWidth The width of the area the full grid should span.
+   * @return The value difference between two lines in the grid along the x-axis.
    */
-  public int getGridStepX()
+  private float getGridStepX(int drawWidth)
   {
-    return gridStepX_;
+//    int magnitude = (int) Math.pow(10, Integer.toString(maxX_).length()) - 1;
+//    
+//    if (magnitude < 1)
+//      magnitude = 1;
+//    
+//    int gridStepX = (int) (maxX_ / (maxX_ / (float)TARGET_GRID_SIZE) % magnitude);
+//    
+//    return gridStepX;
+    
+    float valuesPerPixel = maxX_ / (float)drawWidth;
+    
+    return getGridWidth(drawWidth) * valuesPerPixel;
   }
   
   
-  
+
   /**
-   * Returns the distance between two lines in the grid along the y-axis.
-   * @return The distance between two lines in the grid along the y-axis.
+   * Returns the value difference between two lines in the grid along the y-axis.
+   * @param drawHeight The height of the area the full grid should span. 
+   * @return The value difference between two lines in the grid along the y-axis.
    */
-  public int getGridStepY()
+  private float getGridStepY(int drawHeight)
   {
-    return gridStepY_;
-  }
-  
-  
-  
-  public void setGridStepX(int gridStepX)
-  {
-    if (gridStepX > 0)
-      gridStepX_ = gridStepX;
-  }
-  
-  
-  
-  public void setGridStepY(int gridStepY)
-  {
-    if (gridStepY > 0)
-      gridStepY_ = gridStepY;
-  }
-  
-  
-  
-  public void setLabelX(String labelX)
-  {
-    labelX_ = labelX;
-  }
-  
-  
-  
-  public void setLabelY(String labelY)
-  {
-    labelY_ = labelY;
+//    int magnitude  = (int) Math.pow(10, Integer.toString(graphHeight_).length()) - 1;
+//    
+//    if (magnitude < 1)
+//      magnitude = 1;
+//    
+//    int gridStepY = (int) (graphHeight_ / (graphHeight_ / (float)TARGET_GRID_SIZE) % magnitude);
+//    
+//    return gridStepY;
+    
+    float valuesPerPixel = graphHeight_ / (float)drawHeight;
+    
+    return getGridHeight(drawHeight) * valuesPerPixel;
   }
   
   
@@ -278,255 +259,133 @@ public class GraphList
   {
     if (data_.isEmpty())
       return;
-
-    FontMetrics metrics = g2.getFontMetrics();
     
-    int numberColumnWidth = metrics.stringWidth(Integer.toString(graphHeight_)) + 20;
-    int numberRowHeight   = metrics.getHeight() + 15;
-    int legendRowHeight   = metrics.getHeight() + 5;
-    int bottomAreaHeight  = numberRowHeight + legendRowHeight * data_.size();
-    int graphWidth   = width  - numberColumnWidth  - GRAPH_PADDING;
-    int graphHeight  = height - bottomAreaHeight - GRAPH_PADDING;
+    int numberWidth  = g2.getFontMetrics().stringWidth(Integer.toString(graphHeight_)) + 20;
+    int numberHeight = (g2.getFontMetrics().getHeight() + 10) * (data_.size() + 1);
+    int graphWidth   = width  - numberWidth  - GRAPH_PADDING;
+    int graphHeight  = height - numberHeight - GRAPH_PADDING;
+
+    if (width <= numberWidth + 10 || height <= numberHeight + 10)
+      return;
+    
+    int gridWidth    = getGridWidth (graphWidth);
+    int gridHeight   = getGridHeight(graphHeight);
+    float gridRows   = graphHeight / gridHeight;
+    float gridCols   = graphWidth  / gridWidth;
+    
+    BufferedImage image = createImage(graphWidth, graphHeight);
 
     g2.setColor(BACKGROUND);
     g2.fillRect(0, 0, width, height);
-    g2.translate(numberColumnWidth, GRAPH_PADDING);
+    g2.translate(0, GRAPH_PADDING);
     
-    drawGrid      (g2, graphWidth, graphHeight);
-    drawAxisValues(g2, graphWidth, graphHeight);
-    drawAxisLabels(g2, graphWidth, graphHeight, numberColumnWidth, bottomAreaHeight, 
-        numberRowHeight, legendRowHeight);
-    drawLegend    (g2, graphWidth, graphHeight, numberRowHeight, legendRowHeight);
-    
-    BufferedImage graphs = createGraphsImage(graphWidth, graphHeight);
-    g2.drawImage(graphs, 0, 0, null);
-  }
-  
-  
-  
-  private void drawGrid(Graphics2D g2, int graphWidth, int graphHeight)
-  {
-    g2.setColor(GRID_COLOUR);
-    
-    for (int y = graphHeight; y > 0; y -= GRID_SIZE)
-      g2.drawLine(0, y, graphWidth, y);
-    
-    for (int x = 0; x < graphWidth; x += GRID_SIZE)
-      g2.drawLine(x, 0, x, graphHeight);
-    
+    //*** Draw the number labels
     g2.setColor(Color.BLACK);
-    g2.setStroke(new BasicStroke(2f));
-    g2.drawLine(0, 0, 0, graphHeight);
-    g2.drawLine(0, graphHeight, graphWidth, graphHeight);
-  }
-  
-  
-  
-  private void drawAxisValues(Graphics2D g2, int graphWidth, int graphHeight)
-  {
-    FontMetrics matrics = g2.getFontMetrics();
-    
-    int xPos;
-    int yPos;
-    
-    //Horisontal
-    yPos = graphHeight + matrics.getAscent() + 5;
-    for (int x = 0, v = 0; x < graphWidth; x += GRID_SIZE*2, v += gridStepX_*2) //GraphList2; Don't use magic number ('*2') here!
+    for (int y = 0; y < gridRows + 1; y+=5)
     {
-      String value = Integer.toString(v - (offsetX_ * gridStepX_));
-      xPos = x - (matrics.stringWidth(value)/2);
-      g2.drawString(value, xPos, yPos);
-    }
-    
-    //Vertical
-    for (int y = 0, v = 0; y < graphHeight; y += GRID_SIZE*2, v += gridStepY_*2) //GraphList2; Don't use magic number ('*2') here!
-    {
-      String value = Integer.toString(v - (offsetY_ * gridStepY_));
-      xPos = -matrics.stringWidth(value) - 5;
-      yPos = graphHeight - y + matrics.getAscent()/2;
-      g2.drawString(value, xPos, yPos);
-    }
-  }
-  
-  
-  
-  private void drawAxisLabels(Graphics2D g2, int graphWidth, int graphHeight,
-      int numberColumnWidth, int bottomAreaHeight,
-      int numberRowHeight, int legendRowHeight)
-  {
-    FontMetrics metrics = g2.getFontMetrics();
-    int x;
-    int y;
-    
-    if (labelY_ != null)
-    {
-      x = -numberColumnWidth + 2;
-      y = -metrics.getAscent();
+      int    y2     = graphHeight - gridHeight * y;
+      String number = Integer.toString((int)(getGridStepY(graphHeight) * y));
       
-      g2.drawString(labelY_, x, y);
+      g2.drawString(number, numberWidth - g2.getFontMetrics().stringWidth(number) - 5,
+          y2 + g2.getFontMetrics().getDescent());
     }
     
-    if (labelX_ != null)
+    for (int x = 0; x < gridCols + 1; x+=5)
     {
-      x = graphWidth - metrics.stringWidth(labelX_) - 2;
-      y = graphHeight + numberRowHeight;
+      int    x2     = numberWidth + gridWidth * x;
+      int    y      = graphHeight + g2.getFontMetrics().getAscent() + 2;
+      String number = Integer.toString((int)(getGridStepX(graphWidth) * x));
       
-      g2.drawString(labelX_, x, y);
+      g2.drawString(number, x2 - g2.getFontMetrics().stringWidth(number) / 2, y);
     }
-  }
-  
-  
-  
-  private void drawLegend(Graphics2D g2, int graphWidth, int graphHeight,
-      int numberRowHeight, int legendRowHeight)
-  {
-    FontMetrics metrics = g2.getFontMetrics();
     
-    int index = 0;
+    //*** Draw the colour labels
+    int tempY = graphHeight + numberHeight / (data_.size() + 1) + 5;
     for (Entry<String, GraphData> entry : data_.entrySet())
     {
-      int nameWidth = metrics.stringWidth(entry.getKey());
-      int x         = graphWidth/2 - nameWidth/2;
-      int y         = graphHeight + numberRowHeight + (legendRowHeight*index) + metrics.getAscent()/2;
+      int stringW = g2.getFontMetrics().stringWidth(entry.getKey());
+      int x = numberWidth + (graphWidth - stringW) / 2;
+      int y = tempY + g2.getFontMetrics().getDescent();
       
       g2.setColor(entry.getValue().colour);
       g2.drawString(entry.getKey(), x, y);
-      g2.fillRect(x - 20, y - 5 - metrics.getAscent()/2, 10, 10);
       
-      index++;
+      g2.fillRect(x - 30, y - g2.getFontMetrics().getDescent() - 10, 20, 20);
+      
+      tempY += numberHeight / (data_.size() + 1);
     }
+    
+    
+    //*** Draw the grid
+    g2.setColor(GRID_COLOUR);
+    for (int y = 0; y < gridRows + 1; y++)
+    {
+      int y2 = graphHeight - gridHeight * y;
+      g2.drawLine(numberWidth, y2, numberWidth + graphWidth, y2);
+    }
+    
+    for (int x = 0; x < gridCols + 1; x++)
+    {
+      g2.drawLine(gridWidth * x + numberWidth, 0, gridWidth * x + numberWidth, graphHeight);
+    }
+    
+    g2.setColor(Color.BLACK);
+    g2.setStroke(new BasicStroke(2));
+    g2.drawLine(numberWidth, graphHeight, numberWidth + graphWidth, graphHeight);
+    g2.drawLine(numberWidth, 0, numberWidth, graphHeight);
+    g2.setStroke(new BasicStroke(1));
+    
+    g2.drawImage(image, numberWidth, 0, null);
   }
   
   
   
-  private BufferedImage createGraphsImage(int width, int height)
+  private BufferedImage createImage(int width, int height)
   {
     BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+    float itemsPerPixelX = (width - 1)  / (float)maxX_;
+    float itemsPerPixelY = height / (float)graphHeight_;
+
     
-    Graphics2D g2 = image.createGraphics();
-    Polygon    polygon;
-    
-    g2.setStroke(new BasicStroke(2f));
+    Graphics2D g = image.createGraphics();
+    Polygon    p;
     
     for (Entry<String, GraphData> entry : data_.entrySet())
     {
-      polygon = new Polygon();
-      
-      for (IntPair coordinate : entry.getValue().coords)
+      p = new Polygon();
+      for (IntPair pair : entry.getValue().coords)
       {
-        int x = (int) (coordinate.getFirst()  * (GRID_SIZE / (float)gridStepX_)) + (offsetX_ * GRID_SIZE);
-        int y = (int) (coordinate.getSecond() * (GRID_SIZE / (float)gridStepY_)) + (offsetY_ * GRID_SIZE);
+        int x = (int)(pair.getFirst() * itemsPerPixelX);
+        int y = (int)(height - (pair.getSecond() * itemsPerPixelY));
         
-        polygon.addPoint(x, height-y); //Invert y-axis since y-up is used in graphs.
+        p.addPoint(x, y);
       }
       
-      g2.setColor(entry.getValue().colour);
-
-      //Using g2.drawPolygon(polygon) will draw a closed polygon, therefore drawing is done manually.
-      PathIterator iterator = polygon.getPathIterator(null);
+      g.setColor(entry.getValue().colour);
+      g.setStroke(new BasicStroke(2));
+      
+      PathIterator iterator = p.getPathIterator(null);
       float[] currCoords = new float[6];
       float[] nextCoords = new float[6];
       while (true)
       {
         iterator.currentSegment(currCoords);
+        
         iterator.next();
+        
         iterator.currentSegment(nextCoords);
         
         if (iterator.isDone()) //Break here, so the last line is skipped.
           break;
         
-        g2.drawLine((int)currCoords[0], (int)currCoords[1], (int)nextCoords[0], (int)nextCoords[1]);
+        g.drawLine((int)currCoords[0], (int)currCoords[1], (int)nextCoords[0], (int)nextCoords[1]);
       }
+
+      g.setStroke(new BasicStroke(1));
     }
-    
-    g2.setStroke(new BasicStroke(1f));
     
     return image;
-  }
-  
-  
-  
-  public void mousePressed(MouseEvent event)
-  {
-    clickedX_ = event.getX();
-    clickedY_ = event.getY();
-  }
-  
-  
-  
-  /**
-   * @param event
-   * @return True if the event was used and the <code>GraphList</code> needs to be redrawn.
-   */
-  public boolean mouseDragged(MouseEvent event)
-  {
-    boolean needsRedraw = false;
-    
-    if (event.getX() - clickedX_ > GRID_SIZE)
-    {
-      offsetX_ += 1;
-      clickedX_ = event.getX();
-      
-      if (offsetX_ > 0)
-        offsetX_ = 0;
-      
-      needsRedraw = true;
-    }
-    else if (event.getX() - clickedX_ < -GRID_SIZE)
-    {
-      offsetX_ -= 1;
-      clickedX_ = event.getX();
-      
-      needsRedraw = true;
-    }
-    
-    if (event.getY() - clickedY_ > GRID_SIZE)
-    {
-      offsetY_ -= 1;
-      clickedY_ = event.getY();
-      
-      needsRedraw = true;
-    }
-    else if (event.getY() - clickedY_ < -GRID_SIZE)
-    {
-      offsetY_ += 1;
-      clickedY_ = event.getY();
-      if (offsetY_ > 0)
-        offsetY_ = 0;
-      
-      needsRedraw = true;
-    }
-    
-    return needsRedraw;
-  }
-  
-  
-
-  /**
-   * @param event
-   * @return True if the event was used and the <code>GraphList</code> needs to be redrawn.
-   */
-  public boolean mouseWheelMoved(MouseWheelEvent event)
-  {
-    boolean needsRedraw = false;
-    
-    if (event.getWheelRotation() < 0)
-    {
-      offsetX_ += 1;
-      
-      if (offsetX_ > 0)
-        offsetX_ = 0;
-      
-      needsRedraw = true;
-    }
-    else if (event.getWheelRotation() > 0)
-    {
-      offsetX_ -= 1;
-      
-      needsRedraw = true;
-    }
-    
-    return needsRedraw;
   }
   
   

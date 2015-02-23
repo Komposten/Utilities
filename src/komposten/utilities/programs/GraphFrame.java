@@ -9,6 +9,13 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.File;
 
 import javax.swing.JFileChooser;
@@ -16,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
@@ -50,25 +58,32 @@ public class GraphFrame extends JFrame
       public void componentResized(ComponentEvent e)
       {
         super.componentResized(e);
-        graph_.validate(); 
-        repaint();
+        redrawGraphs();
       }
     });
     
     getContentPane().setSize(getWidth(), getHeight());
     
     validate();
+    
+    addMouseListener(mouseListener_);
+    addMouseMotionListener(mouseMotionListener_);
+    addMouseWheelListener(mouseWheelListener_);
   }
   
   
   
   private void createMenuBar()
   {
-    JMenuBar  menubar  = new JMenuBar();
-    JMenu     menuFile = new JMenu("File");
-    JMenuItem itemSave = new JMenuItem("Save");
-    JMenuItem itemLoad = new JMenuItem("Load");
-    JMenuItem itemExit = new JMenuItem("Exit");
+    JMenuBar  menubar   = new JMenuBar();
+    JMenu     menuFile  = new JMenu("File");
+    JMenuItem itemSave  = new JMenuItem("Save");
+    JMenuItem itemLoad  = new JMenuItem("Load");
+    JMenuItem itemExit  = new JMenuItem("Exit");
+    JMenu     menuEdit  = new JMenu("Edit");
+    JMenuItem itemStepX = new JMenuItem("Set x step");
+    JMenuItem itemStepY = new JMenuItem("Set y step");
+    
 
     itemSave.addActionListener(actionListener_);
     itemLoad.addActionListener(actionListener_);
@@ -85,9 +100,27 @@ public class GraphFrame extends JFrame
     menuFile.addSeparator();
     menuFile.add(itemExit);
     
+
+    itemStepX.addActionListener(actionListener_);
+    itemStepY.addActionListener(actionListener_);
+    itemStepX.setActionCommand("stepX");
+    itemStepY.setActionCommand("stepY");
+    
+    menuEdit.add(itemStepX);
+    menuEdit.add(itemStepY);
+    
     menubar.add(menuFile);
+    menubar.add(menuEdit);
     
     setJMenuBar(menubar);
+  }
+  
+  
+  
+  private void redrawGraphs()
+  {
+    graph_.validate(); 
+    repaint();
   }
   
   
@@ -155,6 +188,59 @@ public class GraphFrame extends JFrame
       {
         System.exit(0);
       }
+      else if (arg0.getActionCommand().equalsIgnoreCase("stepX"))
+      {
+        String value = JOptionPane.showInputDialog(GraphFrame.this, "Enter a value:", graph_.getGridStepX());
+        
+        if (value != null && value.matches("\\d+"))
+          graph_.setGridStepX(Integer.parseInt(value));
+        
+        redrawGraphs();
+      }
+      else if (arg0.getActionCommand().equalsIgnoreCase("stepY"))
+      {
+        String value = JOptionPane.showInputDialog(GraphFrame.this, "Enter a value:", graph_.getGridStepY());
+        
+        if (value != null && value.matches("\\d+"))
+          graph_.setGridStepY(Integer.parseInt(value));
+        
+        redrawGraphs();
+      }
+    }
+  };
+  
+  
+  
+  private MouseListener mouseListener_ = new MouseAdapter()
+  {
+    @Override
+    public void mousePressed(MouseEvent event)
+    {
+      graph_.mousePressed(event);
+    }
+  };
+  
+  
+  
+  private MouseMotionListener mouseMotionListener_ = new MouseMotionAdapter()
+  {
+    @Override
+    public void mouseDragged(MouseEvent event)
+    {
+      if (graph_.mouseDragged(event))
+        redrawGraphs();
+    }
+  };
+  
+  
+  
+  private MouseWheelListener mouseWheelListener_ = new MouseWheelListener()
+  {
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent event)
+    {
+      if (graph_.mouseWheelMoved(event))
+        redrawGraphs();
     }
   };
   
@@ -163,9 +249,13 @@ public class GraphFrame extends JFrame
 	public static void main(String[] args)
 	{
     GraphFrame graph  = new GraphFrame();
-    GraphList  graphs = new GraphList();
+    GraphList graphs = new GraphList("C:\\Users\\Jakob\\Eclipse Workspace\\Eco\\recorded data\\2014-08-27 Somewhat stable rabbit pop (64 map size) no 2.graph");
 
+    graphs.setLabelX("Days");
+    graphs.setLabelY("Population size");
+    
     graph.setGraphs(graphs);
+
     
     if (args.length > 0)
     {

@@ -1,3 +1,9 @@
+2015-02-22
+-FEATURE: Complete rewrite of GraphList.
+-FEATURE: GraphList now supports scrolling, setting x and y steps and axis labels.
+-FEATURE: GraphList no longer automatically sets x/y steps as data is added.
+
+
 2015-01-31
 -FEATURE: Added getMappingsForAction(Integer) to InputMapper.
 -FEATURE: Made InputMapper generic.
