@@ -139,6 +139,7 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
 
     jsonArrayElement = jsonArrayElement.replaceAll("^\\s*,\\s*", "");
     jsonArrayElement = jsonArrayElement.replaceAll("\\s*,\\s*$", "");
+    jsonArrayElement = jsonArrayElement.trim();
     
     if (jsonArrayElement.startsWith("["))
     {

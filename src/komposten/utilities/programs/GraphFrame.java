@@ -75,14 +75,18 @@ public class GraphFrame extends JFrame
   
   private void createMenuBar()
   {
-    JMenuBar  menubar   = new JMenuBar();
-    JMenu     menuFile  = new JMenu("File");
-    JMenuItem itemSave  = new JMenuItem("Save");
-    JMenuItem itemLoad  = new JMenuItem("Load");
-    JMenuItem itemExit  = new JMenuItem("Exit");
-    JMenu     menuEdit  = new JMenu("Edit");
-    JMenuItem itemStepX = new JMenuItem("Set x step");
-    JMenuItem itemStepY = new JMenuItem("Set y step");
+    JMenuBar  menubar    = new JMenuBar();
+    JMenu     menuFile   = new JMenu("File");
+    JMenuItem itemSave   = new JMenuItem("Save");
+    JMenuItem itemLoad   = new JMenuItem("Load");
+    JMenuItem itemExit   = new JMenuItem("Exit");
+    JMenu     menuEdit   = new JMenu("Edit");
+    JMenuItem itemStepX  = new JMenuItem("Set x step");
+    JMenuItem itemStepY  = new JMenuItem("Set y step");
+    JMenuItem itemUnitX  = new JMenuItem("Set x unit");
+    JMenuItem itemUnitY  = new JMenuItem("Set y unit");
+    JMenuItem itemLabelX = new JMenuItem("Set x label");
+    JMenuItem itemLabelY = new JMenuItem("Set y label");
     
 
     itemSave.addActionListener(actionListener_);
@@ -101,13 +105,25 @@ public class GraphFrame extends JFrame
     menuFile.add(itemExit);
     
 
-    itemStepX.addActionListener(actionListener_);
-    itemStepY.addActionListener(actionListener_);
-    itemStepX.setActionCommand("stepX");
-    itemStepY.setActionCommand("stepY");
-    
+    itemStepX .addActionListener(actionListener_);
+    itemStepY .addActionListener(actionListener_);
+    itemUnitX .addActionListener(actionListener_);
+    itemUnitY .addActionListener(actionListener_);
+    itemLabelX.addActionListener(actionListener_);
+    itemLabelY.addActionListener(actionListener_);
+    itemStepX .setActionCommand("stepX");
+    itemStepY .setActionCommand("stepY");
+    itemUnitX .setActionCommand("unitX");
+    itemUnitY .setActionCommand("unitY");
+    itemLabelX.setActionCommand("labelX");
+    itemLabelY.setActionCommand("labelY");
+
     menuEdit.add(itemStepX);
     menuEdit.add(itemStepY);
+    menuEdit.add(itemUnitX);
+    menuEdit.add(itemUnitY);
+    menuEdit.add(itemLabelX);
+    menuEdit.add(itemLabelY);
     
     menubar.add(menuFile);
     menubar.add(menuEdit);
@@ -168,6 +184,7 @@ public class GraphFrame extends JFrame
           if (!path.endsWith(".graph"))
             path = path.concat(".graph");
           graph_.printToFile(path);
+          graph_.printToFile2(path+".txt");
           
           addFileNameToTitle(path);
         }
@@ -180,7 +197,7 @@ public class GraphFrame extends JFrame
         
         if (result == JFileChooser.APPROVE_OPTION)
         {
-          graph_.loadFromFile(chooser.getSelectedFile().getPath());
+          graph_.loadFromFile2(chooser.getSelectedFile().getPath());
           repaint();
         }
       }
@@ -203,6 +220,42 @@ public class GraphFrame extends JFrame
         
         if (value != null && value.matches("\\d+"))
           graph_.setGridStepY(Integer.parseInt(value));
+        
+        redrawGraphs();
+      }
+      else if (arg0.getActionCommand().equalsIgnoreCase("unitX"))
+      {
+        String value = JOptionPane.showInputDialog(GraphFrame.this, "Enter a value:", graph_.getUnitX());
+        
+        if (value != null && value.matches("\\d+"))
+          graph_.setUnitX(Integer.parseInt(value));
+        
+        redrawGraphs();
+      }
+      else if (arg0.getActionCommand().equalsIgnoreCase("unitY"))
+      {
+        String value = JOptionPane.showInputDialog(GraphFrame.this, "Enter a value:", graph_.getUnitY());
+        
+        if (value != null && value.matches("\\d+"))
+          graph_.setUnitY(Integer.parseInt(value));
+        
+        redrawGraphs();
+      }
+      else if (arg0.getActionCommand().equalsIgnoreCase("labelX"))
+      {
+        String value = JOptionPane.showInputDialog(GraphFrame.this, "Enter a value:", graph_.getLabelX());
+        
+        if (value != null && value.length() > 0)
+          graph_.setLabelX(value);
+        
+        redrawGraphs();
+      }
+      else if (arg0.getActionCommand().equalsIgnoreCase("labelY"))
+      {
+        String value = JOptionPane.showInputDialog(GraphFrame.this, "Enter a value:", graph_.getLabelY());
+        
+        if (value != null && value.length() > 0)
+          graph_.setLabelY(value);
         
         redrawGraphs();
       }
@@ -249,7 +302,7 @@ public class GraphFrame extends JFrame
 	public static void main(String[] args)
 	{
     GraphFrame graph  = new GraphFrame();
-    GraphList graphs = new GraphList("C:\\Users\\Jakob\\Eclipse Workspace\\Eco\\recorded data\\2014-08-27 Somewhat stable rabbit pop (64 map size) no 2.graph");
+    GraphList graphs = new GraphList("C:\\Users\\Jakob\\Eclipse Workspace\\Eco\\recorded data\\2015-02-22 2 After random food searching, 64x64.graph");
 
     graphs.setLabelX("Days");
     graphs.setLabelY("Population size");

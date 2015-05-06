@@ -1,8 +1,13 @@
+2015-04-08
+-FEATURE: GraphList now supports changing units and labels on the axes.
+-FEATURE: Added support for (2) decimals for GraphList's axis values.
+-CODE: Fixed JSONObject's printArray casting elements to String rather than using toString.
+-CODE: Fixed JSONReader's parseElement not trimming the input String (caused problems since ' ' could be the first character).
+
 2015-02-22
 -FEATURE: Complete rewrite of GraphList.
 -FEATURE: GraphList now supports scrolling, setting x and y steps and axis labels.
 -FEATURE: GraphList no longer automatically sets x/y steps as data is added.
-
 
 2015-01-31
 -FEATURE: Added getMappingsForAction(Integer) to InputMapper.

@@ -11,6 +11,7 @@ import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,8 @@ import java.util.Scanner;
 
 import komposten.utilities.tools.FileOperations;
 import komposten.utilities.tools.IntPair;
+import komposten.utilities.tools.JSONObject;
+import komposten.utilities.tools.JSONReader;
 import komposten.utilities.tools.Regex;
 
 public class GraphList
@@ -29,9 +32,11 @@ public class GraphList
   private static final Color GRID_COLOUR   = new Color(192, 192, 192);
   private static final int   GRID_SIZE     = 25; //TODO GraphList2; Make it possible to change grid size.
   private static final int   GRAPH_PADDING = 25;
-  
+
   private int gridStepX_ = GRID_SIZE;
   private int gridStepY_ = GRID_SIZE;
+  private int unitX_     = 1;
+  private int unitY_     = 1;
   
   private Map<String, GraphData> data_;
   
@@ -46,6 +51,8 @@ public class GraphList
   private int clickedY_;
   private int offsetX_;
   private int offsetY_;
+  
+  private DecimalFormat numberFormat_ = new DecimalFormat("##.##");
   
   {
     data_ = new HashMap<String, GraphData>();
@@ -244,6 +251,34 @@ public class GraphList
   
   
   
+  public int getUnitX()
+  {
+    return unitX_;
+  }
+  
+  
+  
+  public int getUnitY()
+  {
+    return unitY_;
+  }
+  
+  
+  
+  public String getLabelX()
+  {
+    return labelX_;
+  }
+  
+  
+  
+  public String getLabelY()
+  {
+    return labelY_;
+  }
+  
+  
+  
   public void setGridStepX(int gridStepX)
   {
     if (gridStepX > 0)
@@ -256,6 +291,22 @@ public class GraphList
   {
     if (gridStepY > 0)
       gridStepY_ = gridStepY;
+  }
+  
+  
+  
+  public void setUnitX(int unitX)
+  {
+    if (unitX > 0)
+      unitX_ = unitX;
+  }
+  
+  
+  
+  public void setUnitY(int unitY)
+  {
+    if (unitY > 0)
+      unitY_ = unitY;
   }
   
   
@@ -333,7 +384,7 @@ public class GraphList
     yPos = graphHeight + matrics.getAscent() + 5;
     for (int x = 0, v = 0; x < graphWidth; x += GRID_SIZE*2, v += gridStepX_*2) //GraphList2; Don't use magic number ('*2') here!
     {
-      String value = Integer.toString(v - (offsetX_ * gridStepX_));
+      String value = numberFormat_.format((v - (offsetX_ * gridStepX_)) / (float)unitX_);
       xPos = x - (matrics.stringWidth(value)/2);
       g2.drawString(value, xPos, yPos);
     }
@@ -341,7 +392,7 @@ public class GraphList
     //Vertical
     for (int y = 0, v = 0; y < graphHeight; y += GRID_SIZE*2, v += gridStepY_*2) //GraphList2; Don't use magic number ('*2') here!
     {
-      String value = Integer.toString(v - (offsetY_ * gridStepY_));
+      String value = numberFormat_.format((v - (offsetY_ * gridStepY_)) / (float)unitY_);
       xPos = -matrics.stringWidth(value) - 5;
       yPos = graphHeight - y + matrics.getAscent()/2;
       g2.drawString(value, xPos, yPos);
@@ -536,7 +587,7 @@ public class GraphList
    * @param filePath The file to print to.
    * @return True if the data was printed successfully, false otherwise.
    */
-  public boolean printToFile(String filePath)
+  public boolean printToFile(String filePath) //TODO GraphList; Also save current axis labels, units and steps.
   {
     FileOperations   ops    = new FileOperations();
     File             file   = new File(filePath);
@@ -574,6 +625,63 @@ public class GraphList
   
   
   
+  public boolean printToFile2(String filePath)
+  {
+    FileOperations ops  = new FileOperations();
+    File           file = new File(filePath);
+    JSONObject     data = createJSON();
+    
+    FileOperations.createFileOrFolder(file, false);
+    
+    boolean success = true;
+
+    ops.createWriter(file, false);
+    ops.closeWriter();
+    ops.createWriter(file, true);
+    
+    success = ops.printData(data.toMultiLineString(), false);
+    
+    ops.closeWriter();
+    
+    return success;
+  }
+  
+  
+  
+  private JSONObject createJSON()
+  {
+    JSONObject wrapper = new JSONObject();
+
+    wrapper.addStringPair("stepX", Integer.toString(gridStepX_));
+    wrapper.addStringPair("stepY", Integer.toString(gridStepY_));
+    wrapper.addStringPair("unitX", Integer.toString(unitX_));
+    wrapper.addStringPair("unitY", Integer.toString(unitY_));
+    wrapper.addStringPair("labelX", labelX_);
+    wrapper.addStringPair("labelY", labelY_);
+    
+    JSONObject[] dataArray = new JSONObject[data_.size()];
+    
+    int index = 0;
+    for (Map.Entry<String, GraphData> entry : data_.entrySet())
+    {
+      JSONObject data = new JSONObject();
+      
+      data.addStringPair("name", entry.getKey());
+      data.addStringPair("width", Integer.toString(entry.getValue().width));
+      data.addStringPair("height", Integer.toString(entry.getValue().height));
+      data.addStringPair("colour", Integer.toString(entry.getValue().colour.getRGB()));
+      data.addArrayPair ("coords", entry.getValue().coords.toArray());
+      
+      dataArray[index++] = data;
+    }
+    
+    wrapper.addArrayPair("data", dataArray);
+    
+    return wrapper;
+  }
+  
+  
+  
   /**
    * Loads graph data from the specified file and {@link #validate() validates} the loaded data.
    * <br ><b>Note:</b> Using this method will erase any existing data in this instance.
@@ -607,6 +715,51 @@ public class GraphList
     catch (FileNotFoundException e)
     {
       e.printStackTrace();
+    }
+    
+    validate();
+  }
+  
+  
+  
+  /**
+   * Loads graph data from the specified file and {@link #validate() validates} the loaded data.
+   * <br ><b>Note:</b> Using this method will erase any existing data in this instance.
+   */
+  public void loadFromFile2(String filePath) //CURRENT Implementing usage of JSONObject. Must update old saved files to work with new system.
+  {
+    data_.clear();
+    
+    JSONReader reader = new JSONReader();
+    JSONObject data   = reader.readFile(filePath);
+
+    gridStepX_ = Integer.valueOf((String) data.getMemberByName("stepX"));
+    gridStepY_ = Integer.valueOf((String) data.getMemberByName("stepY"));
+    unitX_     = Integer.valueOf((String) data.getMemberByName("unitX"));
+    unitY_     = Integer.valueOf((String) data.getMemberByName("unitY"));
+    labelX_    = (String) data.getMemberByName("labelX");
+    labelY_    = (String) data.getMemberByName("labelY");
+    
+    for (Object dataObject : (Object[]) data.getMemberByName("data"))
+    {
+      JSONObject jsonObject = (JSONObject) dataObject;
+      GraphData  graphData  = new GraphData();
+
+      graphData.width  = Integer.valueOf((String) jsonObject.getMemberByName("width"));
+      graphData.height = Integer.valueOf((String) jsonObject.getMemberByName("height"));
+      graphData.colour = new Color(Integer.valueOf((String) jsonObject.getMemberByName("colour")));
+      graphData.coords = new ArrayList<IntPair>();
+      
+      for (Object coordObject : (Object[]) jsonObject.getMemberByName("coords"))
+      {
+        String   coord   = (String) coordObject;
+        String[] values  = Regex.getMatches("\\d+", coord);
+        IntPair  intPair = new IntPair(Integer.valueOf(values[0]), Integer.valueOf(values[1]));
+        
+        graphData.coords.add(intPair);
+      }
+      
+      data_.put((String) jsonObject.getMemberByName("name"), graphData);
     }
     
     validate();

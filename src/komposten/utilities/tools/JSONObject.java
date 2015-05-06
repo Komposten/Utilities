@@ -133,9 +133,9 @@ public class JSONObject
       else
       {
         if (i < array.length - 1)
-          stringBuilder.append(formatLine((String)element + ",", tabLevel + 2));
+          stringBuilder.append(formatLine(element.toString() + ",", tabLevel + 2));
         else
-          stringBuilder.append(formatLine((String)element, tabLevel + 2));
+          stringBuilder.append(formatLine(element.toString(), tabLevel + 2));
       }
     }
 
