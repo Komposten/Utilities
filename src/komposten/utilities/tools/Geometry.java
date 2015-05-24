@@ -49,7 +49,7 @@ public class Geometry
   
   
   /**
-   * Checks if the two polygons intersect.
+   * Checks if the two LibGDX polygons intersect.
    * @param poly1 The first polygon.
    * @param poly2 The second polygon.
    * @return True if the two polygons intersect, false otherwise.

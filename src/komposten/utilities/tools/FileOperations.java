@@ -471,6 +471,8 @@ public final class FileOperations
       {
         if (file.getParentFile() != null && file.getParentFile().mkdirs())
           return file.createNewFile();
+        else if (file.getParentFile() == null)
+          return file.createNewFile();
         else
           return false;
       }

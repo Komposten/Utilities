@@ -1,3 +1,6 @@
+2015-05-24
+-CODE: Fixed FileOperations.createFileOrFolder(File) not creating a file at the root of the path (parentFile() == null).
+
 2015-04-08
 -FEATURE: GraphList now supports changing units and labels on the axes.
 -FEATURE: Added support for (2) decimals for GraphList's axis values.
