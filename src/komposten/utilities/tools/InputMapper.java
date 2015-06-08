@@ -3,36 +3,40 @@ package komposten.utilities.tools;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 
-import sbasicgui.events.SEvent;
+//import sbasicgui.events.SEvent;
 
 
 /**
  * <code>InputMapper</code> is a class used to allow dynamic re-binding of
- * key/mouse mappings. Actions, in the shape of <code>int</code> codes are
- * stored together with the key and mouse buttons that should invoke that
- * particular action. When an input event is received passing the key code,
- * mouse button code or mouse wheel rotation from the event to
+ * key/mouse mappings. <i>Actions</i> are
+ * stored together with the keys and mouse buttons that should invoke that
+ * particular action. When an input event is received the key code,
+ * mouse button code or mouse wheel rotation from the event should be passed to
  * {@link #getKeyMappings(int)} (or the mouse button and mouse wheel equivalents)
- * will return all actions associated with that particular input.
+ * in order to retrieve a list of all actions associated with that particular input.
  * <br />
  * <br />
  * Multiple actions can be bound to the same key/button, and multiple
  * keys/buttons can be bound to the same action.
  * <br />
  * <br />
- * <b>Note:</b> This class is built for SBasicGUI.
  * 
  * @author Jakob Hjelm
  * @version
- * <b>1.1.0</b> <br />
+ * <b>1.2.0</b> <br />
+ * <ul>
+ * <li>Removed SBasicGUI dependency.</li>
+ * <li>Updated JavaDoc.</li>
+ * <li>Minor refactoring.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.1.0 <br />
  * <ul>
  * <li>Made the action code type generic.</li>
  * <li>Added <code>getMappingsForAction(T)</code>.</li>
- * </ul>
- * <b>Older</b> <br />
+ * </ul> <br />
  * 1.0.0 <br />
  * <ul>
  * <li>Initial implementation.</li>
@@ -56,31 +60,31 @@ public class InputMapper<T>
   
   
 
-  /**
-   * Converts {@link SEvent}'s mouse button constants to
-   * <code>InputMapper</code>'s equivalent.
-   * 
-   * @param mouseButton The mouse button value from an <code>SMouseEvent</code>.
-   *          Combined values must be separated and sent to this method
-   *          individually.
-   * @return <code>InputMapper</code>'s equivalent to the provided
-   *         <code>SEvent</code> mouse constant, or {@link #INVALID_CODE} if
-   *         <code>mouseButton</code> was invalid.
-   */
-  public static int getMouseButtonCode(int mouseButton)
-  {
-    switch (mouseButton)
-    {
-      case SEvent.MOUSE_BUTTON_LEFT :
-        return MOUSE1;
-      case SEvent.MOUSE_BUTTON_RIGHT :
-        return MOUSE2;
-      case SEvent.MOUSE_BUTTON_MIDDLE :
-        return MOUSE3;
-      default :
-        return INVALID_CODE;
-    }
-  }
+//  /**
+//   * Converts {@link SEvent}'s mouse button constants to
+//   * <code>InputMapper</code>'s equivalent.
+//   * 
+//   * @param mouseButton The mouse button value from an <code>SMouseEvent</code>.
+//   *          Combined values must be separated and sent to this method
+//   *          individually.
+//   * @return <code>InputMapper</code>'s equivalent to the provided
+//   *         <code>SEvent</code> mouse constant, or {@link #INVALID_CODE} if
+//   *         <code>mouseButton</code> was invalid.
+//   */
+//  public static int getMouseButtonCode(int mouseButton)
+//  {
+//    switch (mouseButton)
+//    {
+//      case SEvent.MOUSE_BUTTON_LEFT :
+//        return MOUSE1;
+//      case SEvent.MOUSE_BUTTON_RIGHT :
+//        return MOUSE2;
+//      case SEvent.MOUSE_BUTTON_MIDDLE :
+//        return MOUSE3;
+//      default :
+//        return INVALID_CODE;
+//    }
+//  }
   
   
 
@@ -117,7 +121,7 @@ public class InputMapper<T>
   
   
   /**
-   * Maps the specified action to the specified key.
+   * Maps the specified action to the specified key or mouse button press, or mouse wheel rotation.
    * @param keyCode The key to map the action to.
    * @param action The action code.
    */
@@ -146,22 +150,11 @@ public class InputMapper<T>
   
   
   /**
-   * Maps the specified action to the specified mouse button.
-   * <br />
-   * <br />
-   * This is a convenience method to match {@link SEvent}'s
-   * <code>MOUSE_BUTTON</code> constants to <code>InputMapper</code>'s
-   * <code>MOUSE</code> constants. Mouse buttons can be registered directly
-   * using {@link #registerKey(int, String)} where the <code>int</code>
-   * parameter should be the appropriate <code>MOUSE</code> constant (found in
-   * this class).
-   * 
-   * @param buttonCode The mouse button to map the action to.
-   * @param action The action code.
+   * Does the same thing as {@link #registerKey(int, Object)}.
    */
   public void registerMouseButton(int buttonCode, T action)
   {
-    registerKey(getMouseButtonCode(buttonCode), action);
+    registerKey(buttonCode, action);
   }
   
   
@@ -190,13 +183,13 @@ public class InputMapper<T>
   
   
   /**
-   * Removes all key mappings for the specified key code.
-   * @param keyCode The key code for the key to remove.
+   * Removes all key mappings for the specified key or mouse code.
+   * @param code The key code for the key to remove.
    * @return True if any mappings were found and removed, false otherwise.
    */
-  public boolean removeKey(int keyCode)
+  public boolean removeKey(int code)
   {
-    if (mappings_.remove(Integer.valueOf(keyCode)) != null)
+    if (mappings_.remove(Integer.valueOf(code)) != null)
         return true;
     
     return false;
@@ -205,22 +198,11 @@ public class InputMapper<T>
 
 
   /**
-   * Removes all mouse mappings for the specified mouse button code.
-   * <br />
-   * <br />
-   * This is a convenience method to match {@link SEvent}'s
-   * <code>MOUSE_BUTTON</code> constants to <code>InputMapper</code>'s
-   * <code>MOUSE</code> constants. Mouse button mappings can be removed directly
-   * using {@link #removeKey(int)} where the <code>int</code> parameter should
-   * be the appropriate <code>MOUSE</code> constant (found in this class).
-   * 
-   * @param buttonCode The mouse button code for the key to remove.
-   * @return True if any mappings were found and removed, false otherwise.
-   * @see #getMouseButtonCode(int)
+   * Does the same thing as {@link #removeKey(int)}.
    */
   public boolean removeMouseButton(int buttonCode)
   {
-    return removeKey(getMouseButtonCode(buttonCode));
+    return removeKey(buttonCode);
   }
   
 
@@ -326,34 +308,15 @@ public class InputMapper<T>
 
 
   /**
-   * Returns the actions mapped to the specified mouse button code.
-   * <br />
-   * <br />
-   * This is a convenience method to match {@link SEvent}'s
-   * <code>MOUSE_BUTTON</code> constants to <code>InputMapper</code>'s
-   * <code>MOUSE</code> constants. Mouse button mappings can be retrieved directly
-   * using {@link #getKeyMappings(int)} where the <code>int</code> parameter should
-   * be the appropriate <code>MOUSE</code> constant (found in this class).
-   * 
-   * @param buttonCode The mouse button code for the pressed mouse button (see
-   *          the <code>MOUSE_BUTTON</code> constants in {@link SEvent}.
-   *          Combinations of several button codes are not supported.
-   * @return The actions mapped to the specified mouse button code, or
-   *         an empty list if no such mappings were found.
-   * @see #getMouseButtonCode(int)
+   * Does the same thing as {@link #getKeyMappings(int)}.
    */
   public ArrayList<T> getMouseMappings(int buttonCode)
   {
-    ArrayList<T> actions = mappings_.get(getMouseButtonCode(buttonCode));
-    
-    if (actions == null)
-      actions = new ArrayList<T>();
-    
-    return actions;
+    return getKeyMappings(buttonCode);
   }
-
-
-
+  
+  
+  
   /**
    * Returns the actions mapped to the specified mouse button code.
    * <br />
