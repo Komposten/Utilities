@@ -1,3 +1,7 @@
+2015-06-14
+-CODE: Added an empty list to return instead of using new instances.
+-CODE: Updated JavaDoc to mention that the lists returned by getXXXMappings() are tied to the InputMapper.
+
 2015-06-08
 -CODE: Removed the SBasicGUI from InputMapper.
 -CODE: Minor refactoring in InputMapper.

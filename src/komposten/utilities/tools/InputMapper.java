@@ -30,6 +30,7 @@ import java.util.Map.Entry;
  * <li>Removed SBasicGUI dependency.</li>
  * <li>Updated JavaDoc.</li>
  * <li>Minor refactoring.</li>
+ * <li>Added an empty list to be returned instead of using <code>new ArrayList<T>()</code>.
  * </ul>
  * <b>Older</b> <br />
  * 1.1.0 <br />
@@ -52,10 +53,12 @@ public class InputMapper<T>
   public static final int INVALID_CODE    = -10;
   
   private HashMap<Integer, ArrayList<T>> mappings_;
+  private ArrayList<T> emptyList_;
   
   
   {
-    mappings_ = new HashMap<Integer, ArrayList<T>>();
+    mappings_  = new HashMap<Integer, ArrayList<T>>();
+    emptyList_ = new ArrayList<T>();
   }
   
   
@@ -288,19 +291,21 @@ public class InputMapper<T>
   
   
 
-  /**
-   * Returns the actions mapped to the specified key code.
-   * 
-   * @param keyCode The key code for the pressed key.
-   * @return The actions mapped to the specified key code, or an empty list
-   *         if no such mappings were found.
-   */
+	/**
+	 * Returns a list of the actions mapped to the specified key code. The list is
+	 * backed by the <code>InputMapper</code>, so changes to the list are
+	 * reflected in the <code>InputMapper</code>.
+	 * 
+	 * @param keyCode The key code for the pressed key.
+	 * @return The actions mapped to the specified key code, or an empty list if
+	 *         no such mappings were found.
+	 */
   public ArrayList<T> getKeyMappings(int keyCode)
   {
     ArrayList<T> actions = mappings_.get(Integer.valueOf(keyCode));
     
     if (actions == null)
-      actions = new ArrayList<T>();
+      actions = emptyList_;
     
     return actions;
   }
@@ -317,33 +322,29 @@ public class InputMapper<T>
   
   
   
-  /**
-   * Returns the actions mapped to the specified mouse button code.
-   * <br />
-   * <br />
-   * This is a convenience method to match mouse wheel rotation to
-   * <code>InputMapper</code>'s <code>MOUSE_WHEEL</code> constants. Mouse wheel
-   * rotation mappings can be retrieved directly using
-   * {@link #getKeyMappings(int)} where the <code>int</code> parameter should
-   * be the appropriate <code>MOUSE_WHEEL</code> constant (found in this class).
-   * 
-   * 
-   * @param direction The mouse wheel rotation direction to map the action to
-   *          (negative values if the mouse wheel was rotated up or away from
-   *          the user, and positive values if the mouse wheel was rotated down
-   *          or towards the user).
-   * @return The actions mapped to the specified mouse button code, or
-   *         an empty list if no such mappings were found.
-   * @see #getMouseWheelCode(int);
-   */
+	/**
+	 * Returns a list of the actions mapped to the specified mouse button code.
+	 * The list is backed by the <code>InputMapper</code>, so changes to the list
+	 * are reflected in the <code>InputMapper</code>. <br />
+	 * <br />
+	 * This is a convenience method to match mouse wheel rotation to
+	 * <code>InputMapper</code>'s <code>MOUSE_WHEEL</code> constants. Mouse wheel
+	 * rotation mappings can be retrieved directly using
+	 * {@link #getKeyMappings(int)} where the <code>int</code> parameter should be
+	 * the appropriate <code>MOUSE_WHEEL</code> constant (found in this class).
+	 * 
+	 * 
+	 * @param direction The mouse wheel rotation direction to map the action to
+	 *          (negative values if the mouse wheel was rotated up or away from
+	 *          the user, and positive values if the mouse wheel was rotated down
+	 *          or towards the user).
+	 * @return The actions mapped to the specified mouse button code, or an empty
+	 *         list if no such mappings were found.
+	 * @see #getMouseWheelCode(int);
+	 */
   public ArrayList<T> getMouseWheelMappings(int direction)
   {
-    ArrayList<T> actions =  mappings_.get(getMouseWheelCode(direction));
-    
-    if (actions == null)
-      actions = new ArrayList<T>();
-    
-    return actions;
+    return getKeyMappings(getMouseWheelCode(direction));
   }
   
   
