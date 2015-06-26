@@ -1,5 +1,5 @@
 2015-06-26
--CODE: Replaced Logger.log()'s "exceptionMsgOnly" with "includeStackTrace".
+-CODE: Replaced log()'s "exceptionMsgOnly" with "includeStackTrace".
 -OTHER: Added @deprecated tag to the old log() method.
 
 2015-06-14
