@@ -21,12 +21,17 @@ import javax.swing.JOptionPane;
  * @see {@link LogUtils}
  * @author Jakob Hjelm
  * @version
- * <b>1.3.2</b> <br />
+ * <b>1.4.0</b> <br />
+ * <ul>
+ * <li>API change: <code>exceptionMessageOnly</code> has been replaced by <code>includeStackTrace</code>.
+ * <li>Added <code>@deprecated</code> tag to {@link #log(String, String, Throwable, boolean)}.
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.3.2 <br />
  * <ul>
  * <li>Updated <code>Logger.getProgramDir()</code> to check if the <code>ProtectionDomain</code> is null to prevent <code>NullPointerException</code>s when loading the class.</li>
  * <li>Added null checks to <code>Logger.Logger(String)</code> and <code>Logger.writeToFile(String)</code>.</li>
  * </ul>
- * <b>Older</b> <br />
  * 1.3.1 <br />
  * <ul>
  * <li>Replaced <code>Exception</code> with <code>Throwable</code>.</li>
@@ -87,6 +92,7 @@ public final class Logger
   public  static final String WRITEERROR  = "WRITE ERROR";
   /** Error type constant. */
   public  static final String CREATEERROR = "CREATION ERROR";
+  
   private static final String CAUSED_BY   = "Caused by: ";
 	
 	private static final String[] MONTHS = { "Jan", "Feb", "Mar", "Apr", "May",
@@ -140,18 +146,6 @@ public final class Logger
   
   
 
-//  /**
-//   * Creates a new Logger that writes to the default file (see {@link #FILEPATH}
-//   * ). <br />
-//   * <b>Note:</b> As specified the <code>FILEPATH</code>'s documentation, the
-//   * path may be <code>null</code> on some systems (e.g. Android), in which case
-//   * an exception will be thrown when using this constructor.
-//   */
-//  public Logger()
-//  {
-//    this(FILEPATH);
-//  }
-  
   /**
    * Creates a new Logger that writes to the specified file. Use {@link #FILEPATH} for the default file.
    * @param filePath The path to the file the Logger writes to.
@@ -205,21 +199,27 @@ public final class Logger
   
   
   /**
-   * Logs the given <code>Exception</code> (which can be <code>null</code>) together with the time and message in 
-   * the log file or stream.
-   * @param errorType - A <code>String</code> saying what kind of error occurred (e.g. "WRITE ERROR"). A set 
-   * of standard messages can be found as constants in this class.
-   * @param errorMsg  - The message to be displayed after the error type  (may contain new lines).
-   * @param t         - A <code>Throwable</code> from which additional information of the error 
-   * will be taken. (May be <code>null</code>)
-   * @param throwableMsgOnly - If only the <code>Throwable</code>'s message should be written, and not the 
-   * entire stack trace.
+   * Logs the given <code>Exception</code> (which can be <code>null</code>)
+   * together with the time and message in the log file or stream.
+   * 
+   * @deprecated Use {@link #log(String, String, String, Throwable, boolean)} instead.
+   * 
+   * @param errorType - A <code>String</code> saying what kind of error occurred
+   *          (e.g. "WRITE ERROR"). A set of standard messages can be found as
+   *          constants in this class.
+   * @param errorMsg - The message to be displayed after the error type (may
+   *          contain new lines).
+   * @param t - A <code>Throwable</code> from which additional information of
+   *          the error will be taken. (May be <code>null</code>)
+   * @param includeStackTrace - If the <code>Throwable</code>'s stack trace
+   *          should be included. If <code>false</code> only the
+   *          <code>Throwable</code>'s message will be logged.
    * @return True if the message was successfully logged, false otherwise.
    */
 	@Deprecated
-  public boolean log(String errorType, String errorMsg, Throwable t, boolean throwableMsgOnly)
+  public boolean log(String errorType, String errorMsg, Throwable t, boolean includeStackTrace)
   {
-    return log(errorType, "<unspecified>", errorMsg, t, throwableMsgOnly);
+    return log(errorType, "<unspecified>", errorMsg, t, includeStackTrace);
   }
 	
 	
@@ -233,11 +233,12 @@ public final class Logger
 	 * @param errorMsg  - The message to be displayed after the error type (may contain new lines).
 	 * @param t         - A <code>Throwable</code> from which additional information of the error 
 	 * will be taken. (May be <code>null</code>)
-	 * @param throwableMsgOnly - If only the <code>Throwable</code>'s message should be written, and not the 
-	 * entire stack trace.
+   * @param includeStackTrace - If the <code>Throwable</code>'s stack trace
+   *          should be included. If <code>false</code> only the
+   *          <code>Throwable</code>'s message will be logged.
 	 * @return True if the message was successfully logged, false otherwise.
 	 */
-	public boolean log(String errorType, String className, String errorMsg, Throwable t, boolean throwableMsgOnly)
+	public boolean log(String errorType, String className, String errorMsg, Throwable t, boolean includeStackTrace)
 	{
 		StringBuilder logMsg = new StringBuilder();
 		Calendar      date   = Calendar.getInstance();
@@ -268,7 +269,7 @@ public final class Logger
 		{
 			logMsg.append(newLine + "|-|" + t.toString());
 			
-			if (!throwableMsgOnly)
+			if (includeStackTrace)
 			{
 				for (StackTraceElement st : t.getStackTrace())
 					logMsg.append(newLine + "|---->" + st.toString());

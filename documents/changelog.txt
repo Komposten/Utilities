@@ -1,3 +1,7 @@
+2015-06-26
+-CODE: Replaced Logger.log()'s "exceptionMsgOnly" with "includeStackTrace".
+-OTHER: Added @deprecated tag to the old log() method.
+
 2015-06-14
 -CODE: Added an empty list to return instead of using new instances.
 -CODE: Updated JavaDoc to mention that the lists returned by getXXXMappings() are tied to the InputMapper.
