@@ -74,7 +74,7 @@ import javax.swing.JOptionPane;
  * <li>Added support for nested throwables.</li>
  * </ul>
  */
-public final class Logger
+public final class Logger //TODO Implement "log levels" and make it possible to print to different files/streams depending on level.
 {
   /**
    * The path to the default log file utilised by this class. <br />

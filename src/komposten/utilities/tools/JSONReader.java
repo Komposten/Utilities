@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2014 Jakob Hjelm 
+ */
 package komposten.utilities.tools;
 
 import java.io.BufferedReader;

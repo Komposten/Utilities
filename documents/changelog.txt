@@ -1,3 +1,6 @@
+2015-06-27
+-FEATURE: Added Range to Utilities.
+
 2015-06-26
 -CODE: Replaced log()'s "exceptionMsgOnly" with "includeStackTrace".
 -OTHER: Added @deprecated tag to the old log() method.
