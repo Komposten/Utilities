@@ -1,3 +1,6 @@
+2015-07-02
+-FEATURE: Added isInRange() to MathUtils.
+
 2015-06-27
 -FEATURE: Added Range to Utilities.
 
