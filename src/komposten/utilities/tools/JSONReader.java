@@ -42,18 +42,19 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
       
       while (scanner.hasNextLine())
         builder.append(scanner.nextLine().trim() + "\n");
+      
+      jsonObject = parseObject(builder.toString());
     }
     catch (FileNotFoundException e)
     {
-      //FIXME JSONReader; Exception handling
+    	System.err.println("Could not find or read the file \"" + jsonFile + "\", returning an empty object!");
+    	jsonObject = new JSONObject();
     }
     finally
     {
       if (scanner != null)
         scanner.close();
     }
-    
-    jsonObject = parseObject(builder.toString());
     
     return jsonObject;
   }
@@ -65,7 +66,7 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
     jsonObject = jsonObject.replaceAll("\\n+", " ").trim();
     
     if (jsonObject.startsWith("{"))
-      jsonObject = jsonObject.replaceAll("^\\{", "").replaceAll("\\{$", "");
+      jsonObject = jsonObject.replaceAll("^\\{", "").replaceAll("\\}$", "");
 
     JSONObject object = new JSONObject();
     
@@ -269,15 +270,32 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
   
   public static void main(String[] args)
   {
-    JSONReader reader = new JSONReader();
+//    JSONReader reader = new JSONReader();
+//    
+//    JSONObject object = reader.readFile("resources/json/schedule.json");
+//    
+//    System.out.println("----------------------------");
+//    System.out.println(object.toMultiLineString());
     
-    JSONObject object = reader.readFile("resources/json/schedule.json");
+//    JSONObject object = new JSONObject();
+//    object.addObjectPair("me", object);
+
+    JSONObject parent = new JSONObject();
+    JSONObject[] array = new JSONObject[2];
     
-    System.out.println("----------------------------");
-    System.out.println(object.toMultiLineString());
+    for (int i = 0; i < array.length; i++)
+    {
+    	float x = ((int)(Math.random() * 100));
+    	float y = ((int)(Math.random() * 100));
+      JSONObject object = new JSONObject();
+      object.addArrayPair("pos", new Float[] {x, y});
+      object.addStringPair("type", "some_type");
+      object.addStringPair("radius", "64.0");
+      array[i] = object;
+    }
     
-    object = new JSONObject();
-    object.addObjectPair("me", object);
-    System.out.println(object.toMultiLineString());
+    parent.addArrayPair("lights", array);
+
+    System.out.println(parent.toMultiLineString());
   }
 }

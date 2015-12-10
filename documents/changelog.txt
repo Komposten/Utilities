@@ -1,3 +1,7 @@
+2015-10-10
+-CODE: JSONReader's parseObject() trying to remove an opening brace from the end of the object, rather than a closing brace (if the object is wrapped in braces).
+-CODE: Updated JSONReader's exception handling when trying to read non-existent/non-readable files.
+
 2015-08-09
 -FEATURE: Added ExtensionFileFilter and RegexFileFilter.
 
