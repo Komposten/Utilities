@@ -3,7 +3,6 @@ package komposten.utilities.logging;
 import java.io.OutputStream;
 
 import komposten.utilities.exceptions.InvalidStateException;
-import komposten.utilities.logging.Logger.Level;
 
 
 /**

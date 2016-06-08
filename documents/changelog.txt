@@ -2,7 +2,7 @@
 -FEATURE: Added a LogFormatter to Logger.
 -FEATURE: Added LogFormatter and DefaultLogFormatter.
 -FEATURE: Added log(Level, String, String) to Logger and LogUtils.
--FEATURE: Replaced Logger's "error type" with "log levels".
+-FEATURE: Replaced Logger's "error type" with "log levels" (see the class Level).
 -CODE: Split Logger.write(String, String, OutputStream) into to methods, one for the file and one for the stream.
 -CODE: Logger now uses a LogFormatter to format the output.
 -CODE: Moved Logger and LogUtils to komposten.utilities.logging.

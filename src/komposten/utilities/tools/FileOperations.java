@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import komposten.utilities.exceptions.InvalidStateException;
+import komposten.utilities.logging.Level;
 import komposten.utilities.logging.LogUtils;
-import komposten.utilities.logging.Logger.Level;
 
 
 
@@ -90,7 +90,7 @@ public final class FileOperations
     {
       String msg1 = "Could not open a stream to \"" + file.getPath() + "\".";
       if (LogUtils.hasInitialised())
-        LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
+        LogUtils.log(Level.ERROR, "FileOperations", msg1, e, false);
       else
       {
         System.err.println("I/O ERROR: " + msg1);
@@ -120,7 +120,7 @@ public final class FileOperations
         String msg1 = "Could not close the Writer.";
         
         if (LogUtils.hasInitialised())
-          LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
+          LogUtils.log(Level.ERROR, "FileOperations", msg1, e, false);
         else
         {
           System.err.println("I/O ERROR: " + msg1);
@@ -169,7 +169,7 @@ public final class FileOperations
       String msg1 = "Could not write the data to the file.";
       
       if (LogUtils.hasInitialised())
-        LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
+        LogUtils.log(Level.ERROR, "FileOperations", msg1, e, false);
       else
       {
         System.err.println("WRITE ERROR" + ": " + msg1);
@@ -221,7 +221,7 @@ public final class FileOperations
       String msg1 = "Could not write the data to the file.";
 
       if (LogUtils.hasInitialised())
-        LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
+        LogUtils.log(Level.ERROR, "FileOperations", msg1, e, false);
       else
       {
         System.err.println("WRITE ERROR" + ": " + msg1);
@@ -407,7 +407,7 @@ public final class FileOperations
       String msg1 = "Could not find the file \"" + file.getPath() + "\"!";
 
       if (LogUtils.hasInitialised())
-        LogUtils.log(Level.Error, "FileOperations", msg1, null, false);
+        LogUtils.log(Level.ERROR, "FileOperations", msg1, null, false);
       else
       {
         System.err.println("WRITE ERROR" + ": " + msg1);
@@ -489,7 +489,7 @@ public final class FileOperations
       String msg1 = "Could not create the file \"" + file.getAbsolutePath() + "\"";
       
       if (LogUtils.hasInitialised())
-        LogUtils.log(Level.Error, "FileOperations", msg1, e, true);
+        LogUtils.log(Level.ERROR, "FileOperations", msg1, e, true);
       else
         System.err.println("WRITE ERROR" + ": " + msg1);
       
@@ -535,7 +535,7 @@ public final class FileOperations
       String msg1 = "Could not delete \"" + file.getAbsolutePath() + "\"!";
       
       if (LogUtils.hasInitialised())
-        LogUtils.log(Level.Error, "FileOperations", msg1, null, true);
+        LogUtils.log(Level.ERROR, "FileOperations", msg1, null, true);
       else
         System.err.println("FILE DELETION ERROR: " + msg1);
       return false;
@@ -601,7 +601,7 @@ public final class FileOperations
       		" to \"" + dest.getAbsolutePath() + "\"!";
       
       if (LogUtils.hasInitialised())
-        LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
+        LogUtils.log(Level.ERROR, "FileOperations", msg1, e, false);
       else
       {
         System.err.println("WRITE ERROR" + ": " + msg1);

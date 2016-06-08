@@ -2,8 +2,6 @@ package komposten.utilities.logging;
 
 import java.util.Calendar;
 
-import komposten.utilities.logging.Logger.Level;
-
 
 /**
  * A {@link LogFormatter} implementation that is used by {@link Logger} by default.

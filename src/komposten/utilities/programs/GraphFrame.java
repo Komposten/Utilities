@@ -27,8 +27,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import komposten.utilities.logging.Level;
 import komposten.utilities.logging.LogUtils;
-import komposten.utilities.logging.Logger.Level;
 
 public class GraphFrame extends JFrame
 {
@@ -318,7 +318,7 @@ public class GraphFrame extends JFrame
 			String msg = "Starting GraphFrame with args: ";
 			for (String arg : args)
 				msg.concat(arg + " ");
-			LogUtils.log(Level.Info, msg);
+			LogUtils.log(Level.INFO, msg);
 	
 	    
 	    if (args.length > 0)
@@ -346,7 +346,7 @@ public class GraphFrame extends JFrame
 		catch (Exception e)
 		{
 			String msg = "An unexpected exception occurred while starting GraphFrame!";
-			LogUtils.log(Level.Error, GraphFrame.class.getSimpleName(), msg, e, true);
+			LogUtils.log(Level.ERROR, GraphFrame.class.getSimpleName(), msg, e, true);
 			System.exit(1);
 		}
 		

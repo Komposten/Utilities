@@ -30,7 +30,7 @@ import javax.swing.JOptionPane;
  * <li>Added <code>log(Level, String, String)</code>. </li>
  * <li>Removed <code>logMsg(String)</code> and renamed <code>logMsg(Level, String)</code> to <code>log(Level, String)</code>.</li>
  * <li>API change: Replaced the "error type" strings with a log level.</li>
- * <li>Added log levels (as an enum, Level).</li>
+ * <li>Added log levels (as a separate class, {@link Level}).</li>
  * <li>API change: Removed the deprecated log()-method.</li>
  * <li>Renamed <code>className</code> to <code>location</code>.</li>
  * </ul>
@@ -87,7 +87,7 @@ import javax.swing.JOptionPane;
  * <li>Added support for nested throwables.</li>
  * </ul>
  */
-public final class Logger //TODO Logger: Make it possible to print to different files/streams depending on log level.
+public final class Logger //TODO Logger: Make it possible to print to different files/streams depending on log level. (Explicitly set the file/stream for the given (VarArg) levels.)
 {
   /**
    * The path to the default log file utilised by this class. <br />
@@ -97,16 +97,6 @@ public final class Logger //TODO Logger: Make it possible to print to different 
    */
 	public static final String FILEPATH;
 	
-	public enum Level
-	{
-		/** Messaged with this debug level are only printed if debug mode is enabled. */
-		Debug,
-		Info,
-		Warning,
-		Error,
-		Fatal
-	}
-  
 	private LogFormatter formatter;
 	private String filePath_;
 	private OutputStream stream_;

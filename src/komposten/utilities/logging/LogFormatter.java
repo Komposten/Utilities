@@ -2,8 +2,6 @@ package komposten.utilities.logging;
 
 import java.util.Calendar;
 
-import komposten.utilities.logging.Logger.Level;
-
 
 /** An interface that describes a formatter used to format log output from a {@link Logger}. */
 public interface LogFormatter
