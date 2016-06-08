@@ -2,9 +2,9 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.naming.NoPermissionException;
 
-import komposten.utilities.tools.LogUtils;
-import komposten.utilities.tools.Logger;
-import komposten.utilities.tools.Logger.Level;
+import komposten.utilities.logging.LogUtils;
+import komposten.utilities.logging.Logger;
+import komposten.utilities.logging.Logger.Level;
 
 
 

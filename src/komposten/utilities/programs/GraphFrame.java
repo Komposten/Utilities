@@ -27,6 +27,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import komposten.utilities.logging.LogUtils;
+import komposten.utilities.logging.Logger.Level;
+
 public class GraphFrame extends JFrame
 {
   private GraphList graph_;

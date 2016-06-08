@@ -14,7 +14,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import komposten.utilities.exceptions.InvalidStateException;
-import komposten.utilities.tools.Logger.Level;
+import komposten.utilities.logging.LogUtils;
+import komposten.utilities.logging.Logger.Level;
 
 
 
@@ -171,7 +172,7 @@ public final class FileOperations
         LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
       else
       {
-        System.err.println(Logger.WRITEERROR + ": " + msg1);
+        System.err.println("WRITE ERROR" + ": " + msg1);
         e.printStackTrace();
       }
       
@@ -223,7 +224,7 @@ public final class FileOperations
         LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
       else
       {
-        System.err.println(Logger.WRITEERROR + ": " + msg1);
+        System.err.println("WRITE ERROR" + ": " + msg1);
         e.printStackTrace();
       }
       
@@ -409,7 +410,7 @@ public final class FileOperations
         LogUtils.log(Level.Error, "FileOperations", msg1, null, false);
       else
       {
-        System.err.println(Logger.LOADERROR + ": " + msg1);
+        System.err.println("WRITE ERROR" + ": " + msg1);
         e.printStackTrace();
       }
       return null;
@@ -490,7 +491,7 @@ public final class FileOperations
       if (LogUtils.hasInitialised())
         LogUtils.log(Level.Error, "FileOperations", msg1, e, true);
       else
-        System.err.println(Logger.WRITEERROR + ": " + msg1);
+        System.err.println("WRITE ERROR" + ": " + msg1);
       
       return false;
     }
@@ -603,7 +604,7 @@ public final class FileOperations
         LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
       else
       {
-        System.err.println(Logger.WRITEERROR + ": " + msg1);
+        System.err.println("WRITE ERROR" + ": " + msg1);
         e.printStackTrace();
       }
       
