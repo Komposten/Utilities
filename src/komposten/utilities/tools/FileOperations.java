@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import komposten.utilities.exceptions.InvalidStateException;
+import komposten.utilities.tools.Logger.Level;
 
 
 
@@ -26,9 +27,14 @@ import komposten.utilities.exceptions.InvalidStateException;
  * @version
  * <b>1.2.2</b> <br />
  * <ul>
- * <li>Removed "static" from all writing methods.</li>
+ * <li>Fixed an error in loadConfigFile(File)'s javadoc.</li>
+ * <li>Fixed copyFile(File, File) not properly closing all streams and channels.</li>
  * </ul>
  * <b>Older</b> <br />
+ * 1.2.2 <br />
+ * <ul>
+ * <li>Removed "static" from all writing methods.</li>
+ * </ul>
  * 1.2.1 <br />
  * <ul>
  * <li>Added <code>copyFile(File, File)</code></li>
@@ -83,7 +89,7 @@ public final class FileOperations
     {
       String msg1 = "Could not open a stream to \"" + file.getPath() + "\".";
       if (LogUtils.hasInitialised())
-        LogUtils.log("I/O ERROR", "FileOperations", msg1, e, false);
+        LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
       else
       {
         System.err.println("I/O ERROR: " + msg1);
@@ -113,7 +119,7 @@ public final class FileOperations
         String msg1 = "Could not close the Writer.";
         
         if (LogUtils.hasInitialised())
-          LogUtils.log("I/O ERROR", "FileOperations", msg1, e, false);
+          LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
         else
         {
           System.err.println("I/O ERROR: " + msg1);
@@ -162,7 +168,7 @@ public final class FileOperations
       String msg1 = "Could not write the data to the file.";
       
       if (LogUtils.hasInitialised())
-        LogUtils.log(Logger.WRITEERROR, "FileOperations", msg1, e, false);
+        LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
       else
       {
         System.err.println(Logger.WRITEERROR + ": " + msg1);
@@ -214,7 +220,7 @@ public final class FileOperations
       String msg1 = "Could not write the data to the file.";
 
       if (LogUtils.hasInitialised())
-        LogUtils.log(Logger.WRITEERROR, "FileOperations", msg1, e, false);
+        LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
       else
       {
         System.err.println(Logger.WRITEERROR + ": " + msg1);
@@ -376,7 +382,7 @@ public final class FileOperations
    * The data in the config-file must be formatted as follows: <br />
    * <code>'key'='value'</code> (Without the '-characters).<br />
    * <br />
-   * Neither the key or the value can contain any spaces.
+   * Both the key and the value can contain spaces.
    * @param file - The config-file.
    * @return A map containing the data in the config-file.
    */
@@ -397,10 +403,10 @@ public final class FileOperations
     }
     catch (FileNotFoundException e)
     {
-      String msg1 = "Could not find the Editor config-file";
+      String msg1 = "Could not find the file \"" + file.getPath() + "\"!";
 
       if (LogUtils.hasInitialised())
-        LogUtils.log(Logger.LOADERROR, "FileOperations", msg1, null, false);
+        LogUtils.log(Level.Error, "FileOperations", msg1, null, false);
       else
       {
         System.err.println(Logger.LOADERROR + ": " + msg1);
@@ -482,7 +488,7 @@ public final class FileOperations
       String msg1 = "Could not create the file \"" + file.getAbsolutePath() + "\"";
       
       if (LogUtils.hasInitialised())
-        LogUtils.log(Logger.WRITEERROR, "FileOperations", msg1, e, true);
+        LogUtils.log(Level.Error, "FileOperations", msg1, e, true);
       else
         System.err.println(Logger.WRITEERROR + ": " + msg1);
       
@@ -528,7 +534,7 @@ public final class FileOperations
       String msg1 = "Could not delete \"" + file.getAbsolutePath() + "\"!";
       
       if (LogUtils.hasInitialised())
-        LogUtils.log("FILE DELETION ERROR", "FileOperations", msg1, null, true);
+        LogUtils.log(Level.Error, "FileOperations", msg1, null, true);
       else
         System.err.println("FILE DELETION ERROR: " + msg1);
       return false;
@@ -571,6 +577,8 @@ public final class FileOperations
     if (file.isDirectory())
       return false;
     
+    FileInputStream inputStream = null;
+    FileOutputStream outputStream = null;
     FileChannel source = null;
     FileChannel target = null;
     
@@ -579,13 +587,12 @@ public final class FileOperations
       if (!dest.exists())
         createFileOrFolder(dest, false);
       
-      source = new FileInputStream (file).getChannel();
-      target = new FileOutputStream(dest).getChannel();
+      inputStream = new FileInputStream(file);
+      outputStream = new FileOutputStream(dest);
+      source = inputStream.getChannel();
+      target = outputStream.getChannel();
       
       target.transferFrom(source, 0, source.size());
-      
-      source.close();
-    	target.close();
     }
     catch (IOException e)
     {
@@ -593,7 +600,7 @@ public final class FileOperations
       		" to \"" + dest.getAbsolutePath() + "\"!";
       
       if (LogUtils.hasInitialised())
-        LogUtils.log(Logger.WRITEERROR, "FileOperations", msg1, e, false);
+        LogUtils.log(Level.Error, "FileOperations", msg1, e, false);
       else
       {
         System.err.println(Logger.WRITEERROR + ": " + msg1);
@@ -601,7 +608,16 @@ public final class FileOperations
       }
       
       return false;
-	}
+    }
+    finally
+    {
+    	try
+			{
+				if (inputStream != null) inputStream.close();
+	    	if (outputStream != null) outputStream.close();
+			}
+			catch (IOException e)	{	}
+    }
     
     return true;
   }

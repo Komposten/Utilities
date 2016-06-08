@@ -21,12 +21,21 @@ import javax.swing.JOptionPane;
  * @see {@link LogUtils}
  * @author Jakob Hjelm
  * @version
- * <b>1.4.0</b> <br />
+ * <b>1.5.0</b> <br />
+ * <ul>
+ * <li>Added <code>log(Level, String, String)</code>. 
+ * <li>Removed <code>logMsg(String)</code> and renamed <code>logMsg(Level, String)</code> to <code>log(Level, String)</code>.
+ * <li>API change: Replaced the "error type" strings with a log level.
+ * <li>Added log levels (as an enum, Level).
+ * <li>API change: Removed the deprecated log()-method.
+ * <li>Renamed <code>className</code> to <code>location</code>.
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.4.0 <br />
  * <ul>
  * <li>API change: <code>exceptionMessageOnly</code> has been replaced by <code>includeStackTrace</code>.
  * <li>Added <code>@deprecated</code> tag to {@link #log(String, String, Throwable, boolean)}.
  * </ul>
- * <b>Older</b> <br />
  * 1.3.2 <br />
  * <ul>
  * <li>Updated <code>Logger.getProgramDir()</code> to check if the <code>ProtectionDomain</code> is null to prevent <code>NullPointerException</code>s when loading the class.</li>
@@ -74,7 +83,7 @@ import javax.swing.JOptionPane;
  * <li>Added support for nested throwables.</li>
  * </ul>
  */
-public final class Logger //TODO Implement "log levels" and make it possible to print to different files/streams depending on level.
+public final class Logger //TODO Make it possible to print to different files/streams depending on log level.
 {
   /**
    * The path to the default log file utilised by this class. <br />
@@ -83,15 +92,25 @@ public final class Logger //TODO Implement "log levels" and make it possible to 
    * be <code>null</code> on some systems (e.g. Android).
    */
 	public static final String FILEPATH;
+	
+	public enum Level
+	{
+		/** Messaged with this debug level are only printed if debug mode is enabled. */
+		Debug,
+		Info,
+		Warning,
+		Error,
+		Fatal
+	}
 
 	/** Error type constant. */
-  public  static final String LOADERROR   = "LOAD ERROR";
+  public static final String LOADERROR   = "LOAD ERROR";
   /** Error type constant. */
-  public  static final String READERROR   = "READ ERROR";
+  public static final String READERROR   = "READ ERROR";
   /** Error type constant. */
-  public  static final String WRITEERROR  = "WRITE ERROR";
+  public static final String WRITEERROR  = "WRITE ERROR";
   /** Error type constant. */
-  public  static final String CREATEERROR = "CREATION ERROR";
+  public static final String CREATEERROR = "CREATION ERROR";
   
   private static final String CAUSED_BY   = "Caused by: ";
 	
@@ -101,7 +120,7 @@ public final class Logger //TODO Implement "log levels" and make it possible to 
 	private static String newLine = System.getProperty("line.separator");
 	
 	
-	private String       filePath_;
+	private String filePath_;
 	private OutputStream stream_;
 	
 	
@@ -157,7 +176,7 @@ public final class Logger //TODO Implement "log levels" and make it possible to 
   
   /**
    * Creates a new Logger that writes to the specified stream.
-   * <br /><b>Note:</b> The stream will not be closed until {@link #dispose()} is invoked,
+   * <br /><b>Note:</b> The stream will not be closed until {@link #closeStream()} is invoked,
    * or the stream is closed manually.
    * @param stream The stream to write to.
    */
@@ -171,7 +190,7 @@ public final class Logger //TODO Implement "log levels" and make it possible to 
   /**
    * Sets this Logger to write to the file with the specified path. Use {@link #FILEPATH} for the default file.
    * <br /><b>Note:</b> If this Logger previously has been assigned an <code>OutputStream</code>,
-   * that stream will not be closed! In order to close it, invoke {@link #dispose()} prior to
+   * that stream will <i>not be closed</i>! In order to close it, invoke {@link #closeStream()} prior to
    * invoking this method.
    * @param path The new target file.
    */
@@ -187,7 +206,7 @@ public final class Logger //TODO Implement "log levels" and make it possible to 
    * Sets this Logger to write to the provided stream.
    * @param stream The new target stream.
    * <br /><b>Note:</b> If this Logger previously has been assigned an <code>OutputStream</code>,
-   * that stream will not be closed! In order to close it, invoke {@link #dispose()} prior to
+   * that stream will not be closed! In order to close it, invoke {@link #closeStream()} prior to
    * invoking this method.
    */
   public void writeToStream(OutputStream stream)
@@ -195,50 +214,51 @@ public final class Logger //TODO Implement "log levels" and make it possible to 
     filePath_ = null;
     stream_   = stream;
   }
+	
+	
   
-  
-  
-  /**
-   * Logs the given <code>Exception</code> (which can be <code>null</code>)
-   * together with the time and message in the log file or stream.
-   * 
-   * @deprecated Use {@link #log(String, String, String, Throwable, boolean)} instead.
-   * 
-   * @param errorType - A <code>String</code> saying what kind of error occurred
-   *          (e.g. "WRITE ERROR"). A set of standard messages can be found as
-   *          constants in this class.
-   * @param errorMsg - The message to be displayed after the error type (may
-   *          contain new lines).
-   * @param t - A <code>Throwable</code> from which additional information of
-   *          the error will be taken. (May be <code>null</code>)
-   * @param includeStackTrace - If the <code>Throwable</code>'s stack trace
-   *          should be included. If <code>false</code> only the
-   *          <code>Throwable</code>'s message will be logged.
-   * @return True if the message was successfully logged, false otherwise.
-   */
-	@Deprecated
-  public boolean log(String errorType, String errorMsg, Throwable t, boolean includeStackTrace)
-  {
-    return log(errorType, "<unspecified>", errorMsg, t, includeStackTrace);
-  }
+	/**
+	 * Prints the specified message to the log file or stream.
+	 * @param level The {@link Level log level} for the message.
+	 * @param message The message to log.
+	 * @return True if the message was logged, false otherwise.
+	 */
+	public boolean log(Level level, String message)
+	{
+	  return log(level, "", message, null, false);
+	}
 	
 	
 	
 	/**
+	 * Prints the specified message to the log file or stream.
+	 * @param level The {@link Level log level} for the message.
+	 * @param location The location where the error occurred (can be null or zero-length).
+	 * @param message The message to log.
+	 * @return True if the message was logged, false otherwise.
+	 */
+	public boolean log(Level level, String location, String message)
+	{
+		return log(level, location, message, null, false);
+	}
+
+
+
+	/**
 	 * Logs the given <code>Exception</code> (which can be <code>null</code>) together with the time and message in 
 	 * the log file or stream.
-	 * @param errorType - A <code>String</code> saying what kind of error occurred (e.g. "WRITE ERROR"). A set 
+	 * @param logLevel - A <code>String</code> saying what kind of error occurred (e.g. "WRITE ERROR"). A set 
 	 * of standard messages can be found as constants in this class.
-	 * @param className - The name of the class within which the error occurred (can be null or zero-length).
+	 * @param location - The location where the error occurred (can be null or zero-length).
 	 * @param errorMsg  - The message to be displayed after the error type (may contain new lines).
 	 * @param t         - A <code>Throwable</code> from which additional information of the error 
-	 * will be taken. (May be <code>null</code>)
+	 * will be taken. (May be <code>null</code>.)
    * @param includeStackTrace - If the <code>Throwable</code>'s stack trace
    *          should be included. If <code>false</code> only the
    *          <code>Throwable</code>'s message will be logged.
 	 * @return True if the message was successfully logged, false otherwise.
 	 */
-	public boolean log(String errorType, String className, String errorMsg, Throwable t, boolean includeStackTrace)
+	public boolean log(Level logLevel, String location, String errorMsg, Throwable t, boolean includeStackTrace)
 	{
 		StringBuilder logMsg = new StringBuilder();
 		Calendar      date   = Calendar.getInstance();
@@ -259,10 +279,10 @@ public final class Logger //TODO Implement "log levels" and make it possible to 
 		
 		logMsg.append(newLine + "/=|" + month + " " + day +
 				", " + year + " " + hour + ":" + minute + ":" + second);
-		if (className != null && className.length() > 0)
-		  logMsg.append(" - Class: " + className);
+		if (location != null && location.length() > 0)
+		  logMsg.append(" - Location: " + location);
 		logMsg.append("|");
-		logMsg.append(newLine + "|-|" + errorType.toUpperCase() + ":");
+		logMsg.append(newLine + "|-|" + logLevel.toString().toUpperCase() + ":");
 		logMsg.append(" " + errorMsg.replaceAll("\n\r|\r\n|\r|\n|" + newLine + "", newLine + "|----|"));
 		
 		if (t != null)
@@ -298,38 +318,12 @@ public final class Logger //TODO Implement "log levels" and make it possible to 
           logMsg.append("|-|" + t.toString());
           logMsg.append(newLine + "|---->" + t.getStackTrace()[0]);
 			  }
-			  
 			}
 		}
 		
 		logMsg.append(newLine);
 		
 		return write(logMsg.toString(), filePath_, stream_);
-	}
-	
-	
-	
-	/**
-	 * Prints the specified message to the log file or stream.
-	 * @param message The message to log.
-	 * @return True if the message was logged, false otherwise.
-	 */
-	public boolean logMsg(String message)
-	{
-	  return log("INFO", "", message, null, true);
-	}
-	
-	
-	
-	/**
-   * Prints the specified message to the log file or stream.
-   * @param message The message to log.
-   * @param label The label for the message (e.g. "INFO" or "WARNING").
-   * @return True if the message was logged, false otherwise.
-	 */
-	public boolean logMsg(String label, String message)
-	{
-	  return log(label, "", message, null, true);
 	}
 	
 	
@@ -387,7 +381,7 @@ public final class Logger //TODO Implement "log levels" and make it possible to 
 	 * Closes this Logger's <code>OutputStream</code> if either {@link #Logger(OutputStream)}
 	 * or {@link #writeToStream(OutputStream)} has been used.
 	 */
-	public void dispose()
+	public void closeStream()
 	{
 	  try
 	  {

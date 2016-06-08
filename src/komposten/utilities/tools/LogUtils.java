@@ -3,6 +3,7 @@ package komposten.utilities.tools;
 import java.io.OutputStream;
 
 import komposten.utilities.exceptions.InvalidStateException;
+import komposten.utilities.tools.Logger.Level;
 
 
 /**
@@ -58,39 +59,39 @@ public class LogUtils
   
 
   /**
-   * See {@link Logger#log(String, String, String, Exception, boolean)}.
-   * @throws InvalidStateException If the output file or stream has not been set (see {@link #writeToFile(String)} and {@link #writeToStream(OutputStream)}).
-   */
-  public static boolean log(String errorType, String className, String errorMsg, Exception e, boolean includeStackTrace)
-  {
-    if (logger_ == null)
-      throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before logging!");
-    return logger_.log(errorType, className, errorMsg, e, includeStackTrace);
-  }
+	 * See {@link Logger#log(Level, String)}.
+	 * @throws InvalidStateException If the output file or stream has not been set (see {@link #writeToFile(String)} and {@link #writeToStream(OutputStream)}).
+	 */
+	public static boolean log(Level logLevel, String message)
+	{
+	  if (logger_ == null)
+	    throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before logging!");
+	  return logger_.log(logLevel, message);
+	}
   
   
 
   /**
-   * See {@link Logger#logMsg(String)}.
-   * @throws InvalidStateException If the output file or stream has not been set (see {@link #writeToFile(String)} and {@link #writeToStream(OutputStream)}).
-   */
-  public static boolean logMsg(String message)
-  {
-    if (logger_ == null)
-      throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before logging!");
-    return logger_.logMsg(message);
-  }
-  
-  
+	 * See {@link Logger#log(Level, String, String)}.
+	 * @throws InvalidStateException If the output file or stream has not been set (see {@link #writeToFile(String)} and {@link #writeToStream(OutputStream)}).
+	 */
+	public static boolean log(Level logLevel, String location, String message)
+	{
+	  if (logger_ == null)
+	    throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before logging!");
+	  return logger_.log(logLevel, location, message);
+	}
 
-  /**
-   * See {@link Logger#logMsg(String, String)}.
+
+
+	/**
+   * See {@link Logger#log(Level, String, String, Exception, boolean)}.
    * @throws InvalidStateException If the output file or stream has not been set (see {@link #writeToFile(String)} and {@link #writeToStream(OutputStream)}).
    */
-  public static boolean logMsg(String label, String message)
+  public static boolean log(Level logLevel, String className, String errorMsg, Exception e, boolean includeStackTrace)
   {
     if (logger_ == null)
       throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before logging!");
-    return logger_.logMsg(label, message);
+    return logger_.log(logLevel, className, errorMsg, e, includeStackTrace);
   }
 }

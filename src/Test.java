@@ -4,6 +4,7 @@ import javax.naming.NoPermissionException;
 
 import komposten.utilities.tools.LogUtils;
 import komposten.utilities.tools.Logger;
+import komposten.utilities.tools.Logger.Level;
 
 
 
@@ -25,7 +26,7 @@ public class Test
     }
     catch (NullPointerException e)
     {
-      LogUtils.log("ERROR", "Test", "Random null pointer", e, false);
+      LogUtils.log(Level.Error, "Test", "Random null pointer", e, false);
     }
   }
   
@@ -59,12 +60,12 @@ public class Test
     
     Logger logger = new Logger(System.out);
     
-    logger.logMsg("Program started");
-    logger.log("RANDOM ERROR", "Test", "An exception occured", new NullPointerException("Not null pointer exception"), false);
-    logger.log("RANDOM ERROR", null, "Message", new NoPermissionException(":("), true);
-    logger.log("MESSAGE", "Test - main(String)", "Some message", null, true);
-    logger.log("MESSAGE", "Test - main(String)", "Possible causes:\nBad coding\nBugs\nToo much sugar", new InvocationTargetException(new NullPointerException("Exception")), true);
-    logger.logMsg("WARNING", "Shutdown imminent!");
+    logger.log(Level.Info, "Program started");
+    logger.log(Level.Error, "Test", "An exception occured", new NullPointerException("Not null pointer exception"), false);
+    logger.log(Level.Error, null, "Message", new NoPermissionException(":("), true);
+    logger.log(Level.Info, "Test - main(String)", "Some message", null, true);
+    logger.log(Level.Info, "Test - main(String)", "Possible causes:\nBad coding\nBugs\nToo much sugar", new InvocationTargetException(new NullPointerException("Exception")), true);
+    logger.log(Level.Warning, "Shutdown imminent!");
     new Test().throwException();
 //    System.out.println("Comparing Math.max() with math algorithm!");
 //    ArrayList<long[]> times = new ArrayList<long[]>();

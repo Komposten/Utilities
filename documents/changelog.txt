@@ -1,3 +1,14 @@
+2016-06-08
+-FEATURE: Added log(Level, String, String) to Logger and LogUtils.
+-FEATURE: Replaced Logger's "error type" with "log levels".
+-CODE: Renamed logMsg(Level, String) to log(Level, String) in both Logger and LogUtils.
+-CODE: Removed logMsg(String) from Logger.
+-CODE: Removed the deprecated log() method in Logger.
+
+2016-04-20
+-CODE: Fixed an error in loadConfigFile(File)'s javadoc.
+-CODE: Fixed copyFile(File, File) not properly closing all streams and channels.
+
 2015-10-10
 -CODE: JSONReader's parseObject() trying to remove an opening brace from the end of the object, rather than a closing brace (if the object is wrapped in braces).
 -CODE: Updated JSONReader's exception handling when trying to read non-existent/non-readable files.
