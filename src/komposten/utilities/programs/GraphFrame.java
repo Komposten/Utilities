@@ -304,37 +304,52 @@ public class GraphFrame extends JFrame
 
 	public static void main(String[] args)
 	{
-    GraphFrame graph  = new GraphFrame();
-    GraphList graphs = new GraphList("C:\\Users\\Jakob\\Eclipse Workspace\\Eco\\recorded data\\2015-02-22 2 After random food searching, 64x64.graph");
+		try
+		{
+	    GraphFrame graph  = new GraphFrame();
+//	    GraphList graphs = new GraphList("C:\\Users\\Jakob\\Eclipse Workspace\\Eco\\recorded data\\2015-02-22 2 After random food searching, 64x64.graph");
+//	
+//	    graphs.setLabelX("Days");
+//	    graphs.setLabelY("Population size");
+//	    
+//	    graph.setGraphs(graphs);
 
-    graphs.setLabelX("Days");
-    graphs.setLabelY("Population size");
-    
-    graph.setGraphs(graphs);
-
-    
-    if (args.length > 0)
-    {
-  	  if (args.length == 1 && args[0].matches("((/|-)\\?)|(-help)"))
-  	  {
-  	    System.out.println("Usage: GraphFrame.jar\n\t\t(to open an empty GraphFrame)");
-  	    System.out.println("   or  GraphFrame.jar -loadgraph \"path\"\n\t\t(to open the graph denoted by the path)");
-  	    return;
-  	  }
-  	  else if (args.length >= 2 && args[0].equals("-loadgraph"))
-  	  {
-  	    graph.loadGraphsFromFile(args[1]);
-  	  }
-  	  else
-  	  {
-  	    System.out.println("Invalid launch parameter: " + args[0]);
-  	    System.out.println("Use /? or -? to read the help message.");
-  	    return;
-  	  }
+			LogUtils.writeToFile("log.txt");
+			String msg = "Starting GraphFrame with args: ";
+			for (String arg : args)
+				msg.concat(arg + " ");
+			LogUtils.log(Level.Info, msg);
+	
+	    
+	    if (args.length > 0)
+	    {
+	  	  if (args.length == 1 && args[0].matches("((/|-)\\?)|(-help)"))
+	  	  {
+	  	    System.out.println("Usage: GraphFrame.jar\n\t\t(to open an empty GraphFrame)");
+	  	    System.out.println("   or  GraphFrame.jar -loadgraph \"path\"\n\t\t(to open the graph denoted by the path)");
+	  	    return;
+	  	  }
+	  	  else if (args.length >= 2 && args[0].equals("-loadgraph"))
+	  	  {
+	  	    graph.loadGraphsFromFile(args[1]);
+	  	  }
+	  	  else
+	  	  {
+	  	    System.out.println("Invalid launch parameter: " + args[0]);
+	  	    System.out.println("Use /? or -? to read the help message.");
+	  	    return;
+	  	  }
+	    }
+	    
+	    graph.setVisible(true);
     }
-    
-    graph.setVisible(true);
-    
+		catch (Exception e)
+		{
+			String msg = "An unexpected exception occurred while starting GraphFrame!";
+			LogUtils.log(Level.Error, GraphFrame.class.getSimpleName(), msg, e, true);
+			System.exit(1);
+		}
+		
 //    graphs.addGraph("Graph1");
 //    
 //    int xValueAmount = 10;//graph.getWidth() / 10;
