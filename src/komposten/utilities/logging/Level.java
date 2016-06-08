@@ -31,10 +31,10 @@ public class Level
 	
 
 	public static final Level DEBUG = new Level("Debug");
-	public static final Level INFO = new Level("Debug");
-	public static final Level WARNING = new Level("Debug");
-	public static final Level ERROR = new Level("Debug");
-	public static final Level FATAL = new Level("Debug");
+	public static final Level INFO = new Level("Info");
+	public static final Level WARNING = new Level("Warning");
+	public static final Level ERROR = new Level("Error");
+	public static final Level FATAL = new Level("Fatal");
 }
 
 //public enum Level

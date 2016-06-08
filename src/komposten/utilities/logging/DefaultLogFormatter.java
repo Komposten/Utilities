@@ -117,7 +117,7 @@ public class DefaultLogFormatter implements LogFormatter
 
 	private String formatLogLevel(Level logLevel)
 	{
-		return logLevel.toString().toUpperCase();
+		return logLevel.getName().toUpperCase();
 	}
 	
 	
