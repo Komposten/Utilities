@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
  * @version
  * <b>1.5.0</b> <br />
  * <ul>
+ * <li>Split <code>write(String, String, OutputStream)</code> into to methods, one for the file and one for the stream.</li>
  * <li>Added a LogFormatter to format the output. Also added setFormatter().</li>
  * <li>Removed the default error messages.</li>
  * <li>Moved to <code>komposten.utilities.logging</code>.</li>
@@ -86,7 +87,7 @@ import javax.swing.JOptionPane;
  * <li>Added support for nested throwables.</li>
  * </ul>
  */
-public final class Logger //TODO Make it possible to print to different files/streams depending on log level.
+public final class Logger //TODO Logger: Make it possible to print to different files/streams depending on log level.
 {
   /**
    * The path to the default log file utilised by this class. <br />
@@ -107,7 +108,6 @@ public final class Logger //TODO Make it possible to print to different files/st
 	}
   
 	private LogFormatter formatter;
-	
 	private String filePath_;
 	private OutputStream stream_;
 	
@@ -264,21 +264,23 @@ public final class Logger //TODO Make it possible to print to different files/st
 	public boolean log(Level logLevel, String location, String errorMsg, Throwable t, boolean includeStackTrace)
 	{
 		Calendar date = Calendar.getInstance();
+		String formattedString = formatter.format(logLevel, date, location, errorMsg, t, includeStackTrace);
 		
-		return write(formatter.format(logLevel, date, location, errorMsg, t, includeStackTrace), filePath_, stream_);
+		if (filePath_ != null)
+			return write(formattedString, filePath_);
+		else
+			return write(formattedString, stream_);
 	}
 	
 	
 	
 	/**
-	 * Writes a message to the file specified by <code>filePath</code> or to the stream
-	 * if <code>filePath == null</code>.
-	 * @param filePath The path to a file, or <code>null</code> if the stream should be used.
-	 * @param stream A stream to write to, or <code>null</code> if <code>filePath</code> should be used.
-	 * @return True if the data was successfully written to either a file or a stream, false
+	 * Writes a message to the file specified by <code>filePath</code>.
+	 * @param filePath The path to a file.
+	 * @return True if the data was successfully written to the file, false
 	 * otherwise.
 	 */
-	private boolean write(String data, String filePath, OutputStream stream)
+	private boolean write(String data, String filePath)
 	{
 	  if (filePath != null)
 	  {
@@ -304,7 +306,21 @@ public final class Logger //TODO Make it possible to print to different files/st
       
       return true;
 	  }
-	  else if (stream != null)
+	  else
+	    return false;
+	}
+	
+	
+	
+	/**
+	 * Writes a message to the stream specified by <code>stream</code>.
+	 * @param stream The stream to write to.
+	 * @return True if the data was successfully written to the stream, false
+	 * otherwise.
+	 */
+	private boolean write(String data, OutputStream stream)
+	{
+		if (stream != null)
 	  {
 	    PrintStream print = new PrintStream(stream);
 	    

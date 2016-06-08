@@ -12,9 +12,9 @@ import komposten.utilities.logging.Logger.Level;
  * @version
  * <b>1.0.0</b> <br />
  * <ul>
- * <li>Replaced the different indents with (setable) Strings.
- * <li>Split the format()-method into several sub-methods to format the different parts of the log.</li>
- * <li>Created the class from the old Logger.log()-method.</li>
+ * <li>Replaced the different indents with (setable) <code>Strings</code>.</li>
+ * <li>Split the <code>format()</code>-method into several sub-methods to format the different parts of the log.</li>
+ * <li>Created the class from the old <code>Logger.log()</code>-method.</li>
  * </ul>
  */
 public class DefaultLogFormatter implements LogFormatter

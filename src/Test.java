@@ -59,6 +59,7 @@ public class Test
 //    }
     
     Logger logger = new Logger(System.out);
+//    Logger logger = new Logger("testlog.txt");
     
     logger.log(Level.Info, "Program started");
     logger.log(Level.Error, "Test", "An exception occured", new NullPointerException("Not null pointer exception"), false);
