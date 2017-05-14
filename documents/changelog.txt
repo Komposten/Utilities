@@ -1,5 +1,7 @@
 2017-05-14
+-FEATURE: Added equals() to MathOps.
 -CODE: Removed usage of LogUtils from FileOperations.
+-CODE: Replaced isPOT with a bitwise version that is 100 times faster.
 
 2017-04-22
 -FEATURE: Added getInt(), getFloat() and getDouble() to Settings.

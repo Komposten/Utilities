@@ -7,12 +7,18 @@ import java.text.DecimalFormat;
 
 /**
  * @version
- * <b>1.3.0</b><br />
+ * <b>1.4.0</b><br />
+ * <ul>
+ * <li>isPOT() now use a (100x) faster approach based on bitwise operations.
+ * <li>Added equals(float, float, float).</li>
+ * <li>Added equals(double, double, double).</li>
+ * </ul>
+ * <b>Older</b><br />
+ * 1.3.0<br />
  * <ul>
  * <li>Added isInInterval(int, int, int, boolean).</li>
  * <li>Added isInInterval(float, float, float, boolean).</li>
  * </ul>
- * <b>Older</b><br />
  * 1.2.0
  * <ul>
  * <li>Added isPOT(int) and isPOT(long).</li>
@@ -48,6 +54,32 @@ public class MathOps
     format_.setMaximumFractionDigits(decimals);
     format_.setMinimumFractionDigits(decimals);
     return format_.format(d);
+  }
+  
+  
+  
+  /**
+   * Compares two floating-point values to see if they are similar enough to be considered equal.
+   * @param value1
+   * @param value2
+   * @param threshold The maximum deviation allowed between two "equal" values.
+   * @return <code>true</code> if the difference between the values is lower than <code>threshold</code>, false otherwise.
+   */
+  public static boolean equals(float value1, float value2, float threshold)
+  {
+  	return Math.abs(value1 - value2) < threshold;
+  }
+  
+  /**
+   * Compares two floating-point values to see if they are similar enough to be considered equal.
+   * @param value1
+   * @param value2
+   * @param threshold The maximum deviation allowed between two "equal" values.
+   * @return <code>true</code> if the difference between the values is lower than <code>threshold</code>, false otherwise.
+   */
+  public static boolean equals(double value1, double value2, double threshold)
+  {
+  	return Math.abs(value1 - value2) < threshold;
   }
   
   
@@ -145,24 +177,26 @@ public class MathOps
   
   /**
    * Returns whether <code>value</code> is a power of two or not.
+   * </br> Implementation from <a href="http://stackoverflow.com/a/19383296">http://stackoverflow.com/a/19383296</a>
    * @param value A value
    * @return True if <code>value</code> is a power of two, false otherwise.
    */
   public static boolean isPOT(int value)
   {
-    return Integer.toBinaryString(value).matches("0*10*");
+    return (value > 0) && ((value & (value - 1)) == 0);
   }
   
   
   
   /**
    * Returns whether <code>value</code> is a power of two or not.
+   * </br> Implementation from <a href="http://stackoverflow.com/a/19383296">http://stackoverflow.com/a/19383296</a>
    * @param value A value
    * @return True if <code>value</code> is a power of two, false otherwise.
    */
   public static boolean isPOT(long value)
   {
-    return Long.toBinaryString(value).matches("0*10*");
+    return (value > 0) && ((value & (value - 1)) == 0);
   }
   
   
