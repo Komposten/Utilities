@@ -17,6 +17,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -186,8 +187,16 @@ public class GraphFrame extends JFrame
           
           if (!path.endsWith(".graph"))
             path = path.concat(".graph");
-          graph_.printToFile(path);
-          graph_.printToFile2(path+".txt");
+          
+          try
+          {
+          	graph_.printToFile(path);
+          	graph_.printToFile2(path+".txt");
+          }
+          catch (IOException e)
+          {
+          	throw new RuntimeException("Could not save the graph to \"" + path + "\"!", e);
+          }
           
           addFileNameToTitle(path);
         }

@@ -11,6 +11,7 @@ import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -585,23 +586,21 @@ public class GraphList
   /**
    * Prints the data in this <code>GraphList</code> to the specified file in JSON format. 
    * @param filePath The file to print to.
-   * @return True if the data was printed successfully, false otherwise.
+   * @throws IOException If an exception occurred while writing to the file.
    */
-  public boolean printToFile(String filePath) //TODO GraphList; Also save current axis labels, units and steps.
+  public void printToFile(String filePath) throws IOException //TODO GraphList; Also save current axis labels, units and steps.
   {
     FileOperations   ops    = new FileOperations();
     File             file   = new File(filePath);
     
     FileOperations.createFileOrFolder(file, false);
     
-    boolean success = true;
-
     ops.createWriter(file, false);
     ops.closeWriter();
     ops.createWriter(file, true);
     
-    if (!ops.printData("[", false))
-      success = false;
+    ops.printData("[", false);
+    
     int index = 0;
     for (Entry<String, GraphData> entry : data_.entrySet())
     {
@@ -610,40 +609,37 @@ public class GraphList
       if (index < data_.size() - 1)
         data = data.concat(",\n");
       
-      if (!ops.printData(data, false))
-        success = false;
+      ops.printData(data, false);
       
       index++;
     }
-    if (!ops.printData("]", false))
-      success = false;
     
+    ops.printData("]", false);
     ops.closeWriter();
-    
-    return success;
   }
   
   
-  
-  public boolean printToFile2(String filePath)
+
+  /**
+   * Prints the data in this <code>GraphList</code> to the specified file in TXT format. 
+   * @param filePath The file to print to.
+   * @throws IOException If an exception occurred while writing to the file.
+   */
+  public void printToFile2(String filePath) throws IOException
   {
     FileOperations ops  = new FileOperations();
     File           file = new File(filePath);
     JSONObject     data = createJSON();
     
     FileOperations.createFileOrFolder(file, false);
-    
-    boolean success = true;
 
     ops.createWriter(file, false);
     ops.closeWriter();
     ops.createWriter(file, true);
     
-    success = ops.printData(data.toMultiLineString(), false);
+    ops.printData(data.toMultiLineString(), false);
     
     ops.closeWriter();
-    
-    return success;
   }
   
   

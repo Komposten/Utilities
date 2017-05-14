@@ -8,6 +8,7 @@ import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -395,21 +396,19 @@ public class GraphListOld
    * @param filePath The file to print to.
    * @return True if the data was printed successfully, false otherwise.
    */
-  public boolean printToFile(String filePath)
+  public void printToFile(String filePath) throws IOException
   {
     FileOperations   ops    = new FileOperations();
     File             file   = new File(filePath);
     
     FileOperations.createFileOrFolder(file, false);
-    
-    boolean success = true;
 
     ops.createWriter(file, false);
     ops.closeWriter();
     ops.createWriter(file, true);
     
-    if (!ops.printData("[", false))
-      success = false;
+    ops.printData("[", false);
+
     int index = 0;
     for (Entry<String, GraphData> entry : data_.entrySet())
     {
@@ -418,17 +417,13 @@ public class GraphListOld
       if (index < data_.size() - 1)
         data = data.concat(",\n");
       
-      if (!ops.printData(data, false))
-        success = false;
+      ops.printData(data, false);
       
       index++;
     }
-    if (!ops.printData("]", false))
-      success = false;
+    ops.printData("]", false);
     
     ops.closeWriter();
-    
-    return success;
   }
   
   
