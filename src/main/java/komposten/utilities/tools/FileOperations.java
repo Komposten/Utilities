@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import komposten.utilities.exceptions.InvalidStateException;
-import komposten.utilities.logging.Level;
-import komposten.utilities.logging.LogUtils;
 
 
 
@@ -24,13 +22,16 @@ import komposten.utilities.logging.LogUtils;
 
 /**
  * A class to perform different operations regarding files, like writing data or creating, copying and deleting files.
- * <code>FileOperations</code> makes use of {@link LogUtils} to log exceptions if <code>LogUtils</code> has been initialised.
  * @version
- * <b>1.2.4</b> <br />
+ * <b>1.2.5</b> <br />
+ * <ul>
+ * <li>Removed usage of LogUtils.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.2.4 <br />
  * <ul>
  * <li>Fixed createFileOrFolder() failing if the parent folder already existed (mkdirs() returns false if the dirs already exist).</li>
  * </ul>
- * <b>Older</b> <br />
  * 1.2.3 <br />
  * <ul>
  * <li>Fixed an error in loadConfigFile(File)'s javadoc.</li>
@@ -83,57 +84,24 @@ public final class FileOperations
    * to be done manually using {@link #closeWriter()}.
    * @param file - The file to print to.
    * @param append - If the printed data should be appended to the contents of the file, or if it should overwrite it.
+   * @throws IOException If an exception occurred while opening a stream to <code>file</code>.
    */
-  public void createWriter(File file, boolean append)
+  public void createWriter(File file, boolean append) throws IOException
   {
-    try
-    {
       writer_ = new FileWriter(file, append);
-    }
-    catch (IOException e)
-    {
-      String msg1 = "Could not open a stream to \"" + file.getPath() + "\".";
-      if (LogUtils.hasInitialised())
-        LogUtils.log(Level.ERROR, "FileOperations", msg1, e, false);
-      else
-      {
-        System.err.println("I/O ERROR: " + msg1);
-        e.printStackTrace();
-      }
-      
-      if (writer_ != null)
-        closeWriter();
-    }
   }
   
   
   
   /**
    * Closes the active <code>FileWriter</code>.
+   * @throws IOException If an exception occurred while closing the writer.
    */
-  public void closeWriter()
+  public void closeWriter() throws IOException
   {
     if (writer_ != null)
     {
-      try
-      {
-        writer_.close();
-      }
-      catch (IOException e)
-      {
-        String msg1 = "Could not close the Writer.";
-        
-        if (LogUtils.hasInitialised())
-          LogUtils.log(Level.ERROR, "FileOperations", msg1, e, false);
-        else
-        {
-          System.err.println("I/O ERROR: " + msg1);
-          e.printStackTrace();
-        }
-        
-        return;
-      }
-      
+      writer_.close();
       writer_ = null;
     }
   }
@@ -149,41 +117,18 @@ public final class FileOperations
    * {@link #closeWriter()}.
    * @param data - A <code>String</code> to print to the file.
    * @param encrypt - If the data should be encrypted or not.
-   * @return True if the writing succeeded, false otherwise.
+   * @throws IOException If an exception occurred while writing the data.
    */
-  public boolean printData(String data, boolean encrypt)
+  public void printData(String data, boolean encrypt) throws IOException
   {
     if (writer_ == null)
       throw new InvalidStateException("Must call createWriter(File, boolean) before using printData(String, boolean)!");
     
-    boolean success;
-    
     if (encrypt)
       data = encryptData(data, false);
-    
-    try
-    {
-      writer_.write(data);
-      writer_.flush();
-      
-      success = true;
-    }
-    catch (IOException e)
-    {
-      String msg1 = "Could not write the data to the file.";
-      
-      if (LogUtils.hasInitialised())
-        LogUtils.log(Level.ERROR, "FileOperations", msg1, e, false);
-      else
-      {
-        System.err.println("WRITE ERROR" + ": " + msg1);
-        e.printStackTrace();
-      }
-      
-      success = false;
-    }
-    
-    return success;
+  
+    writer_.write(data);
+    writer_.flush();
   }
   
   
@@ -199,8 +144,9 @@ public final class FileOperations
    * @param append - If the data should be appended to the contents of the file, or if it should overwrite it.
    * @param encrypt - If the data should be encrypted or not.
    * @return True if the writing succeeded, false otherwise.
+   * @throws IOException If an exception occurred while writing the file.
    */
-  public boolean printData(File file, String data, boolean append, boolean encrypt)
+  public boolean printData(File file, String data, boolean append, boolean encrypt) throws IOException
   {
     FileWriter    out = null;
     boolean       success;
@@ -222,16 +168,6 @@ public final class FileOperations
     }
     catch (IOException e)
     {
-      String msg1 = "Could not write the data to the file.";
-
-      if (LogUtils.hasInitialised())
-        LogUtils.log(Level.ERROR, "FileOperations", msg1, e, false);
-      else
-      {
-        System.err.println("WRITE ERROR" + ": " + msg1);
-        e.printStackTrace();
-      }
-      
       try
       {
         if (out != null)
@@ -239,7 +175,7 @@ public final class FileOperations
       }
       catch (IOException ioe) {}
       
-      success = false;
+      throw e;
     }
     
     return success;
@@ -390,8 +326,9 @@ public final class FileOperations
    * Both the key and the value can contain spaces.
    * @param file - The config-file.
    * @return A map containing the data in the config-file.
+   * @throws FileNotFoundException If the file does not exist.
    */
-  public static HashMap<String, String> loadConfigFile(File file)
+  public static HashMap<String, String> loadConfigFile(File file) throws FileNotFoundException
   {
     Scanner             reader;
     String              data;
@@ -402,23 +339,7 @@ public final class FileOperations
     if (!file.exists())
       return map;
     
-    try
-    {
-      reader = new Scanner(file);
-    }
-    catch (FileNotFoundException e)
-    {
-      String msg1 = "Could not find the file \"" + file.getPath() + "\"!";
-
-      if (LogUtils.hasInitialised())
-        LogUtils.log(Level.ERROR, "FileOperations", msg1, null, false);
-      else
-      {
-        System.err.println("WRITE ERROR" + ": " + msg1);
-        e.printStackTrace();
-      }
-      return null;
-    }
+    reader = new Scanner(file);
     
     while (reader.hasNext())
     {
@@ -446,9 +367,11 @@ public final class FileOperations
    * Creates a new file or folder from the specified path.
    * @param path - The path where the file or folder should be created.
    * @param isFolder - If the path represents a file or a folder.
-   * @return True if the file or folder and all non-existing parent directories could be created, false otherwise.
+	 * @return True if the file or folder (and all non-existing parent
+	 *         directories) does not exist and could be created, false otherwise.
+	 * @throws IOException If an exception occurred while creating the file.
    */
-  public static boolean createFileOrFolder(String path, boolean isFolder)
+  public static boolean createFileOrFolder(String path, boolean isFolder) throws IOException
   {
     if (path != null)
       return createFileOrFolder(new File(path), isFolder);
@@ -458,13 +381,17 @@ public final class FileOperations
   
   
   
-  /**
-   * Creates a new file or folder from the specified <code>File</code>-instance.
-   * @param file - The <code>File</code>-instance representing the file or folder to be created.
-   * @param isFolder - If the <code>File</code> represents a file or a folder.
-   * @return True if the file or folder and all non-existing parent directories could be created, false otherwise.
-   */
-  public static boolean createFileOrFolder(File file, boolean isFolder)
+	/**
+	 * Creates a new file or folder from the specified <code>File</code>-instance.
+	 * 
+	 * @param file - The <code>File</code>-instance representing the file or
+	 *          folder to be created.
+	 * @param isFolder - If the <code>File</code> represents a file or a folder.
+	 * @return True if the file or folder (and all non-existing parent
+	 *         directories) does not exist and could be created, false otherwise.
+	 * @throws IOException If an exception occurred while creating the file.
+	 */
+  public static boolean createFileOrFolder(File file, boolean isFolder) throws IOException
   {
     if (file == null)
       return false;
@@ -472,32 +399,18 @@ public final class FileOperations
     if (file.exists())
       return true;
     
-    try
+    if (isFolder)
     {
-      if (isFolder)
-      {
-        return file.mkdirs();
-      }
-      else
-      {
-        if (file.getParentFile() != null && (file.getParentFile().exists() || file.getParentFile().mkdirs()))
-          return file.createNewFile();
-        else if (file.getParentFile() == null)
-          return file.createNewFile();
-        else
-          return false;
-      }
+    	return file.mkdirs();
     }
-    catch (IOException e)
+    else
     {
-      String msg1 = "Could not create the file \"" + file.getAbsolutePath() + "\"";
-      
-      if (LogUtils.hasInitialised())
-        LogUtils.log(Level.ERROR, "FileOperations", msg1, e, true);
-      else
-        System.err.println("WRITE ERROR" + ": " + msg1);
-      
-      return false;
+    	if (file.getParentFile() != null && (file.getParentFile().exists() || file.getParentFile().mkdirs()))
+    		return file.createNewFile();
+    	else if (file.getParentFile() == null)
+    		return file.createNewFile();
+    	else
+    		return false;
     }
   }
   
@@ -520,7 +433,7 @@ public final class FileOperations
   /**
    * Deletes the given file or folder.
    * @param file - The file or folder to delete.
-   * @return True if the file or folder was deleted successfully, false if it was
+   * @return True if the file or folder did not exist or was deleted successfully, false if it was
    * not, or if <code>file == null</code>
    */
   public static boolean deleteFileOrFolder(File file)
@@ -536,12 +449,6 @@ public final class FileOperations
     
     if (!file.delete())
     {
-      String msg1 = "Could not delete \"" + file.getAbsolutePath() + "\"!";
-      
-      if (LogUtils.hasInitialised())
-        LogUtils.log(Level.ERROR, "FileOperations", msg1, null, true);
-      else
-        System.err.println("FILE DELETION ERROR: " + msg1);
       return false;
     }
     
@@ -557,8 +464,9 @@ public final class FileOperations
    * @param destPath - The path to copy the file to.
    * @return True if the file was copied successfully, false if it was not or if
    * <code>sourcePath == null || destPath == null</code>, the file does not exist or if the file is a directory.
+   * @throws IOException If an exception occurred while copying the file.
    */
-  public static boolean copyFile(String sourcePath, String destPath)
+  public static boolean copyFile(String sourcePath, String destPath) throws IOException
   {
     if (sourcePath != null && destPath != null)
       return copyFile(new File(sourcePath), new File(destPath));
@@ -572,58 +480,51 @@ public final class FileOperations
    * @param dest - The file to copy <code>file</code> to.
    * @return True if the file was copied successfully, false if it was not or if
    * <code>file == null || dest == null</code>, the file does not exist or if the file is a directory.
+   * @throws IOException If an exception occurred while copying the file.
    */
-  public static boolean copyFile(File file, File dest)
+  public static boolean copyFile(File file, File dest) throws IOException
   {
-	if (file == null || dest == null)
-	  return false;
-    if (!file.exists())
-      return false;
-    if (file.isDirectory())
-      return false;
-    
-    FileInputStream inputStream = null;
-    FileOutputStream outputStream = null;
-    FileChannel source = null;
-    FileChannel target = null;
-    
-    try
-    {
-      if (!dest.exists())
-        createFileOrFolder(dest, false);
-      
-      inputStream = new FileInputStream(file);
-      outputStream = new FileOutputStream(dest);
-      source = inputStream.getChannel();
-      target = outputStream.getChannel();
-      
-      target.transferFrom(source, 0, source.size());
-    }
-    catch (IOException e)
-    {
-      String msg1 = "Could not copy the file \"" + file.getAbsolutePath() + "\"" +
-      		" to \"" + dest.getAbsolutePath() + "\"!";
-      
-      if (LogUtils.hasInitialised())
-        LogUtils.log(Level.ERROR, "FileOperations", msg1, e, false);
-      else
-      {
-        System.err.println("WRITE ERROR" + ": " + msg1);
-        e.printStackTrace();
-      }
-      
-      return false;
-    }
-    finally
-    {
-    	try
-			{
-				if (inputStream != null) inputStream.close();
-	    	if (outputStream != null) outputStream.close();
-			}
-			catch (IOException e)	{	}
-    }
-    
-    return true;
+  	if (file == null || dest == null)
+  		return false;
+  	if (!file.exists())
+  		return false;
+  	if (file.isDirectory())
+  		return false;
+
+  	FileInputStream inputStream = null;
+  	FileOutputStream outputStream = null;
+  	FileChannel source = null;
+  	FileChannel target = null;
+
+  	try
+  	{
+  		if (!dest.exists())
+  			createFileOrFolder(dest, false);
+
+  		inputStream = new FileInputStream(file);
+  		outputStream = new FileOutputStream(dest);
+  		source = inputStream.getChannel();
+  		target = outputStream.getChannel();
+
+  		target.transferFrom(source, 0, source.size());
+  	}
+  	catch (IOException e)
+  	{
+  		String msg1 = "Could not copy the file \"" + file.getAbsolutePath() + "\"" +
+  				" to \"" + dest.getAbsolutePath() + "\"!";
+  		
+  		throw new IOException(msg1, e);
+  	}
+  	finally
+  	{
+  		try
+  		{
+  			if (inputStream != null) inputStream.close();
+  			if (outputStream != null) outputStream.close();
+  		}
+  		catch (IOException e)	{	}
+  	}
+
+  	return true;
   }
 }

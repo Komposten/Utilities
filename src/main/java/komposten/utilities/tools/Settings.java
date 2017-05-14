@@ -1,6 +1,8 @@
 package komposten.utilities.tools;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -52,7 +54,6 @@ public class Settings
 
 	
 	/**
-	 * 
 	 * @param settingsFilePath The path to the settings file to use. If the file does not exist, an empty Settings object will be created.
 	 * @param arrayElementSeparator The character that is used to separate array elements in the Settings file (',' is default).
 	 */
@@ -69,8 +70,7 @@ public class Settings
 
 	
 	/**
-	 * 
-	 * @param settingsFilePath The settings file to use. If the file does not exist, an empty Settings object will be created.
+	 * @param settingsFile The settings file to use. If the file does not exist, an empty Settings object will be created.
 	 * @param arrayElementSeparator The character that is used to separate array elements in the Settings file (',' is default).
 	 */
 	public Settings(File settingsFile, char arrayElementSeparator)
@@ -83,7 +83,14 @@ public class Settings
 	public Settings(File file)
 	{
 		this.file = file;
-		data = FileOperations.loadConfigFile(file);
+		try
+		{
+			data = FileOperations.loadConfigFile(file);
+		}
+		catch (FileNotFoundException e)
+		{
+			data = new HashMap<String, String>();
+		}
 		listeners = new HashMap<String, ArrayList<SettingChangeListener>>();
 		globalListeners = new ArrayList<SettingChangeListener>();
 	}
@@ -293,7 +300,10 @@ public class Settings
 	}
 	
 	
-	public void saveToFile()
+	/**
+	 * @throws IOException If an exception occurred while creating or writing to the file.
+	 */
+	public void saveToFile() throws IOException
 	{
 		FileOperations.createFileOrFolder(file, false);
 		
