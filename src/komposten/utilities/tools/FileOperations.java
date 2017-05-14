@@ -26,12 +26,16 @@ import komposten.utilities.logging.LogUtils;
  * A class to perform different operations regarding files, like writing data or creating, copying and deleting files.
  * <code>FileOperations</code> makes use of {@link LogUtils} to log exceptions if <code>LogUtils</code> has been initialised.
  * @version
- * <b>1.2.2</b> <br />
+ * <b>1.2.4</b> <br />
+ * <ul>
+ * <li>Fixed createFileOrFolder() failing if the parent folder already existed (mkdirs() returns false if the dirs already exist).</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.2.3 <br />
  * <ul>
  * <li>Fixed an error in loadConfigFile(File)'s javadoc.</li>
  * <li>Fixed copyFile(File, File) not properly closing all streams and channels.</li>
  * </ul>
- * <b>Older</b> <br />
  * 1.2.2 <br />
  * <ul>
  * <li>Removed "static" from all writing methods.</li>
@@ -44,9 +48,9 @@ import komposten.utilities.logging.LogUtils;
  * </ul>
  * 1.1.0  <br />
  * <ul>
- * <li>Added <code>createWriter(File, boolean)</code></li> <br />
- * <li>Added <code>closeWriter()</code></li> <br />
- * <li>Added <code>printData(String, boolean)</code></li> <br />
+ * <li>Added <code>createWriter(File, boolean)</code></li>
+ * <li>Added <code>closeWriter()</code></li>
+ * <li>Added <code>printData(String, boolean)</code></li>
  * </ul>
  * @author Jakob Hjelm
  */
@@ -476,7 +480,7 @@ public final class FileOperations
       }
       else
       {
-        if (file.getParentFile() != null && file.getParentFile().mkdirs())
+        if (file.getParentFile() != null && (file.getParentFile().exists() || file.getParentFile().mkdirs()))
           return file.createNewFile();
         else if (file.getParentFile() == null)
           return file.createNewFile();

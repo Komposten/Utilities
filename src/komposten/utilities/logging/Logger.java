@@ -98,7 +98,7 @@ public final class Logger //TODO Logger: Make it possible to print to different 
 	public static final String FILEPATH;
 	
 	private LogFormatter formatter;
-	private String filePath_;
+	private String filePath_; //TODO Logger; Create a "LogOutput/Handler" class with two sub-classes, "FileLogOutput" and "StreamLogOutput". Then replace filePath and stream with a single LogOutput field (can be set via writeToFile, writeToStream, or writeTo).
 	private OutputStream stream_;
 	
 	

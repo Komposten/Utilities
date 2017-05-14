@@ -52,6 +52,28 @@ public class MathOps
   
   
   
+  public static float clamp(float min, float max, float value)
+  {
+  	return Math.min(Math.max(min, value), max);
+  }
+  
+  public static double clamp(double min, double max, double value)
+  {
+  	return Math.min(Math.max(min, value), max);
+  }
+  
+  public static float clamp01(float value)
+  {
+  	return Math.min(Math.max(0, value), 1);
+  }
+  
+  public static double clamp01(double value)
+  {
+  	return Math.min(Math.max(0, value), 1);
+  }
+  
+  
+  
   /**
    * Calculates the distance between two coordinates.
    * @param x1 The first coordinate.
@@ -66,6 +88,29 @@ public class MathOps
     float dY = y2 - y1;
     
     return (float)Math.sqrt(dX*dX+dY*dY);
+  }
+  
+  
+
+	/**
+	 * Calculates the square of the distance between two coordinates. This is
+	 * slightly more efficient than {@link #distance(float, float, float, float)}
+	 * when simply comparing distances since it doesn't use
+	 * {@link Math#sqrt(double)}. Just remember that the value that
+	 * <code>distanceSqr</code> is compared with must also be squared!
+	 * 
+	 * @param x1 The first coordinate.
+	 * @param y1 The first coordinate.
+	 * @param x2 The second coordinate.
+	 * @param y2 The second coordinate.
+	 * @return The squared distance between (x1, y1) and (x2, y2).
+	 */
+  public static float distanceSqr(float x1, float y1, float x2, float y2)
+  {
+    float dX = x2 - x1;
+    float dY = y2 - y1;
+    
+    return dX*dX+dY*dY;
   }
   
   

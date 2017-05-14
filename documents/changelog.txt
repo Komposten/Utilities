@@ -1,3 +1,22 @@
+2017-04-22
+-FEATURE: Added getInt(), getFloat() and getDouble() to Settings.
+
+2017-0?-??
+-FEATURE: Added Settings.
+
+2017-02-18
+-CODE: Fixed createFileOrFolder() failing if the parent folder already existed (mkdirs() returns false if the dirs already exist).
+
+2017-02-09
+-CODE: Fixed JSONObject not wrapping array string/value elements within quotation marks.
+-CODE: JSONObject now uses a LinkedHashMap instead of a HashMap in order to maintain the order of the objects. 
+
+2016-10-04
+-FEATURE: Added distanceSqr().
+
+2016-08-21
+-FEATURE: Added clamp() and clamp01() to MathOps.
+
 2016-06-08
 -FEATURE: Added a LogFormatter to Logger.
 -FEATURE: Added LogFormatter and DefaultLogFormatter.

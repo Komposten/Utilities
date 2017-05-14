@@ -3,7 +3,7 @@
  */
 package komposten.utilities.tools;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -15,7 +15,7 @@ public class JSONObject
   
   public JSONObject()
   {
-    members = new HashMap<String, Object>();
+    members = new LinkedHashMap<String, Object>();
   }
   
   
@@ -136,9 +136,9 @@ public class JSONObject
       else
       {
         if (i < array.length - 1)
-          stringBuilder.append(formatLine(element.toString() + ",", tabLevel + 2));
+          stringBuilder.append(formatLine("\"" + element.toString() + "\",", tabLevel + 2));
         else
-          stringBuilder.append(formatLine(element.toString(), tabLevel + 2));
+          stringBuilder.append(formatLine("\"" + element.toString() + "\"", tabLevel + 2));
       }
     }
 

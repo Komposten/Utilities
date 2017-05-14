@@ -78,7 +78,7 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
       
       if (currentChar == '"')
         inString = !inString;
-      if ((currentChar == ',' && !inString) || (i < jsonObject.indexOf(',') && currentChar != '{' && currentChar != '['))
+      if ((currentChar == ',' && !inString) || (i < jsonObject.indexOf(',') && currentChar != '{' && currentChar != '[')) //FIXME JSONReader; Will this detect an object with only 1 line of content or an empty object (i.e. no commas)?
       {
         int endIndex = findPairEnd(jsonObject, i);
         
@@ -155,7 +155,7 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
     }
     else
     {
-      element = jsonArrayElement;
+      element = jsonArrayElement.replace("\"", "");
     }
     
     return element;
