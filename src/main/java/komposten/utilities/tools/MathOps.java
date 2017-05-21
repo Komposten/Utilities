@@ -96,12 +96,12 @@ public class MathOps
   
   public static float clamp01(float value)
   {
-  	return Math.min(Math.max(0, value), 1);
+  	return clamp(0, 1, value);
   }
   
   public static double clamp01(double value)
   {
-  	return Math.min(Math.max(0, value), 1);
+  	return clamp(0, 1, value);
   }
   
   
@@ -116,10 +116,7 @@ public class MathOps
    */
   public static float distance(float x1, float y1, float x2, float y2)
   {
-    float dX = x2 - x1;
-    float dY = y2 - y1;
-    
-    return (float)Math.sqrt(dX*dX+dY*dY);
+    return (float)Math.sqrt(distanceSqr(x1, y1, x2, y2));
   }
   
   
@@ -147,28 +144,23 @@ public class MathOps
   
   
   
-  /**
-   * Calculates the angle between the line through (x1, y1) and (x2, y2) and the x-axis.<br />
-   * @param x1 The first coordinate.
-   * @param y1 The first coordinate.
-   * @param x2 The second coordinate.
-   * @param y2 The second coordinate.
-   * @return The angle between the line through the two points and the x-axis in radians.
-   */
+	/**
+	 * Calculates the angle between the line through (x1, y1) and (x2, y2) and the
+	 * x-axis.<br />
+	 * 
+	 * @param x1 The first coordinate.
+	 * @param y1 The first coordinate.
+	 * @param x2 The second coordinate.
+	 * @param y2 The second coordinate.
+	 * @return The angle between the line through the two points and the x-axis in
+	 *         radians (in the range <i>-pi</i> to <i>pi</i>).
+	 */
   public static float angle(float x1, float y1, float x2, float y2)
   {
     float dX = x2 - x1;
     float dY = y2 - y1;
     
     float angle = (float) Math.atan2(dY, dX);
-//    float angle = (float) Math.atan(dY/dX);
-    
-//    if (x2 < x1 && y2 > y1)
-//      angle =  (float) (Math.PI + angle);
-//    else if (x2 < x1 && y2 < y1)
-//      angle += Math.PI;
-//    else if (x2 > x1 && y2 < y1)
-//      angle =  (float) (Math.PI * 2 + angle);
     
     return angle;
   }
