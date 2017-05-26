@@ -336,9 +336,6 @@ public final class FileOperations
     String              key;
     String              value;
     
-    if (!file.exists())
-      return map;
-    
     reader = new Scanner(file);
     
     while (reader.hasNext())
