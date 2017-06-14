@@ -1,4 +1,14 @@
-2017-06-1
+2017-06-14
+-FEATURE: Added dotProduct() to MathOps.
+-FEATURE: Moved querying of InvertedIndex to a separate class, SearchEngine.
+-CODE: InvertedIndex.broadQuery() now squares the inverted edit distance scores (to give high scores even more importance than lower scores).
+
+
+2017-06-13
+-FEATURE: Added InvertedIndex. Note: query() does not yet work for multi-word queries, or if "exact == false".
+-FEATURE: Added IndexEntry.
+
+2017-06-11
 -FEATURE: Added Text.editDistance().
 
 2017-05-26

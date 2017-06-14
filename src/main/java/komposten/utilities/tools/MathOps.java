@@ -7,13 +7,17 @@ import java.text.DecimalFormat;
 
 /**
  * @version
- * <b>1.4.0</b><br />
+ * <b>1.5.0</b><br />
+ * <ul>
+ * <li>Added dotProduct(double[], double[])</li>
+ * </ul>
+ * <b>Older</b><br />
+ * 1.4.0<br />
  * <ul>
  * <li>isPOT() now use a (100x) faster approach based on bitwise operations.
  * <li>Added equals(float, float, float).</li>
  * <li>Added equals(double, double, double).</li>
  * </ul>
- * <b>Older</b><br />
  * 1.3.0<br />
  * <ul>
  * <li>Added isInInterval(int, int, int, boolean).</li>
@@ -27,7 +31,6 @@ import java.text.DecimalFormat;
  * <ul>
  * <li>Changed <code>twoDecimals(double)</code> to <code>round(double, int)</code></li>
  * </ul>
- * <b>Older</b> <br />
  * @author Jakob Hjelm
  */
 public class MathOps
@@ -226,4 +229,24 @@ public class MathOps
 		else
 			return value > min && value < max;
   }
+	
+	
+	
+	/**
+	 * Calculates the dot (or scalar) product of two vectors/arrays.
+	 * @throws IllegalArgumentException If the two arrays are not of the same length.
+	 */
+	public static double dotProduct(double[] vector1, double[] vector2)
+	{
+		if (vector1.length != vector2.length)
+			throw new IllegalArgumentException("The vectors must have the same length!");
+		
+		double sum = 0;
+		for (int i = 0; i < vector1.length; i++)
+		{
+			sum += (vector1[i] * vector2[i]);
+		}
+		
+		return sum;
+	}
 }
