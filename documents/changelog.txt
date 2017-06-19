@@ -1,3 +1,8 @@
+2017-06-19
+-FEATURE: SearchEngine.query() now allows the caller to specify what should happen if the query string is empty.
+-FEATURE: Added InvertedIndex.getIndexables().
+-CODE: Fixed InvertedIndex.split() returning a size-1 array if the input was an empty string ("").
+
 2017-06-14
 -FEATURE: Added dotProduct() to MathOps.
 -FEATURE: Moved querying of InvertedIndex to a separate class, SearchEngine.

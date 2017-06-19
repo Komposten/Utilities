@@ -22,12 +22,17 @@ import java.util.Map.Entry;
  * "http://www.ardendertat.com/2012/01/11/implementing-search-engines/">Arden
  * Dertat</a>.
  * 
- * @version <b>1.1.0</b> <br />
+ * @version <b>1.1.1</b> <br />
+ *          <ul>
+ *          <li>Added getIndexables().</li>
+ *          <li>splitText() now makes sure to return an empty array if <code>text</code> is empty or only contains white space.
+ *          </ul>
+ *          <b>Older</b> <br />
+ *          1.1.0 <br />
  *          <ul>
  *          <li>Migrated query(), exactQuery(), broadQuery() and rankIndexables() to {@link SearchEngine}.
  *          <li>Moved RankedIndexable to {@link SearchEngine}.</li>
  *          </ul>
- *          <b>Older</b> <br />
  *          1.0.0 <br />
  *          <ul>
  *          <li>Created the class.</li>
@@ -173,6 +178,9 @@ public class InvertedIndex
 	 */
 	public String[] splitText(String text)
 	{
+		if (text.isEmpty() || text.equals("\\s*"))
+			return new String[0];
+		
 		return text.toLowerCase().split("(\\s+|-+)");
 	}
 	
@@ -180,6 +188,12 @@ public class InvertedIndex
 	public HashMap<String, ArrayList<IndexEntry>> getIndex()
 	{
 		return index;
+	}
+	
+	
+	public Indexable[] getIndexables()
+	{
+		return documents;
 	}
 	
 	

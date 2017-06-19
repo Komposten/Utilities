@@ -1,12 +1,13 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
 import komposten.utilities.search.IndexEntry;
-import komposten.utilities.search.SearchEngine;
 import komposten.utilities.search.InvertedIndex;
 import komposten.utilities.search.InvertedIndex.Indexable;
+import komposten.utilities.search.SearchEngine;
 
 
 public class SearchTest
@@ -51,9 +52,9 @@ public class SearchTest
 		System.out.println("\nFull index:");
 		printMap(index.getIndex());
 		System.out.println("\nTroy:");
-		printList(search.query("Troy Brooke", true));
+		printList(search.query("Troy Brooke", true, false));
 		System.out.println("\nTroy~:");
-		printList(search.query("Troy Brooke", false));
+		printList(search.query("Troy Brooke", false, false));
 	}
 	
 	
@@ -329,21 +330,21 @@ public class SearchTest
 		SearchEngine search = new SearchEngine(index);
 		String query = "computer";
 		System.out.println("\n" + query);
-		printList(search.query(query, true));
+		printList(search.query(query, true, false));
 		System.out.println("~" + query);
-		printList(search.query(query, false));
+		printList(search.query(query, false, false));
 		
 		query = "computer programming";
 		System.out.println("\n" + query);
-		printList(search.query(query, true));
+		printList(search.query(query, true, false));
 		System.out.println("~" + query);
-		printList(search.query(query, false));
+		printList(search.query(query, false, false));
 		
 		query = "compter programm";
 		System.out.println("\n" + query);
-		printList(search.query(query, true));
+		printList(search.query(query, true, false));
 		System.out.println("~" + query);
-		printList(search.query(query, false));
+		printList(search.query(query, false, false));
 	}
 
 
@@ -364,7 +365,7 @@ public class SearchTest
 	}
 
 
-	private static void printList(ArrayList<Indexable> query)
+	private static void printList(List<Indexable> query)
 	{
 		StringBuilder builder = new StringBuilder();
 		builder.append("[");

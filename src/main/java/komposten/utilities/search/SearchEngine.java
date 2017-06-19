@@ -4,10 +4,12 @@
 package komposten.utilities.search;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 
 import komposten.utilities.search.InvertedIndex.Indexable;
@@ -31,7 +33,12 @@ import komposten.utilities.tools.Text;
  * Dertat</a>.
  * 
  * @see InvertedIndex
- * @version <b>1.0.0</b> <br />
+ * @version <b>1.1.0</b> <br />
+ *          <ul>
+ *          <li>Added <code>returnAllIfEmptyQuery</code> to query().</li>
+ *          </ul>
+ *          <b>Older</b> <br />
+ *          1.0.0 <br />
  *          <ul>
  *          <li>Created the class.</li>
  *          <li>Added query(), with support for multi-word exact and "broad"
@@ -39,10 +46,9 @@ import komposten.utilities.tools.Text;
  *          <li>Added rankIndexables().</li>
  *          <li>Added RankedIndexable.</li>
  *          </ul>
- *          <b>Older</b> <br />
  * @author Jakob Hjelm
  */
-public class SearchEngine
+public class SearchEngine //NEXT_TASK SearchEngine; Add a "return all on empty query"-option to query().
 {
 	private InvertedIndex index;
 	
@@ -61,14 +67,24 @@ public class SearchEngine
 	 * @param exact <code>true</code> if only exact matches should be returned,
 	 *          <code>false</code> if {@link Text#editDistance(String, String)
 	 *          Levenshtein distance} should be used to find approximate matches.
-	 * @return A list of the <code>Indexable</code>s that match the query, sorted in descending order. 
+	 * @param returnAllIfEmptyQuery If set to <code>true</code>, all indexables in
+	 *          the index will be returned if <code>query</code> is an empty
+	 *          string. If set to <code>false</code>, an empty list would be
+	 *          returned.
+	 * @return A list of the <code>Indexable</code>s that match the query, sorted
+	 *         in descending order.
 	 */
-	public ArrayList<Indexable> query(String query, boolean exact)
+	public List<Indexable> query(String query, boolean exact, boolean returnAllIfEmptyQuery)
 	{
 		String[] terms = index.splitText(query);
 		
 		if (terms.length == 0)
-			return null;
+		{
+			if (returnAllIfEmptyQuery)
+				return new ArrayList<Indexable>(Arrays.asList(index.getIndexables()));
+			else
+				return new ArrayList<Indexable>();
+		}
 		
 		if (exact)
 		{
