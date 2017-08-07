@@ -1,3 +1,12 @@
+2017-08-07
+-FEATURE: Added removeElement() and hasElement() to JSONObject.
+-CODE: Re-wrote the meat of JSONReader.parseObject() and .parseArray(). The old code was overly complex, and could not handle objects and arrays that contained one or fewer elements.
+-CODE: JavaDoc'd JSONReader and JSONObject.
+
+2017-08-04
+-FEATURE: Added getFileExtension(File) and getNameWithoutExtension(File) to FileOperations.
+-FEATURE: Added ObjectPair.
+
 2017-06-19
 -FEATURE: SearchEngine.query() now allows the caller to specify what should happen if the query string is empty.
 -FEATURE: Added InvertedIndex.getIndexables().

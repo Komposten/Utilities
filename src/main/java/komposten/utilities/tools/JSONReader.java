@@ -11,19 +11,47 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class JSONReader //TODO Identifiers and values should be enclosed within quotation marks ("string":"value" instead of string:value).
+
+/**
+ * JSONReader is a tool that reads files with a JSON-format ("JavaScript Object
+ * Notation") and creates {@link JSONObject}s from them.
+ * 
+ * @version <b>1.1.0</b> <br />
+ *          <ul>
+ *          <li>Re-factored <code>parseObject()</code> and
+ *          <code>parseArray()</code>. The old version was overly complex, and
+ *          couldn't handle all scenarios.</li>
+ *          </ul>
+ *          <b>Older</b> <br />
+ *          1.0.0 <br />
+ *          <ul>
+ *          <li>Initial version, reading of JSON files. and retrieval of
+ *          members.</li>
+ *          </ul>
+ * 
+ * @author Jakob Hjelm
+ *
+ */
+public class JSONReader
 {
-  public JSONObject readFile(String jsonFilePath)
-  {
-    return readFile(new File(jsonFilePath));
-  }
-  
-  
+	/**
+	 * Reads the provided JSON-formatted file and stores its data in a
+	 * {@link JSONObject}.
+	 * 
+	 * @return A <code>JSONObject</code> representing the JSON data in the file,
+	 *         or <code>null</code> if the file at <code>jsonFilePath</code> does
+	 *         not exist or is a folder.
+	 */
+	public JSONObject readFile(String jsonFilePath)
+	{
+		return readFile(new File(jsonFilePath));
+	}
+
   
   /**
-   * @param jsonFile
-   * @return A {@link JSONObject} representing the JSON data in the file, or
-   *         <code>null</code> if the file doesn't exist/is a directory/
+   * Reads the provided JSON-formatted file and stores its data in a {@link JSONObject}.
+   * @return A <code>JSONObject</code> representing the JSON data in the file, or
+   *         <code>null</code> if the file does not exist, is a directory or
    *         is <code>null</code>.
    */
   public JSONObject readFile(File jsonFile)
@@ -32,7 +60,6 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
       return null;
     
     JSONObject jsonObject = null;
-    
     Scanner       scanner = null;
     StringBuilder builder = new StringBuilder();
     
@@ -63,34 +90,42 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
   
   private JSONObject parseObject(String jsonObject)
   {
-    jsonObject = jsonObject.replaceAll("\\n+", " ").trim();
+    jsonObject = jsonObject.replaceAll("\\n+", " ").trim(); //Remove all new-lines.
     
     if (jsonObject.startsWith("{"))
-      jsonObject = jsonObject.replaceAll("^\\{", "").replaceAll("\\}$", "");
+    {
+    	jsonObject = jsonObject.replaceAll("^\\{", "").replaceAll("\\}$", "").trim(); //Remove leading and trailing curly braces.
+    }
 
     JSONObject object = new JSONObject();
     
-    boolean inString = false;
-
-    for (int i = 0; i < jsonObject.length(); i++)
+    int i = 0;
+    while (i < jsonObject.length())
     {
-      char currentChar = jsonObject.charAt(i);
-      
-      if (currentChar == '"')
-        inString = !inString;
-      if ((currentChar == ',' && !inString) || (i < jsonObject.indexOf(',') && currentChar != '{' && currentChar != '[')) //FIXME JSONReader; Will this detect an object with only 1 line of content or an empty object (i.e. no commas)?
-      {
-        int endIndex = findPairEnd(jsonObject, i);
-        
-        if (endIndex == -1)
-          endIndex = jsonObject.length() - 1;
-
-        Object[] pair = parsePair(jsonObject.substring(i, endIndex));
+    	int end = findPairEnd(jsonObject, i);
+    	
+    	if (end < 0)
+    	{
+    		//Couldn't find a comma, so we should be at the end of the string.
+    		String substring = jsonObject.substring(i);
+    		
+    		if (!substring.matches("\\s*"))
+    		{
+    			Object[] pair = parsePair(substring);
+          
+          object.members.put((String)pair[0], pair[1]);
+    		}
+    		break;
+    	}
+    	else
+    	{
+    		//Found a comma (i.e. the end of a key:value-pair!
+        Object[] pair = parsePair(jsonObject.substring(i, end));
         
         object.members.put((String)pair[0], pair[1]);
         
-        i = endIndex-1;
-      }
+        i = end;
+    	}
     }
     
     return object;
@@ -137,12 +172,56 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
   
   
   
-  private Object parseElement(String jsonArrayElement)
+  private Object[] parseArray(String jsonArray)
+  {
+    List<Object> arrayList = new ArrayList<Object>();
+    
+    jsonArray = jsonArray.trim();
+    if (jsonArray.startsWith("["))
+    {
+    	jsonArray = jsonArray.replaceAll("^\\[", "").replaceAll("\\]$", "").trim(); //Remove leading and trailing brackets.
+    }
+    
+    int i = 0;
+    while (i < jsonArray.length())
+    {
+    	int end = findPairEnd(jsonArray, i);
+
+    	if (end < 0)
+    	{
+    		//Couldn't find a comma, so we should be at the end of the string.
+    		String substring = jsonArray.substring(i);
+    		
+    		if (!substring.matches("\\s*"))
+    		{
+    			Object element = parseArrayElement(substring);
+          
+          arrayList.add(element);
+    		}
+    		break;
+    	}
+    	else
+    	{
+    		//Found a comma (i.e. the end of a key:value-pair!
+        Object element = parseArrayElement(jsonArray.substring(i, end));
+        
+        arrayList.add(element);
+        
+        i = end;
+    	}
+    }
+    
+    return arrayList.toArray();
+  }
+  
+  
+  
+  private Object parseArrayElement(String jsonArrayElement)
   {
     Object element;
 
-    jsonArrayElement = jsonArrayElement.replaceAll("^\\s*,\\s*", "");
-    jsonArrayElement = jsonArrayElement.replaceAll("\\s*,\\s*$", "");
+    jsonArrayElement = jsonArrayElement.replaceAll("^\\s*,\\s*", ""); //Remove leading comma and whitespace.
+    jsonArrayElement = jsonArrayElement.replaceAll("\\s*,\\s*$", ""); //Remove trailing comma and whitespace.
     jsonArrayElement = jsonArrayElement.trim();
     
     if (jsonArrayElement.startsWith("["))
@@ -157,7 +236,7 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
     {
       element = jsonArrayElement.replace("\"", "");
     }
-    
+
     return element;
   }
   
@@ -207,7 +286,12 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
     int objectLevels = 0;
     boolean inString = false;
     
-    for (int i = elementStart+1; i < jsonObject.length(); i++)
+    if (jsonObject.charAt(elementStart) == ',')
+    {
+    	elementStart++;
+    }
+    
+    for (int i = elementStart; i < jsonObject.length(); i++)
     {
       char currentChar = jsonObject.charAt(i);
 
@@ -236,34 +320,6 @@ public class JSONReader //TODO Identifiers and values should be enclosed within 
     }
     
     return -1;
-  }
-  
-  
-  
-  private Object[] parseArray(String jsonArray)
-  {
-    List<Object> arrayList = new ArrayList<Object>();
-
-    for (int i = 0; i < jsonArray.length(); i++)
-    {
-      char currentChar = jsonArray.charAt(i);
-      
-      if (currentChar == ',' || (i < jsonArray.indexOf(',') && currentChar != '{' && currentChar != '['))
-      {
-        int endIndex = findPairEnd(jsonArray, i);
-        
-        if (endIndex == -1)
-          endIndex = jsonArray.length() - 1;
-
-        Object element = parseElement(jsonArray.substring(i, endIndex));
-        
-        arrayList.add(element);
-        
-        i = endIndex-1;
-      }
-    }
-    
-    return arrayList.toArray();
   }
   
   

@@ -48,7 +48,7 @@ import komposten.utilities.tools.Text;
  *          </ul>
  * @author Jakob Hjelm
  */
-public class SearchEngine //NEXT_TASK SearchEngine; Add a "return all on empty query"-option to query().
+public class SearchEngine
 {
 	private InvertedIndex index;
 	

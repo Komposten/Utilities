@@ -23,11 +23,16 @@ import komposten.utilities.exceptions.InvalidStateException;
 /**
  * A class to perform different operations regarding files, like writing data or creating, copying and deleting files.
  * @version
- * <b>1.2.5</b> <br />
+ * <b>1.2.6</b> <br />
+ * <ul>
+ * <li>Added <code>getFileExtension(File)</code>.</li>
+ * <li>Added <code>getNameWithoutExtension(File)</code>.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.2.5 <br />
  * <ul>
  * <li>Removed usage of LogUtils.</li>
  * </ul>
- * <b>Older</b> <br />
  * 1.2.4 <br />
  * <ul>
  * <li>Fixed createFileOrFolder() failing if the parent folder already existed (mkdirs() returns false if the dirs already exist).</li>
@@ -523,5 +528,41 @@ public final class FileOperations
   	}
 
   	return true;
+  }
+  
+  
+  /**
+   * @param file
+   * @return The extension of the file (e.g. <code>.txt</code>), or an empty string if <code>file</code> has no extension or is a folder.
+   */
+  public static String getFileExtension(File file)
+  {
+  	if (file.isFile())
+  	{
+	    int dotIndex = file.getName().lastIndexOf('.');
+	    
+	    if (dotIndex >= 0)
+	      return file.getName().substring(dotIndex);
+  	}
+  	
+    return "";
+  }
+  
+  
+  /**
+   * @param file
+   * @return The name of the file (or folder) without its extension.
+   */
+  public static String getNameWithoutExtension(File file)
+  {
+  	if (file.isFile())
+  	{
+	    int dotIndex = file.getName().lastIndexOf('.');
+	    
+	    if (dotIndex >= 0)
+	      return file.getName().substring(0, dotIndex);
+  	}
+  	
+    return file.getName();
   }
 }
