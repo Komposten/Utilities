@@ -637,7 +637,7 @@ public class GraphList
     ops.closeWriter();
     ops.createWriter(file, true);
     
-    ops.printData(data.toMultiLineString(), false);
+    ops.printData(data.toString(false), false);
     
     ops.closeWriter();
   }

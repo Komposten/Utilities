@@ -13,7 +13,7 @@ public class JsonTest
 		JSONObject object = reader.readFile("test files/json/Test.json");
 		
 		System.err.println("===================");
-		System.err.println(object.toMultiLineString());
+		System.err.println(object.toString(false));
 //		JSONObject schedule = (JSONObject)object.getMemberByName("schedule");
 //		Object[] array = (Object[]) schedule.getMemberByName("lesson_types");
 //		for (Object object2 : array)

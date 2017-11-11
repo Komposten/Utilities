@@ -1,4 +1,6 @@
 2017-11-11
+-FEATURE: A boolean parameter for JSONObject.toString() allows the caller to choose between a formatted or minified result. 
+-CODE: Renamed JSONObject.toMultiLineString() to toString().
 -CODE: JSONObject.toMultiLineString() now uses a custom method for removing unnecessary spaces. This is faster than replaceAll() and also doesn't affect spaces inside quotation marks.
 
 2017-08-07

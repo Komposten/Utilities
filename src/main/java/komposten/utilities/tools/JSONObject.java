@@ -11,16 +11,24 @@ import java.util.Set;
 
 /**
  * A data structure that describes a JSON object ("JavaScript Object Notation
- * object"). The data can be converted to a readable string by calling
- * {@link #toMultiLineString()} for writing to files. To load existing JSON
- * files, see {@link JSONReader}.
+ * object"). The data can be converted to a formatted or minified string by
+ * calling {@link #toString(boolean)} (e.g. for writing to files). <br />
+ * To load existing JSON files, see {@link JSONReader}.
  * 
- * @version <b>1.2.0</b> <br />
+ * @version <b>1.2.1</b> <br />
  *          <ul>
- *          <li>Added <code>cleanUpSpaces()</code> to improve performance of <code>toMultiLineString()</code>.</li>
- *          <li>Fixed a bug where <code>toMultiLineString()</code> would remove spaces inside quotation marks (i.e. elements or keys).</li>
+ *          <li>Renamed toMultiLineString() to toString().</li>
+ *          <li>Added a "minify" parameter to toString(), to allow creation of
+ *          more compressed JSON data.</li>
  *          </ul>
  *          <b>Older</b> <br />
+ *          1.2.0 <br />
+ *          <ul>
+ *          <li>Added <code>cleanUpSpaces()</code> to improve performance of
+ *          <code>toMultiLineString()</code>.</li>
+ *          <li>Fixed a bug where <code>toMultiLineString()</code> would remove
+ *          spaces inside quotation marks (i.e. elements or keys).</li>
+ *          </ul>
  *          1.1.0 <br />
  *          <ul>
  *          <li>Added <code>removeElement()</code> and
@@ -140,20 +148,20 @@ public class JSONObject
   
   
 	/**
-	 * Converts the <code>JSONObject</code> to a readable, formatted string. This
-	 * string can be saved to a file and a {@link JSONReader} can be used to
-	 * re-create a <code>JSONObject</code> from it.
+	 * Converts the <code>JSONObject</code> to a string. This string can be saved
+	 * to a file and a {@link JSONReader} can be used to re-create a
+	 * <code>JSONObject</code> from it.
+	 * 
+	 * @param minify If <code>true</code> the JSON will be minified to reduce the
+	 *          amount of space required to store it. If <code>false</code> the
+	 *          JSON will be formatted in a human-readable way.
 	 */
-  public String toMultiLineString()
+  public String toString(boolean minify)
   {
-  	//TODO JSONObject; Have an option to "minify" the file (i.e. toString() runs without putting any whitespaces anywhere).
-  	//     Change toMultiLineString() to toString(boolean formatted). If formatted == false, then formatLine() should not insert any spaces/tabs/newlines/etc. 
   	//MAYBE JSONObject; Make sure toString() puts spaces and new lines in the correct places so no replace-calls are needed.
-  	
-    String string = toString(this, 0);
-		String replaceAll = cleanUpSpaces(new StringBuilder(string)); //Using a custom method here instead of replaceAll() because it's 2-20 times faster.
-		String replaceAll2 = replaceAll.replaceAll("\\n+", "\n");
-		return replaceAll2;
+    String string = toString(this, 0, minify);
+		string = cleanUpSpaces(new StringBuilder(string)); //Using a custom method here instead of replaceAll() because it's 2-20 times faster.
+		return string.replaceAll("\\n+", "\n"); //This part is really fast anyway, so no need for a custom method.
   }
   
   
@@ -212,13 +220,14 @@ public class JSONObject
   	
 		return result.toString();
 	}
+
   
-  
-	private String toString(JSONObject object, int tabLevel)
+
+	private String toString(JSONObject object, int tabLevel, boolean minify)
   {
     StringBuilder stringBuilder = new StringBuilder();
     
-    stringBuilder.append(formatLine("{", tabLevel));
+    stringBuilder.append(formatLine("{", tabLevel, minify));
     
     int index = 0;
     
@@ -226,43 +235,43 @@ public class JSONObject
     {
       if (pair.getValue() instanceof Object[])
       {
-        stringBuilder.append(formatLine("\"" + pair.getKey() + "\":", tabLevel + 2));
-        stringBuilder.append(printArray((Object[])pair.getValue(), tabLevel + 2));
+        stringBuilder.append(formatLine("\"" + pair.getKey() + "\":", tabLevel + 2, minify));
+        stringBuilder.append(printArray((Object[])pair.getValue(), tabLevel + 2, minify));
 
         if (index < object.members.size() - 1)
-          stringBuilder.append(formatLine(",", tabLevel + 2));
+          stringBuilder.append(formatLine(",", tabLevel + 2, minify));
       }
       else if (pair.getValue() instanceof JSONObject)
       {
-        stringBuilder.append(formatLine("\"" + pair.getKey() + "\":", tabLevel + 2));
-        stringBuilder.append(toString((JSONObject)pair.getValue(), tabLevel + 2));
+        stringBuilder.append(formatLine("\"" + pair.getKey() + "\":", tabLevel + 2, minify));
+        stringBuilder.append(toString((JSONObject)pair.getValue(), tabLevel + 2, minify));
 
         if (index < object.members.size() - 1)
-          stringBuilder.append(formatLine(",", tabLevel + 2));
+          stringBuilder.append(formatLine(",", tabLevel + 2, minify));
       }
       else
       {
         if (index < object.members.size() - 1)
-          stringBuilder.append(formatLine("\"" + pair.getKey() + "\":\"" + pair.getValue() + "\",", tabLevel + 2));
+          stringBuilder.append(formatLine("\"" + pair.getKey() + "\":\"" + pair.getValue() + "\",", tabLevel + 2, minify));
         else
-          stringBuilder.append(formatLine("\"" + pair.getKey() + "\":\"" + pair.getValue() + "\"", tabLevel + 2));
+          stringBuilder.append(formatLine("\"" + pair.getKey() + "\":\"" + pair.getValue() + "\"", tabLevel + 2, minify));
       }
       
       index++;
     }
 
-    stringBuilder.append(formatLine("}", tabLevel));
+    stringBuilder.append(formatLine("}", tabLevel, minify));
     
     return stringBuilder.toString();
   }
   
   
   
-  private String printArray(Object[] array, int tabLevel)
+  private String printArray(Object[] array, int tabLevel, boolean minify)
   {
     StringBuilder stringBuilder = new StringBuilder();
     
-    stringBuilder.append(formatLine("[", tabLevel));
+    stringBuilder.append(formatLine("[", tabLevel, minify));
     
     for (int i = 0; i < array.length; i++)
     {
@@ -270,39 +279,46 @@ public class JSONObject
       
       if (element instanceof Object[])
       {
-        stringBuilder.append(printArray((Object[])element, tabLevel + 2));
+        stringBuilder.append(printArray((Object[])element, tabLevel + 2, minify));
         
         if (i < array.length - 1)
-          stringBuilder.append(formatLine(",", tabLevel + 2));
+          stringBuilder.append(formatLine(",", tabLevel + 2, minify));
       }
       else if (element instanceof JSONObject)
       {
-        stringBuilder.append(toString((JSONObject)element, tabLevel + 2));
+        stringBuilder.append(toString((JSONObject)element, tabLevel + 2, minify));
         
         if (i < array.length - 1)
-          stringBuilder.append(formatLine(",", tabLevel + 2));
+          stringBuilder.append(formatLine(",", tabLevel + 2, minify));
       }
       else
       {
         if (i < array.length - 1)
-          stringBuilder.append(formatLine("\"" + element.toString() + "\",", tabLevel + 2));
+          stringBuilder.append(formatLine("\"" + element.toString() + "\",", tabLevel + 2, minify));
         else
-          stringBuilder.append(formatLine("\"" + element.toString() + "\"", tabLevel + 2));
+          stringBuilder.append(formatLine("\"" + element.toString() + "\"", tabLevel + 2, minify));
       }
     }
 
-    stringBuilder.append(formatLine("]", tabLevel));
+    stringBuilder.append(formatLine("]", tabLevel, minify));
     
     return stringBuilder.toString();
   }
   
   
   
-  private String formatLine(String line, int tabLevel)
+  private String formatLine(String line, int tabLevel, boolean minify)
   {
-    if (tabLevel > 0)
-      return String.format("%1$" + tabLevel + "s", "") + line + "\n";
-    else
-      return line + "\n";
+  	if (!minify)
+  	{
+	    if (tabLevel > 0)
+	      return String.format("%1$" + tabLevel + "s", "") + line + "\n";
+	    else
+	      return line + "\n";
+  	}
+  	else
+  	{
+  		return line;
+  	}
   }
 }

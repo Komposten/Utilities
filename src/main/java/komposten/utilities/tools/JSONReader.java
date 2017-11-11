@@ -326,32 +326,18 @@ public class JSONReader
   
   public static void main(String[] args)
   {
-//    JSONReader reader = new JSONReader();
-//    
-//    JSONObject object = reader.readFile("resources/json/schedule.json");
-//    
-//    System.out.println("----------------------------");
-//    System.out.println(object.toMultiLineString());
+    JSONReader reader = new JSONReader();
     
-//    JSONObject object = new JSONObject();
-//    object.addObjectPair("me", object);
-
-    JSONObject parent = new JSONObject();
-    JSONObject[] array = new JSONObject[2];
+    JSONObject object = reader.readFile("test files/json/BIO217.json");
     
-    for (int i = 0; i < array.length; i++)
-    {
-    	float x = ((int)(Math.random() * 100));
-    	float y = ((int)(Math.random() * 100));
-      JSONObject object = new JSONObject();
-      object.addArrayPair("pos", new Float[] {x, y});
-      object.addStringPair("type", "some_type");
-      object.addStringPair("radius", "64.0");
-      array[i] = object;
-    }
+    System.out.println("Result of reading formatted file:");
+    System.out.println(object.toString(false));
+    System.out.println("----------------------------");
     
-    parent.addArrayPair("lights", array);
-
-    System.out.println(parent.toMultiLineString());
+    object = reader.readFile("test files/json/BIO217_mini.json");
+    
+    System.out.println("Result of reading minified file:");
+    System.out.println(object.toString(false));
+    System.out.println("----------------------------");
   }
 }
