@@ -15,12 +15,17 @@ import java.util.Set;
  * {@link #toMultiLineString()} for writing to files. To load existing JSON
  * files, see {@link JSONReader}.
  * 
- * @version <b>1.1.0</b> <br />
+ * @version <b>1.2.0</b> <br />
+ *          <ul>
+ *          <li>Added <code>cleanUpSpaces()</code> to improve performance of <code>toMultiLineString()</code>.</li>
+ *          <li>Fixed a bug where <code>toMultiLineString()</code> would remove spaces inside quotation marks (i.e. elements or keys).</li>
+ *          </ul>
+ *          <b>Older</b> <br />
+ *          1.1.0 <br />
  *          <ul>
  *          <li>Added <code>removeElement()</code> and
  *          <code>hasElement()</code>.</li>
  *          </ul>
- *          <b>Older</b> <br />
  *          1.0.0 <br />
  *          <ul>
  *          <li>Initial version, supporting addition of strings, arrays and
@@ -141,12 +146,75 @@ public class JSONObject
 	 */
   public String toMultiLineString()
   {
-    return toString(this, 0).replaceAll("\\s+,", ",\n").replaceAll("\\n+", "\n");
+  	//TODO JSONObject; Have an option to "minify" the file (i.e. toString() runs without putting any whitespaces anywhere).
+  	//     Change toMultiLineString() to toString(boolean formatted). If formatted == false, then formatLine() should not insert any spaces/tabs/newlines/etc. 
+  	//MAYBE JSONObject; Make sure toString() puts spaces and new lines in the correct places so no replace-calls are needed.
+  	
+    String string = toString(this, 0);
+		String replaceAll = cleanUpSpaces(new StringBuilder(string)); //Using a custom method here instead of replaceAll() because it's 2-20 times faster.
+		String replaceAll2 = replaceAll.replaceAll("\\n+", "\n");
+		return replaceAll2;
   }
   
   
   
-  private String toString(JSONObject object, int tabLevel)
+  private String cleanUpSpaces(StringBuilder builder)
+	{
+  	StringBuilder result = new StringBuilder(builder.length());
+  	boolean isInQuote = false;
+  	int spaceStart = -1;
+  	
+  	for (int i = 0; i < builder.length(); i++)
+  	{
+  		char c = builder.charAt(i);
+  		
+  		if (isInQuote)
+  		{
+    		if (c == '"')
+    		{
+    			isInQuote = !isInQuote;
+    			spaceStart = -1;
+    		}
+    		
+  			result.append(c);
+  		}
+  		else
+  		{
+    		if (c == '"')
+    		{
+    			isInQuote = !isInQuote;
+    		}
+    		
+	  		if (Character.isWhitespace(c) && spaceStart == -1)
+	  		{
+	  			spaceStart = i;
+	  		}
+	  		else if (c == ',' && spaceStart != -1)
+	  		{
+	  			result.append(",\n");
+	  			spaceStart = -1;
+	  		}
+	  		else if ((!Character.isWhitespace(c) && c != ',') || (spaceStart == -1 && c == ','))
+	  		{
+	  			if (spaceStart != -1)
+	  			{
+	  				result.append(builder.substring(spaceStart, i+1));
+	  			}
+	  			else
+	  			{
+	  				result.append(c);
+	  			}
+	  			
+	  			spaceStart = -1;
+	  		}
+  		}
+  	}
+  	
+		return result.toString();
+	}
+  
+  
+	private String toString(JSONObject object, int tabLevel)
   {
     StringBuilder stringBuilder = new StringBuilder();
     

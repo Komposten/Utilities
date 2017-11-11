@@ -1,3 +1,6 @@
+2017-11-11
+-CODE: JSONObject.toMultiLineString() now uses a custom method for removing unnecessary spaces. This is faster than replaceAll() and also doesn't affect spaces inside quotation marks.
+
 2017-08-07
 -FEATURE: Added removeElement() and hasElement() to JSONObject.
 -CODE: Re-wrote the meat of JSONReader.parseObject() and .parseArray(). The old code was overly complex, and could not handle objects and arrays that contained one or fewer elements.
