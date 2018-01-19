@@ -158,6 +158,7 @@ public class JSONObject
 	 */
   public String toString(boolean minify)
   {
+  	//TODO JSONObject; Add a toStream() option that streams the data (maybe every 1000 chars or so) to a stream.
   	//MAYBE JSONObject; Make sure toString() puts spaces and new lines in the correct places so no replace-calls are needed.
     String string = toString(this, 0, minify);
 		string = cleanUpSpaces(new StringBuilder(string)); //Using a custom method here instead of replaceAll() because it's 2-20 times faster.

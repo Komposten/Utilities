@@ -5,7 +5,7 @@ package komposten.utilities.tools;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 
@@ -14,7 +14,7 @@ import java.util.Map.Entry;
  */
 public class KeyMap
 {
-  private HashMap<String, String> data_;
+  private Map<String, String> data_;
   
 
 	/**
@@ -31,7 +31,7 @@ public class KeyMap
 	 */
 	public KeyMap(File file) throws FileNotFoundException
 	{
-		data_ = FileOperations.loadConfigFile(file);
+		data_ = FileOperations.loadConfigFile(file, false);
 	}
   
   

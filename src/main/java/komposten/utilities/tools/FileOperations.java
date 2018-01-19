@@ -11,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import komposten.utilities.exceptions.InvalidStateException;
@@ -23,12 +25,18 @@ import komposten.utilities.exceptions.InvalidStateException;
 /**
  * A class to perform different operations regarding files, like writing data or creating, copying and deleting files.
  * @version
- * <b>1.2.6</b> <br />
+ * <b>1.2.7</b> <br />
+ * <ul>
+ * <li>Added the parameter <code>maintainDataOrder</code> to <code>loadConfigFile(File, boolean)</code>.</li>
+ * <li><code>loadConfigFile(File, boolean)</code> now returns a Map instead of a HashMap.
+ * <li>Added <code>getNameWithoutExtension(File)</code>.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.2.6 <br />
  * <ul>
  * <li>Added <code>getFileExtension(File)</code>.</li>
  * <li>Added <code>getNameWithoutExtension(File)</code>.</li>
  * </ul>
- * <b>Older</b> <br />
  * 1.2.5 <br />
  * <ul>
  * <li>Removed usage of LogUtils.</li>
@@ -330,14 +338,15 @@ public final class FileOperations
    * <br />
    * Both the key and the value can contain spaces.
    * @param file - The config-file.
+   * @param maintainDataOrder - <code>true</code> if the order of the data in the file should be preserved.
    * @return A map containing the data in the config-file.
    * @throws FileNotFoundException If the file does not exist.
    */
-  public static HashMap<String, String> loadConfigFile(File file) throws FileNotFoundException
+  public static Map<String, String> loadConfigFile(File file, boolean maintainDataOrder) throws FileNotFoundException
   {
     Scanner             reader;
     String              data;
-    HashMap<String, String> map = new HashMap<String, String>();
+    Map<String, String> map = (maintainDataOrder ? new LinkedHashMap<String, String>() : new HashMap<String, String>());
     String              key;
     String              value;
     

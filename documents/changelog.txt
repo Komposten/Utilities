@@ -1,3 +1,10 @@
+2018-01-19
+-FEATURE: FileOperations.loadConfigFile() now takes an additional boolean parameter to determine if the order of the data should be maintained.
+-CODE: FileOperations.loadConfigFile() now returns a Map instead of a HashMap.
+
+2017-12-29
+-CODE: LogUtils.log() now takes a Throwable instead of an Exception.
+
 2017-11-11
 -FEATURE: A boolean parameter for JSONObject.toString() allows the caller to choose between a formatted or minified result. 
 -CODE: Renamed JSONObject.toMultiLineString() to toString().

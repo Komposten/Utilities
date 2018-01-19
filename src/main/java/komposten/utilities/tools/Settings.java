@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -46,7 +47,7 @@ import komposten.utilities.tools.FileOperations;
 public class Settings
 {
 	private File file;
-	private HashMap<String, String> data;
+	private Map<String, String> data;
 	private HashMap<String, ArrayList<SettingChangeListener>> listeners;
 	private ArrayList<SettingChangeListener> globalListeners;
 	
@@ -85,7 +86,7 @@ public class Settings
 		this.file = file;
 		try
 		{
-			data = FileOperations.loadConfigFile(file);
+			data = FileOperations.loadConfigFile(file, false);
 		}
 		catch (FileNotFoundException e)
 		{

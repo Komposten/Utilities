@@ -84,13 +84,13 @@ public class LogUtils
 
 
 	/**
-   * See {@link Logger#log(Level, String, String, Exception, boolean)}.
+   * See {@link Logger#log(Level, String, String, Throwable, boolean)}.
    * @throws InvalidStateException If the output file or stream has not been set (see {@link #writeToFile(String)} and {@link #writeToStream(OutputStream)}).
    */
-  public static boolean log(Level logLevel, String className, String errorMsg, Exception e, boolean includeStackTrace)
+  public static boolean log(Level logLevel, String className, String errorMsg, Throwable t, boolean includeStackTrace)
   {
     if (logger_ == null)
       throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before logging!");
-    return logger_.log(logLevel, className, errorMsg, e, includeStackTrace);
+    return logger_.log(logLevel, className, errorMsg, t, includeStackTrace);
   }
 }
