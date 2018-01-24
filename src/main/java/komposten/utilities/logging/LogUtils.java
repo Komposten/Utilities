@@ -26,6 +26,28 @@ public class LogUtils
   }
   
   
+  /**
+   * @see Logger#setFormatter(LogFormatter)
+   */
+  public static void setFormatter(LogFormatter formatter)
+  {
+	  if (logger_ == null)
+	    throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before setting a formatter!");
+	  logger_.setFormatter(formatter);
+  }
+  
+  
+  /**
+   * @see Logger#setExceptionHandler(ExceptionHandler)
+   */
+  public static void setExceptionHandler(ExceptionHandler handler)
+  {
+	  if (logger_ == null)
+	    throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before setting an exception handler!");
+	  logger_.setExceptionHandler(handler);
+  }
+  
+  
   
   /**
    * Sets <code>LogUtils</code> to write to the specified file. Also initialises the logger if needed.

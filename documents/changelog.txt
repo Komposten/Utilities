@@ -1,6 +1,7 @@
 2018-01-24
 -FEATURE: Added ExceptionHandler.
--FEATURE: Added setExceptionHandler() to Logger.
+-FEATURE: Added setExceptionHandler() to Logger and LogUtils.
+-FEATURE: Added setFormatter() to LogUtils.
 -CODE: Logger now passes all internal exception to its ExceptionHandler instead of throwing them.
 -OTHER: Logger.getProgramDir() now uses an ExceptionHandler instead of JOptionPane in case of exceptions. 
 
