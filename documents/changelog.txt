@@ -1,3 +1,7 @@
+2018-01-24
+-FEATURE: LogUtils now contains "logSilent()"-methods that redirect exceptions thrown by log() to System.err rather than throwing them.
+-CODE: Logger (and LogUtils) now throws any exceptions that occur while writing (like if the target file is read-only).
+
 2018-01-19
 -FEATURE: FileOperations.loadConfigFile() now takes an additional boolean parameter to determine if the order of the data should be maintained.
 -CODE: FileOperations.loadConfigFile() now returns a Map instead of a HashMap.

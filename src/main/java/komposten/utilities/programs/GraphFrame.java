@@ -355,7 +355,7 @@ public class GraphFrame extends JFrame
 		catch (Exception e)
 		{
 			String msg = "An unexpected exception occurred while starting GraphFrame!";
-			LogUtils.log(Level.ERROR, GraphFrame.class.getSimpleName(), msg, e, true);
+			LogUtils.logSilent(Level.ERROR, GraphFrame.class.getSimpleName(), msg, e, true);
 			System.exit(1);
 		}
 		

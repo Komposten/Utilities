@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.naming.NoPermissionException;
@@ -26,7 +27,7 @@ public class Test
     }
     catch (NullPointerException e)
     {
-      LogUtils.log(Level.ERROR, "Test", "Random null pointer", e, false);
+      LogUtils.logSilent(Level.ERROR, "Test", "Random null pointer", e, false);
     }
   }
   
@@ -61,12 +62,20 @@ public class Test
     Logger logger = new Logger(System.out);
 //    Logger logger = new Logger("testlog.txt");
     
-    logger.log(Level.INFO, "Program started");
-    logger.log(Level.ERROR, "Test", "An exception occured", new NullPointerException("Not null pointer exception"), false);
-    logger.log(Level.ERROR, null, "Message", new NoPermissionException(":("), true);
-    logger.log(Level.INFO, "Test - main(String)", "Some message", null, true);
-    logger.log(Level.INFO, "Test - main(String)", "Possible causes:\nBad coding\nBugs\nToo much sugar", new InvocationTargetException(new NullPointerException("Exception")), true);
-    logger.log(Level.WARNING, "Shutdown imminent!");
+    try
+		{
+			logger.log(Level.INFO, "Program started");
+			logger.log(Level.ERROR, "Test", "An exception occured", new NullPointerException("Not null pointer exception"), false);
+			logger.log(Level.ERROR, null, "Message", new NoPermissionException(":("), true);
+			logger.log(Level.INFO, "Test - main(String)", "Some message", null, true);
+			logger.log(Level.INFO, "Test - main(String)", "Possible causes:\nBad coding\nBugs\nToo much sugar", new InvocationTargetException(new NullPointerException("Exception")), true);
+			logger.log(Level.WARNING, "Shutdown imminent!");
+		}
+		catch (IOException e)
+		{
+			System.out.println("Exception while logging!");
+			e.printStackTrace();
+		}
     new Test().throwException();
 //    System.out.println("Comparing Math.max() with math algorithm!");
 //    ArrayList<long[]> times = new ArrayList<long[]>();

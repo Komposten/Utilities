@@ -1,5 +1,6 @@
 package komposten.utilities.logging;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 import komposten.utilities.exceptions.InvalidStateException;
@@ -59,9 +60,10 @@ public class LogUtils
 
   /**
 	 * See {@link Logger#log(Level, String)}.
+	 * @throws IOException If writing to a file and the file could not be created or if access to the file was denied, or if an error occurred while writing.
 	 * @throws InvalidStateException If the output file or stream has not been set (see {@link #writeToFile(String)} and {@link #writeToStream(OutputStream)}).
 	 */
-	public static boolean log(Level logLevel, String message)
+	public static boolean log(Level logLevel, String message) throws IOException
 	{
 	  if (logger_ == null)
 	    throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before logging!");
@@ -72,9 +74,10 @@ public class LogUtils
 
   /**
 	 * See {@link Logger#log(Level, String, String)}.
+	 * @throws IOException If writing to a file and the file could not be created or if access to the file was denied, or if an error occurred while writing.
 	 * @throws InvalidStateException If the output file or stream has not been set (see {@link #writeToFile(String)} and {@link #writeToStream(OutputStream)}).
 	 */
-	public static boolean log(Level logLevel, String location, String message)
+	public static boolean log(Level logLevel, String location, String message) throws IOException
 	{
 	  if (logger_ == null)
 	    throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before logging!");
@@ -85,12 +88,76 @@ public class LogUtils
 
 	/**
    * See {@link Logger#log(Level, String, String, Throwable, boolean)}.
+	 * @throws IOException If writing to a file and the file could not be created or if access to the file was denied, or if an error occurred while writing.
    * @throws InvalidStateException If the output file or stream has not been set (see {@link #writeToFile(String)} and {@link #writeToStream(OutputStream)}).
    */
-  public static boolean log(Level logLevel, String className, String errorMsg, Throwable t, boolean includeStackTrace)
+  public static boolean log(Level logLevel, String className, String errorMsg, Throwable t, boolean includeStackTrace) throws IOException
   {
     if (logger_ == null)
       throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before logging!");
     return logger_.log(logLevel, className, errorMsg, t, includeStackTrace);
+  }
+  
+  
+
+  /**
+   * Same as {@link #log(Level, String)}, but prints <code>IOExceptions</code>, thrown while writing, to the standard error stream instead of throwing them.
+	 * See {@link Logger#log(Level, String)}.
+	 * @throws InvalidStateException If the output file or stream has not been set (see {@link #writeToFile(String)} and {@link #writeToStream(OutputStream)}).
+	 */
+	public static boolean logSilent(Level logLevel, String message)
+	{
+	  try
+		{
+			return log(logLevel, message);
+		}
+		catch (IOException e)
+		{
+			System.err.println("An unexpected exception occurred while logging:");
+			e.printStackTrace();
+			return false;
+		}
+	}
+  
+  
+
+  /**
+   * Same as {@link #log(Level, String, String)}, but prints <code>IOExceptions</code>, thrown while writing, to the standard error stream instead of throwing them.
+	 * See {@link Logger#log(Level, String, String)}.
+	 * @throws InvalidStateException If the output file or stream has not been set (see {@link #writeToFile(String)} and {@link #writeToStream(OutputStream)}).
+	 */
+	public static boolean logSilent(Level logLevel, String location, String message)
+	{
+	  try
+		{
+			return log(logLevel, location, message);
+		}
+		catch (IOException e)
+		{
+			System.err.println("An unexpected exception occurred while logging:");
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+
+
+	/**
+   * Same as {@link #log(Level, String, String, Throwable, boolean)}, but prints <code>IOExceptions</code>, thrown while writing, to the standard error stream instead of throwing them.
+   * See {@link Logger#log(Level, String, String, Throwable, boolean)}.
+   * @throws InvalidStateException If the output file or stream has not been set (see {@link #writeToFile(String)} and {@link #writeToStream(OutputStream)}).
+   */
+  public static boolean logSilent(Level logLevel, String className, String errorMsg, Throwable t, boolean includeStackTrace)
+  {
+    try
+		{
+			return log(logLevel, className, errorMsg, t, includeStackTrace);
+		}
+		catch (IOException e)
+		{
+			System.err.println("An unexpected exception occurred while logging:");
+			e.printStackTrace();
+			return false;
+		}
   }
 }
