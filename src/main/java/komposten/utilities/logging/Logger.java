@@ -12,8 +12,6 @@ import java.net.URLDecoder;
 import java.security.ProtectionDomain;
 import java.util.Calendar;
 
-import javax.swing.JOptionPane;
-
 
 
 /**
@@ -21,12 +19,19 @@ import javax.swing.JOptionPane;
  * @see {@link LogUtils}
  * @author Jakob Hjelm
  * @version
- * <b>1.5.1</b> <br />
+ * <b>1.5.2</b> <br />
  * <ul>
- * <li><code>write(String, String)</code> now throws exceptions instead of catching them.</li>
- * <li>All <code>log()</code>-methods now throw exceptions thrown by <code>write(String, String)</code>.
+ * <li>Removed the exception throwing introduced in the previous version.</li>
+ * <li>All internal exceptions are now passed to an <code>ExceptionHandler</code>.</li>
+ * <li>Added <code>setExceptionHandler(ExceptionHandler)</code>.</li>
+ * <li><code>getProgramDir()</code> now uses default instances of ExceptionHandler for error messages rather than <code>JOptionPane</code>.</li>
  * </ul>
  * <b>Older</b> <br />
+ * 1.5.1 <br />
+ * <ul>
+ * <li><code>write(String, String)</code> now throws exceptions instead of catching them.</li>
+ * <li>All <code>log()</code>-methods now throw exceptions thrown by <code>write(String, String)</code>.</li>
+ * </ul>
  * 1.5.0 <br />
  * <ul>
  * <li>Split <code>write(String, String, OutputStream)</code> into two methods, one for the file and one for the stream.</li>
@@ -103,6 +108,7 @@ public final class Logger //TODO Logger: Make it possible to print to different 
 	public static final String FILEPATH;
 	
 	private LogFormatter formatter;
+	private ExceptionHandler handler;
 	private String filePath_; //TODO Logger; Create a "LogOutput/Handler" class with two sub-classes, "FileLogOutput" and "StreamLogOutput". Then replace filePath and stream with a single LogOutput field (can be set via writeToFile, writeToStream, or writeTo).
 	private OutputStream stream_;
 	
@@ -121,32 +127,40 @@ public final class Logger //TODO Logger: Make it possible to print to different 
 	
 	private static String getProgramDir()
 	{
-	  ProtectionDomain domain = Logger.class.getProtectionDomain();
-	  
-	  if (domain == null)
-	    return "";
-	  
-    String path = domain.getCodeSource().getLocation().getPath();
+		try
+		{
+		  ProtectionDomain domain = Logger.class.getProtectionDomain();
+		  
+		  if (domain == null)
+		    return "";
+		  
+	    String path = domain.getCodeSource().getLocation().getPath();
     
-    try
-    {
       path = URLDecoder.decode(path, "UTF-8");
       path = new File(path).getParent();
+      
+      return path;
     }
     catch (IOException e)
     {
-      String msg = "An unexpected exception ocurred while reading the program's .jar-archive's path.";
-      
-      System.out.println("Logger - getProgramDir(): " + msg);
-      System.out.println(e.getMessage());
-      
-      JOptionPane.showMessageDialog(null, msg + "\nThe logger may not work properly without this information!", "Load Error", JOptionPane.ERROR_MESSAGE);
+      String msg = "An unexpected exception ocurred while reading the program's path:";
+      (new ExceptionHandler()).handleException(msg, e); 
     }
-    
-    return path;
+		catch (SecurityException e)
+		{
+      String msg = "An unexpected exception ocurred while reading the program's path:";
+      (new ExceptionHandler()).handleException(msg, e); 
+		}
+		
+		return null;
 	}
   
   
+	
+	{
+    formatter = new DefaultLogFormatter();
+    handler = new ExceptionHandler();
+	}
 
   /**
    * Creates a new Logger that writes to the specified file. Use {@link #FILEPATH} for the default file.
@@ -154,7 +168,6 @@ public final class Logger //TODO Logger: Make it possible to print to different 
    */
   public Logger(String filePath)
   {
-    formatter = new DefaultLogFormatter();
     writeToFile(filePath);
   }
   
@@ -166,7 +179,6 @@ public final class Logger //TODO Logger: Make it possible to print to different 
    */
   public Logger(OutputStream stream)
   {
-    formatter = new DefaultLogFormatter();
     writeToStream(stream);
   }
   
@@ -181,6 +193,12 @@ public final class Logger //TODO Logger: Make it possible to print to different 
   public void setFormatter(LogFormatter formatter)
   {
   	this.formatter = formatter;
+  }
+  
+  
+  public void setExceptionHandler(ExceptionHandler handler)
+  {
+  	this.handler = handler;
   }
   
   
@@ -220,9 +238,8 @@ public final class Logger //TODO Logger: Make it possible to print to different 
 	 * @param level The {@link Level log level} for the message.
 	 * @param message The message to log.
 	 * @return True if the message was logged, false otherwise.
-	 * @throws IOException If an the file could not be created, an error occurred while writing, or if access to the file was denied.
 	 */
-	public boolean log(Level level, String message) throws IOException
+	public boolean log(Level level, String message)
 	{
 	  return log(level, "", message, null, false);
 	}
@@ -235,9 +252,8 @@ public final class Logger //TODO Logger: Make it possible to print to different 
 	 * @param location The location where the error occurred (can be null or zero-length).
 	 * @param message The message to log.
 	 * @return True if the message was logged, false otherwise.
-	 * @throws IOException If an the file could not be created, an error occurred while writing, or if access to the file was denied.
 	 */
-	public boolean log(Level level, String location, String message) throws IOException
+	public boolean log(Level level, String location, String message)
 	{
 		return log(level, location, message, null, false);
 	}
@@ -257,9 +273,8 @@ public final class Logger //TODO Logger: Make it possible to print to different 
    *          should be included. If <code>false</code> only the
    *          <code>Throwable</code>'s message will be logged.
 	 * @return True if the message was successfully logged, false otherwise.
-	 * @throws IOException If writing to a file and the file could not be created or if access to the file was denied, or if an error occurred while writing.
 	 */
-	public boolean log(Level logLevel, String location, String errorMsg, Throwable t, boolean includeStackTrace) throws IOException
+	public boolean log(Level logLevel, String location, String errorMsg, Throwable t, boolean includeStackTrace)
 	{
 		Calendar date = Calendar.getInstance();
 		String formattedString = formatter.format(logLevel, date, location, errorMsg, t, includeStackTrace);
@@ -278,7 +293,7 @@ public final class Logger //TODO Logger: Make it possible to print to different 
 	 * @return True if the data was successfully written to the file, false
 	 * otherwise.
 	 */
-	private boolean write(String data, String filePath) throws IOException
+	private boolean write(String data, String filePath)
 	{
 	  if (filePath != null)
 	  {
@@ -295,9 +310,13 @@ public final class Logger //TODO Logger: Make it possible to print to different 
         writer.flush();
         writer.close();
       }
+      catch (IOException e)
+      {
+      	handler.handleException("An unexpected exception occurred while logging:", e);
+      }
       catch (SecurityException e)
       {
-    		throw new IOException("Access denied: " + filePath + "!", e);
+    		handler.handleException("An unexpected exception occurred while logging:", new IOException("Access denied: " + filePath + "!", e));
       }
       
       return true;
@@ -344,8 +363,7 @@ public final class Logger //TODO Logger: Make it possible to print to different 
 	  }
 	  catch (IOException e)
 	  {
-      System.out.println("Logger encountered an exception while closing its stream: ");
-      e.printStackTrace();
+	  	handler.handleException("Logger encountered an exception while closing its stream: ", e);
 	  }
 	}
 }
