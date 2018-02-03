@@ -3,12 +3,10 @@
  */
 package komposten.utilities.search;
 
-import komposten.utilities.search.InvertedIndex.Indexable;
 
-
-public class IndexEntry
+public class IndexEntry<T extends InvertedIndex.Indexable>
 {
-	private final Indexable indexable;
+	private final T indexable;
 	/**
 	 * Integers describing the positions (in the indexable's string) of the term
 	 * this is an entry for.<br />
@@ -22,7 +20,7 @@ public class IndexEntry
 	 * @param indexable
 	 * @param termPosition See {@link #termPositions}
 	 */
-	public IndexEntry(Indexable indexable, int termPosition)
+	public IndexEntry(T indexable, int termPosition)
 	{
 		this.indexable = indexable;
 		this.termPositions = new int[] { termPosition };
@@ -43,7 +41,7 @@ public class IndexEntry
 	}
 
 
-	public Indexable getIndexable()
+	public T getIndexable()
 	{
 		return indexable;
 	}

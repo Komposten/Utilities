@@ -24,6 +24,8 @@ public class SearchTest
 		articleTest();
 		System.out.println("******TESTING WIKI ARTICLES******");
 		wikiTest();
+		System.out.println("******TESTING WIKI ARTICLES V2******");
+		wikiTest2();
 	}
 
 
@@ -46,7 +48,7 @@ public class SearchTest
 //				new Name("Hugh Jasmine Anderson"), new Name("Troy Terry Pittman"),
 //				new Name("Troy Troy Pittman") };
 
-		InvertedIndex index = new InvertedIndex(names);
+		InvertedIndex<Name> index = new InvertedIndex<Name>(names);
 		
 		System.out.println("Indexed objects: " + index.getIndexableCount());
 		System.out.println("Indexed terms: " + index.getIndexSize());
@@ -54,7 +56,7 @@ public class SearchTest
 		double[] troy = index.getTermFrequencies().get("troy");
 		Double troy2 = index.getInverseDocumentFrequencies().get("troy");
 
-		SearchEngine search = new SearchEngine(index);
+		SearchEngine<Name> search = new SearchEngine<Name>(index);
 		System.out.println("\nFull index:");
 		printMap(index.getIndex());
 		System.out.println("\nTroy:");
@@ -70,12 +72,12 @@ public class SearchTest
 		for (int i = 0; i < articles.length; i++)
 			articleNames[i] = new Name(articles[i]);
 
-		InvertedIndex index = new InvertedIndex(articleNames);
+		InvertedIndex<Name> index = new InvertedIndex<Name>(articleNames);
 		
 		System.out.println("Indexed objects: " + index.getIndexableCount());
 		System.out.println("Indexed terms: " + index.getIndexSize());
 
-		SearchEngine search = new SearchEngine(index);
+		SearchEngine<Name> search = new SearchEngine<Name>(index);
 		String query = "computer";
 		System.out.println("\n" + query);
 		printList(search.query(query, true, false));
@@ -105,17 +107,47 @@ public class SearchTest
 
 		time = System.nanoTime();
 		System.out.println("Creating index...");
-		InvertedIndex index = new InvertedIndex(articleNames);
+		InvertedIndex<Name> index = new InvertedIndex<Name>(articleNames);
 		System.out.println("Index built, took " + ((System.nanoTime() - time) / 1E9) + " seconds.");
 		
 		System.out.println("Indexed objects: " + index.getIndexableCount());
 		System.out.println("Indexed terms: " + index.getIndexSize());
 
-		SearchEngine search = new SearchEngine(index);
+		SearchEngine<Name> search = new SearchEngine<Name>(index);
 		String query = "test machine";
 		time = System.nanoTime();
 		System.out.println("\n" + query);
-		List<Indexable> searchResult = search.query(query, true, false);
+		List<Name> searchResult = search.query(query, true, false);
+		System.out.println("Search performed, took " + ((System.nanoTime() - time) / 1E9) + " seconds.");
+		printList(searchResult);
+		time = System.nanoTime();
+		System.out.println("~" + query);
+		searchResult = search.query(query, false, false);
+		System.out.println("Search performed, took " + ((System.nanoTime() - time) / 1E9) + " seconds.");
+		printList(searchResult);
+	}
+	
+	
+	private static void wikiTest2()
+	{
+		long time = System.nanoTime();
+		System.out.println("Loading articles...");
+		Name[] articleNames = loadWikiArticles2();
+		System.out.println("Load complete, took " + ((System.nanoTime() - time) / 1E9) + " seconds.");
+
+		time = System.nanoTime();
+		System.out.println("Creating index...");
+		InvertedIndex<Name> index = new InvertedIndex<Name>(articleNames);
+		System.out.println("Index built, took " + ((System.nanoTime() - time) / 1E9) + " seconds.");
+		
+		System.out.println("Indexed objects: " + index.getIndexableCount());
+		System.out.println("Indexed terms: " + index.getIndexSize());
+
+		SearchEngine<Name> search = new SearchEngine<Name>(index);
+		String query = "great britain";
+		time = System.nanoTime();
+		System.out.println("\n" + query);
+		List<Name> searchResult = search.query(query, true, false);
 		System.out.println("Search performed, took " + ((System.nanoTime() - time) / 1E9) + " seconds.");
 		printList(searchResult);
 		time = System.nanoTime();
@@ -126,12 +158,12 @@ public class SearchTest
 	}
 
 
-	private static void printMap(Map<String, ArrayList<IndexEntry>> map)
+	private static void printMap(Map<String, ArrayList<IndexEntry<Name>>> map)
 	{
-		for (Entry<String, ArrayList<IndexEntry>> entry : map.entrySet())
+		for (Entry<String, ArrayList<IndexEntry<Name>>> entry : map.entrySet())
 		{
 			System.out.print(entry.getKey() + ", " + entry.getValue().size() + ": ");
-			for (IndexEntry indexEntry : entry.getValue())
+			for (IndexEntry<Name> indexEntry : entry.getValue())
 			{
 				System.out.print(indexEntry.getIndexable().getText() + "{");
 				for (int i : indexEntry.getTermPositions())
@@ -143,7 +175,7 @@ public class SearchTest
 	}
 
 
-	private static void printList(List<Indexable> query)
+	private static void printList(List<Name> query)
 	{
 		StringBuilder builder = new StringBuilder();
 		builder.append("[");
@@ -247,6 +279,37 @@ public class SearchTest
 		}
 		
 		return names.toArray(new Name[0]);
+	}
+	
+	
+	private static Name[] loadWikiArticles2()
+	{
+		ArrayList<Name> names = new ArrayList<SearchTest.Name>();
+		File file = new File("C:\\Users\\Jakob\\Desktop\\enwiki-20180120-all-titles\\enwiki-20180120-all-titles-only-titles.txt");
+		BufferedReader scanner;
+		
+		try
+		{
+			scanner = new BufferedReader(new FileReader(file));
+			String line = scanner.readLine();
+			
+			int i = 0;
+			while (line != null && i++ < 100000)
+			{
+				line = line.trim();
+				
+				names.add(new Name(line.replaceAll("[^A-Za-z0-9_]", "")));
+				
+				line = scanner.readLine();
+			}
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return names.toArray(new Name[names.size()]);
 	}
 
 

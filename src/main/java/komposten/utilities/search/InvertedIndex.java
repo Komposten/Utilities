@@ -24,10 +24,14 @@ import java.util.Map.Entry;
  * 
  * @version <b>1.1.1</b> <br />
  *          <ul>
+ *          <li><code>InvertedIndex</code> is now generic.</li>
+ *          </ul>
+ *          <b>Older</b> <br />
+ *          1.1.1 <br />
+ *          <ul>
  *          <li>Added getIndexables().</li>
  *          <li>splitText() now makes sure to return an empty array if <code>text</code> is empty or only contains white space.
  *          </ul>
- *          <b>Older</b> <br />
  *          1.1.0 <br />
  *          <ul>
  *          <li>Migrated query(), exactQuery(), broadQuery() and rankIndexables() to {@link SearchEngine}.
@@ -50,35 +54,35 @@ import java.util.Map.Entry;
  *          </ul>
  * @author Jakob Hjelm
  */
-public class InvertedIndex
+public class InvertedIndex<T extends InvertedIndex.Indexable>
 {
 	public interface Indexable
 	{
 		public String getText();
 	}
 
-	private Indexable[] documents;
-	private HashMap<String, ArrayList<IndexEntry>> index;
+	private T[] documents;
+	private HashMap<String, ArrayList<IndexEntry<T>>> index;
 	private HashMap<String, double[]> termFrequencies; //Stored as "term; frequency per document", with frequencies ordered in the same order as the entries in index.get(term).
 	private HashMap<String, Double> inverseDocumentFrequencies;
 
-	public InvertedIndex(Indexable[] documents)
+	public InvertedIndex(T[] documents)
 	{
 		this.documents = documents;
 		createIndex(documents);
 	}
 
 
-	private void createIndex(Indexable[] documents)
+	private void createIndex(T[] documents)
 	{
-		index = new HashMap<String, ArrayList<IndexEntry>>();
+		index = new HashMap<String, ArrayList<IndexEntry<T>>>();
 		termFrequencies = new HashMap<String, double[]>();
 
 		for (int objectIndex = 0; objectIndex < documents.length; objectIndex++)
 		{
-			Indexable indexable = documents[objectIndex];
+			T indexable = documents[objectIndex];
 			String[] terms = splitText(indexable.getText());
-			HashMap<String, IndexEntry> objectData = new HashMap<String, IndexEntry>();
+			HashMap<String, IndexEntry<T>> objectData = new HashMap<String, IndexEntry<T>>();
 			
 			for (int i = 0; i < terms.length; i++)
 			{
@@ -90,7 +94,7 @@ public class InvertedIndex
 				}
 				else
 				{
-					objectData.put(term, new IndexEntry(indexable, i));
+					objectData.put(term, new IndexEntry<T>(indexable, i));
 				}
 			}
 			
@@ -102,7 +106,7 @@ public class InvertedIndex
 	}
 
 
-	private void addObjectDataToIndex(HashMap<String, IndexEntry> objectData)
+	private void addObjectDataToIndex(HashMap<String, IndexEntry<T>> objectData)
 	{
 		for (String term : objectData.keySet())
 		{
@@ -112,7 +116,7 @@ public class InvertedIndex
 			}
 			else
 			{
-				ArrayList<IndexEntry> entries = new ArrayList<IndexEntry>();
+				ArrayList<IndexEntry<T>> entries = new ArrayList<IndexEntry<T>>();
 				entries.add(objectData.get(term));
 				index.put(term, entries);
 			}
@@ -120,21 +124,21 @@ public class InvertedIndex
 	}
 	
 
-	private void calculateTermFrequencies(HashMap<String, IndexEntry> objectData)
+	private void calculateTermFrequencies(HashMap<String, IndexEntry<T>> objectData)
 	{
 		//Calculate the Euclidian norm.
 		double norm = 0;
-		for (IndexEntry entry : objectData.values())
+		for (IndexEntry<T> entry : objectData.values())
 		{
 			norm += Math.pow(entry.getTermPositions().length, 2);
 		}
 		norm = Math.sqrt(norm);
 		
 		//Calculate the normalised term frequencies.
-		for (Entry<String, IndexEntry> entry : objectData.entrySet())
+		for (Entry<String, IndexEntry<T>> entry : objectData.entrySet())
 		{
 			String term = entry.getKey();
-			IndexEntry indexEntry = entry.getValue();
+			IndexEntry<T> indexEntry = entry.getValue();
 			double termFrequency = indexEntry.getTermPositions().length / norm;
 			
 			if (termFrequencies.containsKey(term))
@@ -185,13 +189,13 @@ public class InvertedIndex
 	}
 	
 	
-	public HashMap<String, ArrayList<IndexEntry>> getIndex()
+	public HashMap<String, ArrayList<IndexEntry<T>>> getIndex()
 	{
 		return index;
 	}
 	
 	
-	public Indexable[] getIndexables()
+	public T[] getIndexables()
 	{
 		return documents;
 	}

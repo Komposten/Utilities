@@ -33,11 +33,15 @@ import komposten.utilities.tools.Text;
  * Dertat</a>.
  * 
  * @see InvertedIndex
- * @version <b>1.1.0</b> <br />
+ * @version <b>1.2.0</b> <br />
+ *          <ul>
+ *          <li><code>SearchEngine</code> is now generic.</li>
+ *          </ul>
+ *          <b>Older</b> <br />
+ *          1.1.0 <br />
  *          <ul>
  *          <li>Added <code>returnAllIfEmptyQuery</code> to query().</li>
  *          </ul>
- *          <b>Older</b> <br />
  *          1.0.0 <br />
  *          <ul>
  *          <li>Created the class.</li>
@@ -48,12 +52,12 @@ import komposten.utilities.tools.Text;
  *          </ul>
  * @author Jakob Hjelm
  */
-public class SearchEngine
+public class SearchEngine<T extends InvertedIndex.Indexable>
 {
-	private InvertedIndex index;
+	private InvertedIndex<T> index;
 	
 	
-	public SearchEngine(InvertedIndex index)
+	public SearchEngine(InvertedIndex<T> index)
 	{
 		this.index = index;
 	}
@@ -74,16 +78,16 @@ public class SearchEngine
 	 * @return A list of the <code>Indexable</code>s that match the query, sorted
 	 *         in descending order.
 	 */
-	public List<Indexable> query(String query, boolean exact, boolean returnAllIfEmptyQuery)
+	public List<T> query(String query, boolean exact, boolean returnAllIfEmptyQuery)
 	{
 		String[] terms = index.splitText(query);
 		
 		if (terms.length == 0)
 		{
 			if (returnAllIfEmptyQuery)
-				return new ArrayList<Indexable>(Arrays.asList(index.getIndexables()));
+				return new ArrayList<T>(Arrays.asList(index.getIndexables()));
 			else
-				return new ArrayList<Indexable>();
+				return new ArrayList<T>();
 		}
 		
 		if (exact)
@@ -97,17 +101,17 @@ public class SearchEngine
 	}
 
 
-	private ArrayList<Indexable> exactQuery(String[] terms)
+	private ArrayList<T> exactQuery(String[] terms)
 	{
-		HashSet<Indexable> matchingIndexables = new HashSet<Indexable>();
+		HashSet<T> matchingIndexables = new HashSet<T>();
 		
 		for (String term : terms)
 		{
 			if (index.getIndex().containsKey(term))
 			{
-				ArrayList<IndexEntry> indexEntries = index.getIndex().get(term);
+				ArrayList<IndexEntry<T>> indexEntries = index.getIndex().get(term);
 				
-				for (IndexEntry entry : indexEntries)
+				for (IndexEntry<T> entry : indexEntries)
 				{
 					matchingIndexables.add(entry.getIndexable());
 				}
@@ -118,15 +122,15 @@ public class SearchEngine
 	}
 
 
-	private ArrayList<Indexable> broadQuery(String[] terms)
+	private ArrayList<T> broadQuery(String[] terms)
 	{
-		HashSet<Indexable> matchingIndexables = new HashSet<Indexable>();
+		HashSet<T> matchingIndexables = new HashSet<T>();
 		ArrayList<String> matchingTerms = new ArrayList<String>();
 		ArrayList<Double> matchScores = new ArrayList<Double>();
 		
 		for (String term : terms)
 		{
-			for (Entry<String, ArrayList<IndexEntry>> entry : index.getIndex().entrySet())
+			for (Entry<String, ArrayList<IndexEntry<T>>> entry : index.getIndex().entrySet())
 			{
 				String indexTerm = entry.getKey();
 				int distance = Text.editDistance(term, indexTerm);
@@ -138,7 +142,7 @@ public class SearchEngine
 					matchingTerms.add(indexTerm);
 					matchScores.add(Math.pow(1-normalisedDistance, 2));
 					
-					for (IndexEntry indexEntry : entry.getValue())
+					for (IndexEntry<T> indexEntry : entry.getValue())
 					{
 						matchingIndexables.add(indexEntry.getIndexable());
 					}
@@ -157,10 +161,10 @@ public class SearchEngine
 	}
 
 
-	private ArrayList<Indexable> rankIndexables(String[] terms,
-			Collection<Indexable> indexables, double[] scoresArray)
+	private ArrayList<T> rankIndexables(String[] terms,
+			Collection<T> indexables, double[] scoresArray)
 	{
-		HashMap<Indexable, double[]> indexableVectors = new HashMap<Indexable, double[]>();
+		HashMap<T, double[]> indexableVectors = new HashMap<T, double[]>();
 		double[] queryVector = new double[terms.length];
 		
 		for (int i = 0; i < terms.length; i++)
@@ -172,10 +176,10 @@ public class SearchEngine
 				double score = (scoresArray == null ? 1 : scoresArray[i]);
 				queryVector[i] = index.getInverseDocumentFrequencies().get(term) * score;
 				
-				ArrayList<IndexEntry> entriesForTerm = index.getIndex().get(term);
+				ArrayList<IndexEntry<T>> entriesForTerm = index.getIndex().get(term);
 				for (int j = 0; j < entriesForTerm.size(); j++)
 				{
-					Indexable indexable = entriesForTerm.get(j).getIndexable();
+					T indexable = entriesForTerm.get(j).getIndexable();
 					if (indexables.contains(indexable))
 					{
 						if (!indexableVectors.containsKey(indexable))
@@ -218,21 +222,21 @@ public class SearchEngine
 //		}
 		
 		
-		ArrayList<RankedIndexable> rankedIndexables = new ArrayList<RankedIndexable>();
-		for (Entry<Indexable, double[]> entry : indexableVectors.entrySet())
+		ArrayList<RankedIndexable<T>> rankedIndexables = new ArrayList<RankedIndexable<T>>();
+		for (Entry<T, double[]> entry : indexableVectors.entrySet())
 		{
-			Indexable indexable = entry.getKey();
+			T indexable = entry.getKey();
 			double[] vector = entry.getValue();
 			
 			double dot = MathOps.dotProduct(vector, queryVector);
 			
-			rankedIndexables.add(new RankedIndexable(dot, indexable));
+			rankedIndexables.add(new RankedIndexable<T>(dot, indexable));
 		}
 		
 		Collections.sort(rankedIndexables);
 		
-		ArrayList<Indexable> result = new ArrayList<Indexable>();
-		for (RankedIndexable rankedIndexable : rankedIndexables)
+		ArrayList<T> result = new ArrayList<T>();
+		for (RankedIndexable<T> rankedIndexable : rankedIndexables)
 		{
 			result.add(rankedIndexable.indexable);
 		}
@@ -241,13 +245,13 @@ public class SearchEngine
 
 	
 	
-	private static class RankedIndexable implements Comparable<RankedIndexable>
+	private static class RankedIndexable<T extends InvertedIndex.Indexable> implements Comparable<RankedIndexable<T>>
 	{
 		public double rank;
-		public Indexable indexable;
+		public T indexable;
 		
 		
-		public RankedIndexable(double rank, Indexable indexable)
+		public RankedIndexable(double rank, T indexable)
 		{
 			this.rank = rank;
 			this.indexable = indexable;
@@ -255,7 +259,7 @@ public class SearchEngine
 		
 
 		@Override
-		public int compareTo(RankedIndexable o)
+		public int compareTo(RankedIndexable<T> o)
 		{
 			if (rank > o.rank)
 			{

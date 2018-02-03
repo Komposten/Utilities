@@ -1,3 +1,6 @@
+2018-02-03
+-FEATURE: SearchEngine and InvertedIndex are now generic (<T extends Indexable>).
+
 2018-01-24
 -FEATURE: Added ExceptionHandler.
 -FEATURE: Added setExceptionHandler() to Logger and LogUtils.
