@@ -4,10 +4,8 @@
 package komposten.utilities.logging;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.URLDecoder;
 import java.security.ProtectionDomain;
 import java.util.Calendar;
@@ -19,14 +17,20 @@ import java.util.Calendar;
  * @see {@link LogUtils}
  * @author Jakob Hjelm
  * @version
- * <b>1.5.2</b> <br />
+ * <b>1.6.0</b> <br />
+ * <ul>
+ * <li>Replaced the <code>filePath</code> and <code>stream</code> fields with a <code>LogOutput</code> field.</li>
+ * <li>Added <code>writeTo(LogOutput)</code>.</li>
+ * <li>Replaced <code>closeStream()</code> with <code>closeOutput()</code> and changed return type to <code>boolean</code>.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.5.2 <br />
  * <ul>
  * <li>Removed the exception throwing introduced in the previous version.</li>
  * <li>All internal exceptions are now passed to an <code>ExceptionHandler</code>.</li>
  * <li>Added <code>setExceptionHandler(ExceptionHandler)</code>.</li>
  * <li><code>getProgramDir()</code> now uses default instances of ExceptionHandler for error messages rather than <code>JOptionPane</code>.</li>
  * </ul>
- * <b>Older</b> <br />
  * 1.5.1 <br />
  * <ul>
  * <li><code>write(String, String)</code> now throws exceptions instead of catching them.</li>
@@ -109,8 +113,7 @@ public final class Logger //TODO Logger: Make it possible to print to different 
 	
 	private LogFormatter formatter;
 	private ExceptionHandler handler;
-	private String filePath_; //TODO Logger; Create a "LogOutput/Handler" class with two sub-classes, "FileLogOutput" and "StreamLogOutput". Then replace filePath and stream with a single LogOutput field (can be set via writeToFile, writeToStream, or writeTo).
-	private OutputStream stream_;
+	private LogOutput output;
 	
 	
 	static
@@ -161,6 +164,7 @@ public final class Logger //TODO Logger: Make it possible to print to different 
     formatter = new DefaultLogFormatter();
     handler = new ExceptionHandler();
 	}
+	
 
   /**
    * Creates a new Logger that writes to the specified file. Use {@link #FILEPATH} for the default file.
@@ -173,13 +177,22 @@ public final class Logger //TODO Logger: Make it possible to print to different 
   
   /**
    * Creates a new Logger that writes to the specified stream.
-   * <br /><b>Note:</b> The stream will not be closed until {@link #closeStream()} is invoked,
+   * <br /><b>Note:</b> The stream will not be closed until {@link #closeOutput()} is invoked,
    * or the stream is closed manually.
    * @param stream The stream to write to.
    */
   public Logger(OutputStream stream)
   {
     writeToStream(stream);
+  }
+
+  /**
+   * Creates a new Logger that writes to the specified <code>LogOutput</code>.
+   * @param output The <code>LogOutput</code> to write to.
+   */
+  public Logger(LogOutput output)
+  {
+  	writeTo(output);
   }
   
   
@@ -204,16 +217,29 @@ public final class Logger //TODO Logger: Make it possible to print to different 
   
   
   /**
+   * Sets this Logger to write to the provided <code>LogOutput</code>.
+   * @param output The new target <code>LogOutput</code>.
+   * <br /><b>Note:</b> The <code>LogOutput</code> previously assigned to this <code>Logger</code>
+   * will not be closed! In order to close it, invoke {@link #closeOutput()} prior to
+   * invoking this method.
+   */
+  public void writeTo(LogOutput output)
+  {
+  	this.output = output;
+  }
+  
+  
+  
+  /**
    * Sets this Logger to write to the file with the specified path. Use {@link #FILEPATH} for the default file.
-   * <br /><b>Note:</b> If this Logger previously has been assigned an <code>OutputStream</code>,
-   * that stream will <i>not be closed</i>! In order to close it, invoke {@link #closeStream()} prior to
+   * <br /><b>Note:</b> The <code>LogOutput</code> previously assigned to this <code>Logger</code>
+   * will not be closed! In order to close it, invoke {@link #closeOutput()} prior to
    * invoking this method.
    * @param path The new target file.
    */
   public void writeToFile(String path)
   {
-  	filePath_ = path;
-  	stream_   = null;
+  	writeTo(new FileLogOutput(path));
   }
   
   
@@ -221,14 +247,13 @@ public final class Logger //TODO Logger: Make it possible to print to different 
   /**
    * Sets this Logger to write to the provided stream.
    * @param stream The new target stream.
-   * <br /><b>Note:</b> If this Logger previously has been assigned an <code>OutputStream</code>,
-   * that stream will not be closed! In order to close it, invoke {@link #closeStream()} prior to
+   * <br /><b>Note:</b> The <code>LogOutput</code> previously assigned to this <code>Logger</code>
+   * will not be closed! In order to close it, invoke {@link #closeOutput()} prior to
    * invoking this method.
    */
   public void writeToStream(OutputStream stream)
   {
-    filePath_ = null;
-    stream_   = stream;
+  	writeTo(new StreamLogOutput(stream));
   }
 	
 	
@@ -279,91 +304,17 @@ public final class Logger //TODO Logger: Make it possible to print to different 
 		Calendar date = Calendar.getInstance();
 		String formattedString = formatter.format(logLevel, date, location, errorMsg, t, includeStackTrace);
 		
-		if (filePath_ != null)
-			return write(formattedString, filePath_);
-		else
-			return write(formattedString, stream_);
+		return output.write(formattedString, handler);
 	}
 	
 	
 	
 	/**
-	 * Writes a message to the file specified by <code>filePath</code>.
-	 * @param filePath The path to a file.
-	 * @return True if the data was successfully written to the file, false
-	 * otherwise.
+	 * Closes this Logger's current <code>LogOutput</code>.
+	 * @see LogOutput#close(ExceptionHandler)
 	 */
-	private boolean write(String data, String filePath)
+	public boolean closeOutput()
 	{
-	  if (filePath != null)
-	  {
-      try
-      {
-        File log = new File(filePath);
-        
-        if (!log.exists())
-          if (!log.createNewFile())
-            System.err.println("Logger - write(): Could not create the log file!");
-        
-        FileWriter writer = new FileWriter(log, true);
-        writer.write(data.toString());
-        writer.flush();
-        writer.close();
-      }
-      catch (IOException e)
-      {
-      	handler.handleException("An unexpected exception occurred while logging:", e);
-      }
-      catch (SecurityException e)
-      {
-    		handler.handleException("An unexpected exception occurred while logging:", new IOException("Access denied: " + filePath + "!", e));
-      }
-      
-      return true;
-	  }
-	  else
-	    return false;
-	}
-	
-	
-	
-	/**
-	 * Writes a message to the stream specified by <code>stream</code>.
-	 * @param stream The stream to write to.
-	 * @return True if the data was successfully written to the stream, false
-	 * otherwise.
-	 */
-	private boolean write(String data, OutputStream stream)
-	{
-		if (stream != null)
-	  {
-	    PrintStream print = new PrintStream(stream);
-	    
-	    print.println(data);
-	    print.flush();
-	    
-	    return true;
-	  }
-	  else
-	    return false;
-	}
-	
-	
-	
-	/**
-	 * Closes this Logger's <code>OutputStream</code> if either {@link #Logger(OutputStream)}
-	 * or {@link #writeToStream(OutputStream)} has been used.
-	 */
-	public void closeStream()
-	{
-	  try
-	  {
-  	  if (stream_ != null)
-  	    stream_.close();
-	  }
-	  catch (IOException e)
-	  {
-	  	handler.handleException("Logger encountered an exception while closing its stream: ", e);
-	  }
+		return output.close(handler);
 	}
 }

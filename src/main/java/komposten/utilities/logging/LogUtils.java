@@ -32,7 +32,7 @@ public class LogUtils
   public static void setFormatter(LogFormatter formatter)
   {
 	  if (logger_ == null)
-	    throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before setting a formatter!");
+	    throw new InvalidStateException("Must call LogUtils.writeToFile(), .writeToStream() or .writeTo() before logging!");
 	  logger_.setFormatter(formatter);
   }
   
@@ -43,8 +43,22 @@ public class LogUtils
   public static void setExceptionHandler(ExceptionHandler handler)
   {
 	  if (logger_ == null)
-	    throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before setting an exception handler!");
+	    throw new InvalidStateException("Must call LogUtils.writeToFile(), .writeToStream() or .writeTo() before logging!");
 	  logger_.setExceptionHandler(handler);
+  }
+  
+
+  
+  /**
+   * Sets <code>LogUtils</code> to write to the specified <code>LogOutput</code>. Also initialises the logger if needed.
+   * @see Logger#writeTo(LogOutput)
+   */
+  public static void writeTo(LogOutput output)
+  {
+    if (logger_ == null)
+      logger_ = new Logger(output);
+    else
+      logger_.writeTo(output);
   }
   
   
@@ -52,7 +66,6 @@ public class LogUtils
   /**
    * Sets <code>LogUtils</code> to write to the specified file. Also initialises the logger if needed.
    * @see Logger#writeToFile(String)
-   * @see LogUtils#writeToStream(OutputStream)
    */
   public static void writeToFile(String path)
   {
@@ -67,7 +80,6 @@ public class LogUtils
   /**
    * Sets <code>LogUtils</code> to write to the specified stream. Also initialises the logger if needed.
    * @see Logger#writeToStream(OutputStream)
-   * @see LogUtils#writeToFile(String)
    */
   public static void writeToStream(OutputStream stream)
   {
@@ -86,7 +98,7 @@ public class LogUtils
 	public static boolean log(Level logLevel, String message)
 	{
 	  if (logger_ == null)
-	    throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before logging!");
+	    throw new InvalidStateException("Must call LogUtils.writeToFile(), .writeToStream() or .writeTo() before logging!");
 	  return logger_.log(logLevel, message);
 	}
   
@@ -99,7 +111,7 @@ public class LogUtils
 	public static boolean log(Level logLevel, String location, String message)
 	{
 	  if (logger_ == null)
-	    throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before logging!");
+	    throw new InvalidStateException("Must call LogUtils.writeToFile(), .writeToStream() or .writeTo() before logging!");
 	  return logger_.log(logLevel, location, message);
 	}
 
@@ -112,7 +124,16 @@ public class LogUtils
   public static boolean log(Level logLevel, String className, String errorMsg, Throwable t, boolean includeStackTrace)
   {
     if (logger_ == null)
-      throw new InvalidStateException("Must call LogUtils.writeToFile() or LogUtils.writeToStream() before logging!");
+      throw new InvalidStateException("Must call LogUtils.writeToFile(), .writeToStream() or .writeTo() before logging!");
     return logger_.log(logLevel, className, errorMsg, t, includeStackTrace);
+  }
+  
+  
+  
+  public static boolean closeOutput()
+  {
+    if (logger_ == null)
+      throw new InvalidStateException("Must call LogUtils.writeToFile(), .writeToStream() or .writeTo() before logging!");
+    return logger_.closeOutput();
   }
 }

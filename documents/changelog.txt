@@ -1,3 +1,9 @@
+2018-02-09
+-FEATURE: Added LogOutput, FileLogOutput and StreamLogOutput.
+-CODE: Logger now uses a single LogOutput field instead of separate fields for writing to files or streams.
+-CODE: Added writeTo(LogOutput) to Logger and LogUtils.
+-CODE: Renamed Logger.closeStream() to closeOutput() and changed return type to boolean.
+
 2018-02-03
 -FEATURE: SearchEngine and InvertedIndex are now generic (<T extends Indexable>).
 
