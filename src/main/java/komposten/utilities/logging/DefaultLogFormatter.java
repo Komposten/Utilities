@@ -29,10 +29,10 @@ public class DefaultLogFormatter implements LogFormatter
 
 	public DefaultLogFormatter()
 	{
-		firstLineIndent = "/=|";
-		messageIndent = "|-|";
-		messageMultiLineIndent = "|----|";
-		stackTraceIndent = "|---->";
+		firstLineIndent = "/=| ";
+		messageIndent = "|-| ";
+		messageMultiLineIndent = "|----| ";
+		stackTraceIndent = "|----> ";
 	}
 	
 	

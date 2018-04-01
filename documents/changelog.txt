@@ -1,3 +1,6 @@
+2018-04-01
+-CODE: Minor change to the default log formatter to allow ctrl+clicking on the log lines (in text files) to open the correct file and location in Eclipse.
+
 2018-02-09
 -FEATURE: Added LogOutput, FileLogOutput and StreamLogOutput.
 -CODE: Logger now uses a single LogOutput field instead of separate fields for writing to files or streams.
