@@ -1,3 +1,14 @@
+2018-04-07
+-FEATURE: Added Text.getEditDistanceChangeType().
+-CODE: Fixed getEditDistanceMatrix() missing a column.
+-CODE: Transposed the edit distance matrix so it correctly represents changes.
+-CODE: Updated TextTest.
+
+
+2018-04-06
+-FEATURE: Added Text.editDistance(String, String, boolean).
+-FEATURE: Added Text.getEditDistanceMatrix().
+
 2018-04-01
 -CODE: Minor change to the default log formatter to allow ctrl+clicking on the log lines (in text files) to open the correct file and location in Eclipse.
 

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import komposten.utilities.tools.Text;
+import komposten.utilities.tools.Text.Change;
 
 public class TextTest
 {
@@ -38,5 +39,43 @@ public class TextTest
 
 		assertEquals(0, Text.editDistance("", null));
 		assertEquals(0, Text.editDistance(null, ""));
+	}
+	
+	
+	@Test(expected = IllegalStateException.class)
+	public void testGetEditDistanceMatrixIllegalState()
+	{
+		Text.editDistance("cat", "dog", false);
+		Text.getEditDistanceMatrix();
+	}
+	
+	
+	@Test(expected = IllegalStateException.class)
+	public void testGetEditDistanceChangeTypeIllegalState()
+	{
+		Text.editDistance("cat", "dog", false);
+		Text.getEditDistanceChangeType();
+	}
+	
+	
+	@Test
+	public void testGetEditDistanceChangeType()
+	{
+		Text.editDistance("in", "ins", true);
+		assertEquals(Change.Insertion, Text.getEditDistanceChangeType());
+		Text.editDistance("del", "de", true);
+		assertEquals(Change.Deletion, Text.getEditDistanceChangeType());
+		Text.editDistance("sub", "sus", true);
+		assertEquals(Change.Substitution, Text.getEditDistanceChangeType());
+		Text.editDistance("indel", "insde", true);
+		assertEquals(Change.InDel, Text.getEditDistanceChangeType());
+		Text.editDistance("insub", "inssus", true);
+		assertEquals(Change.InSub, Text.getEditDistanceChangeType());
+		Text.editDistance("subdel", "susde", true);
+		assertEquals(Change.SubDel, Text.getEditDistanceChangeType());
+		Text.editDistance("none", "none", true);
+		assertEquals(Change.None, Text.getEditDistanceChangeType());
+		Text.editDistance("indelsub", "insdesus", true);
+		assertEquals(Change.InDelSub, Text.getEditDistanceChangeType());
 	}
 }
