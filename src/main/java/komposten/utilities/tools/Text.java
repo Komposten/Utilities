@@ -8,6 +8,7 @@ package komposten.utilities.tools;
  * 
  * @version <b>1.2.1</b> <br />
  *          <ul>
+ *          <li>Renamed <code>getEditDistanceChangeType()</code> to <code>getEditDistanceChangeSummary()</code>.
  *          <li><code>editDistance(String, String, boolean)</code> now properly creates the matrix if <code>saveMatrix == true</code> and either string is null/empty.</li>
  *          </ul>
  *          <b>Older</b> <br />
@@ -45,7 +46,7 @@ public class Text
 	 * This method calls {@link #editDistance(String, String, boolean)
 	 * editDistance(string1, string2, false)} and will thus not create an
 	 * {@link #getEditDistanceMatrix() edit distance matrix} or allow retrieval of
-	 * {@link #getEditDistanceChangeType() change type}.
+	 * {@link #getEditDistanceChangeSummary() change type}.
 	 * 
 	 * @return The minimum amount of insertions, deletions and/or substitutions
 	 *         required to change <code>string1</code> into <code>string2</code>.
@@ -185,12 +186,20 @@ public class Text
 		SubDel,
 		InDelSub
 	}
-	
+
+
 	/**
-	 * @return The types of changes that are required to go from the first to the second string in the last call to {@link #editDistance(String, String)}.
-	 * @throws IllegalStateException If the last call to {@link #editDistance(String, String, boolean)} had <code>saveMatrix</code> set to <code>false</code>.
+	 * @return A summary of the types of changes that are required to go from the
+	 *         first to the second string in the last call to
+	 *         {@link #editDistance(String, String)}.
+	 * @throws IllegalStateException If the last call to
+	 *           {@link #editDistance(String, String, boolean)} had
+	 *           <code>saveMatrix</code> set to <code>false</code>.
+	 * @see Change
+	 * @see #editDistance(String, String)
+	 * @see #editDistance(String, String, boolean)
 	 */
-	public static Change getEditDistanceChangeType()
+	public static Change getEditDistanceChangeSummary()
 	{
 		if (editDistanceMatrix == null)
 		{
