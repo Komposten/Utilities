@@ -2,6 +2,8 @@ package test.komposten.utilities.tools;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import komposten.utilities.tools.Text;
@@ -55,6 +57,45 @@ public class TextTest
 	{
 		Text.editDistance("cat", "dog", false);
 		Text.getEditDistanceOperationSummary();
+	}
+	
+	
+	@Test(expected = IllegalStateException.class)
+	public void testGetEditDistanceOperationsIllegalState()
+	{
+		Text.editDistance("cat", "dog", false);
+		Text.getEditDistanceOperations();
+	}
+	
+	
+	@Test
+	public void testGetEditDistanceOperations()
+	{
+		//Test InSubDel to larger string.
+		Text.editDistance("interest", "ntvaestes", true);
+		List<Text.Operation> operations = Text.getEditDistanceOperations();
+		assertEquals(new Text.Operation(8, 's', OperationType.Insertion), operations.get(0));
+		assertEquals(new Text.Operation(8, 'e', OperationType.Insertion), operations.get(1));
+		assertEquals(new Text.Operation(4, 'a', OperationType.Substitution), operations.get(2));
+		assertEquals(new Text.Operation(3, 'v', OperationType.Substitution), operations.get(3));
+		assertEquals(new Text.Operation(0, 'i', OperationType.Deletion), operations.get(4));
+
+		//Test InSubDel to shorter string.
+		Text.editDistance("ntvaestes", "interest", true);
+		operations = Text.getEditDistanceOperations();
+		assertEquals(new Text.Operation(8, 's', OperationType.Deletion), operations.get(0));
+		assertEquals(new Text.Operation(7, 'e', OperationType.Deletion), operations.get(1));
+		assertEquals(new Text.Operation(3, 'r', OperationType.Substitution), operations.get(2));
+		assertEquals(new Text.Operation(2, 'e', OperationType.Substitution), operations.get(3));
+		assertEquals(new Text.Operation(0, 'i', OperationType.Insertion), operations.get(4));
+		
+		//Test InSubDel to same-length string.
+		Text.editDistance("interest", "ntvaests", true);
+		operations = Text.getEditDistanceOperations();
+		assertEquals(new Text.Operation(8, 's', OperationType.Insertion), operations.get(0));
+		assertEquals(new Text.Operation(4, 'a', OperationType.Substitution), operations.get(1));
+		assertEquals(new Text.Operation(3, 'v', OperationType.Substitution), operations.get(2));
+		assertEquals(new Text.Operation(0, 'i', OperationType.Deletion), operations.get(3));
 	}
 	
 	

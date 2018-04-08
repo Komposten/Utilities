@@ -9,13 +9,15 @@ import java.util.List;
 /**
  * A class to perform different operations concerning text.
  * 
- * @version <b>1.2.1</b> <br />
+ * @version <b>1.3.0</b> <br />
  *          <ul>
  *          <li><code>editDistance(String, String, boolean)</code> now properly creates the matrix if <code>saveMatrix == true</code> and either string is null/empty.</li>
  *          <li>Renamed <code>getEditDistanceChangeType()</code> to <code>getEditDistanceChangeSummary()</code>.</li>
  *          <li>Renamed <code>updateChange()</code> to <code>addToChangeSummary()</code>.</li>
  *          <li>Replaced "change" in parameters, method names, etc. with "operation".</code>.</li>
  *          <li>Renamed <code>Text.Change</code> to <code>Text.OperationType</code>.</li>
+ *          <li>Re-factored the "illegal state checks" to <code>checkState(String)</code>.</li>
+ *          <li>Added <code>getEditDistanceOperations()</code> and <code>Operation</code>.</li>
  *          </ul>
  *          <b>Older</b> <br />
  *          1.2.0 <br />
@@ -39,6 +41,9 @@ import java.util.List;
 public class Text
 {
 	private static int[][] editDistanceMatrix;
+	private static List<Operation> editDistanceOperations;
+	private static String editDistanceString1;
+	private static String editDistanceString2;
 
 	
 	/**
@@ -79,6 +84,9 @@ public class Text
 	 */
 	public static int editDistance(String string1, String string2, boolean saveMatrix)
 	{
+		editDistanceOperations = null;
+		editDistanceString1 = string1;
+		editDistanceString2 = string2;
 		
 		int length1 = (string1 == null ? 0 : string1.length());
 		int length2 = (string2 == null ? 0 : string2.length());
@@ -167,13 +175,7 @@ public class Text
 	 */
 	public static int[][] getEditDistanceMatrix()
 	{
-		if (editDistanceMatrix == null)
-		{
-			throw new IllegalStateException(
-					"getEditDistanceMatrix() can only be called after a call to "
-					+ "editDistance(String, String, boolean) with saveMatrix == true!");
-		}
-		
+		checkState("getEditDistanceMatrix()");
 		return editDistanceMatrix;
 	}
 	
@@ -193,6 +195,64 @@ public class Text
 		SubDel,
 		InDelSub
 	}
+	
+	
+	/**
+	 * @return The operations required to go from the first to the second string in the last call to {@link #editDistance(String, String)}.
+	 * @see OperationType
+	 * @see #editDistance(String, String)
+	 * @see #editDistance(String, String, boolean)
+	 */
+	public static List<Operation> getEditDistanceOperations()
+	{
+		checkState("getEditDistanceOperations()");
+		
+		if (editDistanceOperations != null)
+			return editDistanceOperations;
+		else
+			editDistanceOperations = new ArrayList<Operation>();
+
+		int x = editDistanceMatrix.length-1;
+		int y = editDistanceMatrix[0].length-1;
+		
+		OperationType operationType = OperationType.None;
+		
+		while (x > 0 || y > 0)
+		{
+			boolean isLeftmost = (x == 0);
+			boolean isTop = (y == 0);
+			
+			int current = editDistanceMatrix[x][y];
+			int left = (!isLeftmost ? editDistanceMatrix[x-1][y] : Integer.MAX_VALUE);
+			int above = (!isTop ? editDistanceMatrix[x][y-1] : Integer.MAX_VALUE);
+			int diagonal = (!isTop ? (!isLeftmost ? editDistanceMatrix[x-1][y-1] : Integer.MAX_VALUE) : Integer.MAX_VALUE);
+			
+			if (diagonal <= left && diagonal <= above && diagonal <= current)
+			{
+				if (diagonal < current)
+				{
+					editDistanceOperations.add(new Operation(y-1, editDistanceString2.charAt(x-1), OperationType.Substitution));
+					operationType = addToOperationSummary(OperationType.Substitution, operationType);
+				}
+				
+				x = x-1;
+				y = y-1;
+			}
+			else if (left <= above && left <= current)
+			{
+				editDistanceOperations.add(new Operation(y, editDistanceString2.charAt(x-1), OperationType.Insertion));
+				operationType = addToOperationSummary(OperationType.Insertion, operationType);
+				x = x-1;
+			}
+			else
+			{
+				editDistanceOperations.add(new Operation(y-1, editDistanceString1.charAt(y-1), OperationType.Deletion));
+				operationType = addToOperationSummary(OperationType.Deletion, operationType);
+				y = y-1;
+			}
+		}
+		
+		return editDistanceOperations;
 	}
 
 
@@ -209,12 +269,7 @@ public class Text
 	 */
 	public static OperationType getEditDistanceOperationSummary()
 	{
-		if (editDistanceMatrix == null)
-		{
-			throw new IllegalStateException(
-					"getEditDistanceOperationSummary() can only be called after a call to "
-					+ "editDistance(String, String, boolean) with saveMatrix == true!");
-		}
+		//NEXT_TASK Text; getEditDistanceOperationSummary() should store the result so next call doesn't require any calculations.
 		checkState("getEditDistanceOperationSummary()");
 		
 		int x = editDistanceMatrix.length-1;
@@ -258,6 +313,14 @@ public class Text
 
 
 	private static void checkState(String callerName)
+	{
+		if (editDistanceMatrix == null)
+		{
+			throw new IllegalStateException(
+					callerName + " can only be called after a call to "
+					+ "editDistance(String, String, boolean) with saveMatrix == true!");
+		}
+	}
 	
 	
 	private static OperationType addToOperationSummary(OperationType newOperation, OperationType summary)
@@ -323,6 +386,36 @@ public class Text
 	
 	public static class Operation
 	{
+		int index;
+		char character;
+		OperationType operationType;
 		
+		public Operation(int index, char character, OperationType operationType)
+		{
+			this.index = index;
+			this.character = character;
+			this.operationType = operationType;
+		}
+		
+		
+		@Override
+		public String toString()
+		{
+			return operationType + " of " + character + " at " + index;
+		}
+		
+		
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (obj != null && obj instanceof Operation)
+			{
+				Operation op = (Operation) obj;
+				
+				return index == op.index && character == op.character && operationType == op.operationType;
+			}
+			
+			return false;
+		}
 	}
 }
