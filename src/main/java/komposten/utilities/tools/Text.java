@@ -6,22 +6,26 @@ package komposten.utilities.tools;
 /**
  * A class to perform different operations concerning text.
  * 
- * @version <b>1.2.0</b> <br />
+ * @version <b>1.2.1</b> <br />
  *          <ul>
- *          <li>Added getEditDistanceChangeType().</li>
- *          <li>Fixed getEditDistanceMatrix() missing a column.</li>
- *          <li>Transposed the edit distance matrix so it correctly represents changes.</li>
- *          <li>Added and updated javadoc for most methods.
+ *          <li><code>editDistance(String, String, boolean)</code> now properly creates the matrix if <code>saveMatrix == true</code> and either string is null/empty.</li>
  *          </ul>
  *          <b>Older</b> <br />
+ *          1.2.0 <br />
+ *          <ul>
+ *          <li>Added <code>getEditDistanceChangeType()</code>.</li>
+ *          <li>Fixed <code>getEditDistanceMatrix()</code> missing a column.</li>
+ *          <li>Transposed the edit distance matrix so it correctly represents changes.</li>
+ *          <li>Added and updated javadoc for most methods.</li>
+ *          </ul>
  *          1.1.0 <br />
  *          <ul>
- *          <li>Added editDistance(String, String, boolean).</li>
- *          <li>Added getEditDistanceMatrix().</li>
+ *          <li>Added <code>editDistance(String, String, boolean)</code>.</li>
+ *          <li>Added <code>getEditDistanceMatrix()</code>.</li>
  *          </ul>
  *          1.0.0 <br />
  *          <ul>
- *          <li>Added editDistance(String, String).</li>
+ *          <li>Added <code>editDistance(String, String)</code>.</li>
  *          </ul>
  * @author Jakob Hjelm
  */
@@ -68,21 +72,33 @@ public class Text
 	 */
 	public static int editDistance(String string1, String string2, boolean saveMatrix)
 	{
-		editDistanceMatrix = null;
+		int length1 = (string1 == null ? 0 : string1.length());
+		int length2 = (string2 == null ? 0 : string2.length());
+
+		editDistanceMatrix = (saveMatrix ? new int[length2 + 1][length1 + 1] : null);
 		
 		if (string1 == null && string2 == null)
+		{
 			return 0;
-		if ((string1 == null || string1.isEmpty()) && string2 != null)
+		}
+		else if ((string1 == null || string1.isEmpty()) && string2 != null)
+		{
+			if (saveMatrix)
+			{
+				for (int i = 0; i <= length2; i++)
+					editDistanceMatrix[i][0] = i;
+			}
 			return string2.length();
-		if ((string2 == null || string2.isEmpty()) && string1 != null)
+		}
+		else if ((string2 == null || string2.isEmpty()) && string1 != null)
+		{
+			if (saveMatrix)
+			{
+				for (int i = 0; i <= length1; i++)
+					editDistanceMatrix[0][i] = i;
+			}
 			return string1.length();
-		//FIXME Text; getEditDistanceMatrix() and getEditDistanceChangeType() will not work if either string is null or empty!
-
-		int length1 = string1.length();
-		int length2 = string2.length();
-
-		if (saveMatrix)
-			editDistanceMatrix = new int[length2 + 1][length1 + 1];
+		}
 				
 		int[] distance = new int[length1 + 1]; // We only need to keep track of 1 column, and then update values in it as we go.
 		int previous = 0; //We also need to store the previously calculated value separately so we don't write to the column too early.
@@ -96,7 +112,7 @@ public class Text
 
 		for (int i = 0; i < length2; i++)
 		{
-			previous = i+1;
+			previous = i + 1;
 			
 			char char1 = string2.charAt(i);
 
@@ -122,7 +138,7 @@ public class Text
 				distance[j] = previous;
 				
 				if (saveMatrix)
-					editDistanceMatrix[i+1][j] = distance[j];
+					editDistanceMatrix[i + 1][j] = distance[j];
 				
 				previous = current;
 			}
@@ -130,7 +146,7 @@ public class Text
 			distance[length1] = current;
 			
 			if (saveMatrix)
-				editDistanceMatrix[i+1][length1] = distance[length1];
+				editDistanceMatrix[i + 1][length1] = distance[length1];
 		}
 
 		return distance[length1];

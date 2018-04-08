@@ -61,6 +61,7 @@ public class TextTest
 	@Test
 	public void testGetEditDistanceChangeType()
 	{
+		//Test all types of changes.
 		Text.editDistance("in", "ins", true);
 		assertEquals(Change.Insertion, Text.getEditDistanceChangeType());
 		Text.editDistance("del", "de", true);
@@ -77,5 +78,19 @@ public class TextTest
 		assertEquals(Change.None, Text.getEditDistanceChangeType());
 		Text.editDistance("indelsub", "insdesus", true);
 		assertEquals(Change.InDelSub, Text.getEditDistanceChangeType());
+		
+		//Test null and zero-length strings.
+		Text.editDistance("", "ins", true);
+		assertEquals(Change.Insertion, Text.getEditDistanceChangeType());
+		Text.editDistance(null, "ins", true);
+		assertEquals(Change.Insertion, Text.getEditDistanceChangeType());
+		Text.editDistance("del", "", true);
+		assertEquals(Change.Deletion, Text.getEditDistanceChangeType());
+		Text.editDistance("del", null, true);
+		assertEquals(Change.Deletion, Text.getEditDistanceChangeType());
+		Text.editDistance("", "", true);
+		assertEquals(Change.None, Text.getEditDistanceChangeType());
+		Text.editDistance(null, null, true);
+		assertEquals(Change.None, Text.getEditDistanceChangeType());
 	}
 }
