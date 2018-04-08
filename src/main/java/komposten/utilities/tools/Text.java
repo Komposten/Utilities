@@ -18,6 +18,7 @@ import java.util.List;
  *          <li>Renamed <code>Text.Change</code> to <code>Text.OperationType</code>.</li>
  *          <li>Re-factored the "illegal state checks" to <code>checkState(String)</code>.</li>
  *          <li>Added <code>getEditDistanceOperations()</code> and <code>Operation</code>.</li>
+ *          <li><code>getEditDistanceOperationSummary()</code> now uses <code>getEditDistanceOperations()</code> to get a list of operations, and stores the result for future calls.</li>
  *          </ul>
  *          <b>Older</b> <br />
  *          1.2.0 <br />
@@ -42,6 +43,7 @@ public class Text
 {
 	private static int[][] editDistanceMatrix;
 	private static List<Operation> editDistanceOperations;
+	private static OperationType editDistanceOperationSummary;
 	private static String editDistanceString1;
 	private static String editDistanceString2;
 
@@ -85,6 +87,7 @@ public class Text
 	public static int editDistance(String string1, String string2, boolean saveMatrix)
 	{
 		editDistanceOperations = null;
+		editDistanceOperationSummary = null;
 		editDistanceString1 = string1;
 		editDistanceString2 = string2;
 		
@@ -269,45 +272,19 @@ public class Text
 	 */
 	public static OperationType getEditDistanceOperationSummary()
 	{
-		//NEXT_TASK Text; getEditDistanceOperationSummary() should store the result so next call doesn't require any calculations.
 		checkState("getEditDistanceOperationSummary()");
 		
-		int x = editDistanceMatrix.length-1;
-		int y = editDistanceMatrix[0].length-1;
+		if (editDistanceOperationSummary != null)
+			return editDistanceOperationSummary;
 		
-		OperationType operationType = OperationType.None;
+		List<Operation> editDistanceOperations = getEditDistanceOperations();
 		
-		while (x > 0 || y > 0)
-		{
-			boolean isLeftmost = (x == 0);
-			boolean isTop = (y == 0);
-			
-			int current = editDistanceMatrix[x][y];
-			int left = (!isLeftmost ? editDistanceMatrix[x-1][y] : Integer.MAX_VALUE);
-			int above = (!isTop ? editDistanceMatrix[x][y-1] : Integer.MAX_VALUE);
-			int diagonal = (!isTop ? (!isLeftmost ? editDistanceMatrix[x-1][y-1] : Integer.MAX_VALUE) : Integer.MAX_VALUE);
-			
-			if (diagonal <= left && diagonal <= above && diagonal <= current)
-			{
-				if (diagonal < current)
-					operationType = addToOperationSummary(OperationType.Substitution, operationType);
-				
-				x = x-1;
-				y = y-1;
-			}
-			else if (left <= above && left <= current)
-			{
-				operationType = addToOperationSummary(OperationType.Insertion, operationType);
-				x = x-1;
-			}
-			else
-			{
-				operationType = addToOperationSummary(OperationType.Deletion, operationType);
-				y = y-1;
-			}
-		}
+		editDistanceOperationSummary = OperationType.None;
 		
-		return operationType;
+		for (Operation operation : editDistanceOperations)
+			editDistanceOperationSummary = addToOperationSummary(operation.operationType, editDistanceOperationSummary);
+		
+		return editDistanceOperationSummary;
 	}
 
 
