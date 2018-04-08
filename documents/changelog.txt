@@ -1,6 +1,7 @@
 2018-04-08
 -FEATURE: Text.editDistance(String, String, boolean) now properly creates the matrix is saveMatrix == true and either string is null/empty.
 -CODE: Renamed getEditDistanceChangeType() to getEditDistanceChangeSummary().
+-CODE: Renamed updateChange() to addToChangeSummary().
 
 2018-04-07
 -FEATURE: Added Text.getEditDistanceChangeType().

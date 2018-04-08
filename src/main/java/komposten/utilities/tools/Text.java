@@ -8,8 +8,9 @@ package komposten.utilities.tools;
  * 
  * @version <b>1.2.1</b> <br />
  *          <ul>
- *          <li>Renamed <code>getEditDistanceChangeType()</code> to <code>getEditDistanceChangeSummary()</code>.
  *          <li><code>editDistance(String, String, boolean)</code> now properly creates the matrix if <code>saveMatrix == true</code> and either string is null/empty.</li>
+ *          <li>Renamed <code>getEditDistanceChangeType()</code> to <code>getEditDistanceChangeSummary()</code>.
+ *          <li>Renamed <code>updateChange()</code> to <code>addToChangeSummary()</code>.
  *          </ul>
  *          <b>Older</b> <br />
  *          1.2.0 <br />
@@ -226,19 +227,19 @@ public class Text
 			if (diagonal <= left && diagonal <= above && diagonal <= current)
 			{
 				if (diagonal < current)
-					change = updateChange(Change.Substitution, change);
+					change = addToChangeSummary(Change.Substitution, change);
 				
 				x = x-1;
 				y = y-1;
 			}
 			else if (left <= above && left <= current)
 			{
-				change = updateChange(Change.Insertion, change);
+				change = addToChangeSummary(Change.Insertion, change);
 				x = x-1;
 			}
 			else
 			{
-				change = updateChange(Change.Deletion, change);
+				change = addToChangeSummary(Change.Deletion, change);
 				y = y-1;
 			}
 		}
@@ -247,17 +248,17 @@ public class Text
 	}
 	
 	
-	private static Change updateChange(Change newChange, Change oldChange)
+	private static Change addToChangeSummary(Change newChange, Change summary)
 	{
-		if (oldChange == null || oldChange == Change.None)
+		if (summary == null || summary == Change.None)
 			return newChange;
-		if (newChange == oldChange)
-			return oldChange;
+		if (newChange == summary)
+			return summary;
 		
-		switch (oldChange)
+		switch (summary)
 		{
 			case InDelSub :
-				return oldChange;
+				return summary;
 			case Insertion :
 				if (newChange == Change.Deletion)
 					return Change.InDel;
@@ -278,32 +279,32 @@ public class Text
 				break;
 			case InDel :
 				if (newChange == Change.Insertion)
-					return oldChange;
+					return summary;
 				if (newChange == Change.Deletion)
-					return oldChange;
+					return summary;
 				if (newChange == Change.Substitution)
 					return Change.InDelSub;
 				break;
 			case InSub :
 				if (newChange == Change.Insertion)
-					return oldChange;
+					return summary;
 				if (newChange == Change.Deletion)
 					return Change.InDelSub;
 				if (newChange == Change.Substitution)
-					return oldChange;
+					return summary;
 				break;
 			case SubDel :
 				if (newChange == Change.Insertion)
 					return Change.InDelSub;
 				if (newChange == Change.Deletion)
-					return oldChange;
+					return summary;
 				if (newChange == Change.Substitution)
-					return oldChange;
+					return summary;
 				break;
 			default :
 				break;
 		}
 		
-		return oldChange;
+		return summary;
 	}
 }
