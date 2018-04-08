@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import komposten.utilities.tools.Text;
-import komposten.utilities.tools.Text.Change;
+import komposten.utilities.tools.Text.OperationType;
 
 public class TextTest
 {
@@ -54,7 +54,7 @@ public class TextTest
 	public void testGetEditDistanceChangeTypeIllegalState()
 	{
 		Text.editDistance("cat", "dog", false);
-		Text.getEditDistanceChangeSummary();
+		Text.getEditDistanceOperationSummary();
 	}
 	
 	
@@ -63,34 +63,34 @@ public class TextTest
 	{
 		//Test all types of changes.
 		Text.editDistance("in", "ins", true);
-		assertEquals(Change.Insertion, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.Insertion, Text.getEditDistanceOperationSummary());
 		Text.editDistance("del", "de", true);
-		assertEquals(Change.Deletion, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.Deletion, Text.getEditDistanceOperationSummary());
 		Text.editDistance("sub", "sus", true);
-		assertEquals(Change.Substitution, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.Substitution, Text.getEditDistanceOperationSummary());
 		Text.editDistance("indel", "insde", true);
-		assertEquals(Change.InDel, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.InDel, Text.getEditDistanceOperationSummary());
 		Text.editDistance("insub", "inssus", true);
-		assertEquals(Change.InSub, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.InSub, Text.getEditDistanceOperationSummary());
 		Text.editDistance("subdel", "susde", true);
-		assertEquals(Change.SubDel, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.SubDel, Text.getEditDistanceOperationSummary());
 		Text.editDistance("none", "none", true);
-		assertEquals(Change.None, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.None, Text.getEditDistanceOperationSummary());
 		Text.editDistance("indelsub", "insdesus", true);
-		assertEquals(Change.InDelSub, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.InDelSub, Text.getEditDistanceOperationSummary());
 		
 		//Test null and zero-length strings.
 		Text.editDistance("", "ins", true);
-		assertEquals(Change.Insertion, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.Insertion, Text.getEditDistanceOperationSummary());
 		Text.editDistance(null, "ins", true);
-		assertEquals(Change.Insertion, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.Insertion, Text.getEditDistanceOperationSummary());
 		Text.editDistance("del", "", true);
-		assertEquals(Change.Deletion, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.Deletion, Text.getEditDistanceOperationSummary());
 		Text.editDistance("del", null, true);
-		assertEquals(Change.Deletion, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.Deletion, Text.getEditDistanceOperationSummary());
 		Text.editDistance("", "", true);
-		assertEquals(Change.None, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.None, Text.getEditDistanceOperationSummary());
 		Text.editDistance(null, null, true);
-		assertEquals(Change.None, Text.getEditDistanceChangeSummary());
+		assertEquals(OperationType.None, Text.getEditDistanceOperationSummary());
 	}
 }

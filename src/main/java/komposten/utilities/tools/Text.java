@@ -3,14 +3,19 @@
  */
 package komposten.utilities.tools;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A class to perform different operations concerning text.
  * 
  * @version <b>1.2.1</b> <br />
  *          <ul>
  *          <li><code>editDistance(String, String, boolean)</code> now properly creates the matrix if <code>saveMatrix == true</code> and either string is null/empty.</li>
- *          <li>Renamed <code>getEditDistanceChangeType()</code> to <code>getEditDistanceChangeSummary()</code>.
- *          <li>Renamed <code>updateChange()</code> to <code>addToChangeSummary()</code>.
+ *          <li>Renamed <code>getEditDistanceChangeType()</code> to <code>getEditDistanceChangeSummary()</code>.</li>
+ *          <li>Renamed <code>updateChange()</code> to <code>addToChangeSummary()</code>.</li>
+ *          <li>Replaced "change" in parameters, method names, etc. with "operation".</code>.</li>
+ *          <li>Renamed <code>Text.Change</code> to <code>Text.OperationType</code>.</li>
  *          </ul>
  *          <b>Older</b> <br />
  *          1.2.0 <br />
@@ -47,7 +52,7 @@ public class Text
 	 * This method calls {@link #editDistance(String, String, boolean)
 	 * editDistance(string1, string2, false)} and will thus not create an
 	 * {@link #getEditDistanceMatrix() edit distance matrix} or allow retrieval of
-	 * {@link #getEditDistanceChangeSummary() change type}.
+	 * {@link #getEditDistanceOperationSummary() change type}.
 	 * 
 	 * @return The minimum amount of insertions, deletions and/or substitutions
 	 *         required to change <code>string1</code> into <code>string2</code>.
@@ -173,10 +178,10 @@ public class Text
 	
 	
 	/**
-	 * These enum values represent a change or a combination of changes that are
+	 * These enum values represent an operation or a combination of operations that are
 	 * required to change one string into another.
 	 */
-	public enum Change
+	public enum OperationType
 	{
 		None,
 		Insertion,
@@ -190,29 +195,29 @@ public class Text
 
 
 	/**
-	 * @return A summary of the types of changes that are required to go from the
+	 * @return A summary of the types of operations that are required to go from the
 	 *         first to the second string in the last call to
 	 *         {@link #editDistance(String, String)}.
 	 * @throws IllegalStateException If the last call to
 	 *           {@link #editDistance(String, String, boolean)} had
 	 *           <code>saveMatrix</code> set to <code>false</code>.
-	 * @see Change
+	 * @see OperationType
 	 * @see #editDistance(String, String)
 	 * @see #editDistance(String, String, boolean)
 	 */
-	public static Change getEditDistanceChangeSummary()
+	public static OperationType getEditDistanceOperationSummary()
 	{
 		if (editDistanceMatrix == null)
 		{
 			throw new IllegalStateException(
-					"getEditDistanceChangeType() can only be called after a call to "
+					"getEditDistanceOperationSummary() can only be called after a call to "
 					+ "editDistance(String, String, boolean) with saveMatrix == true!");
 		}
 		
 		int x = editDistanceMatrix.length-1;
 		int y = editDistanceMatrix[0].length-1;
 		
-		Change change = Change.None;
+		OperationType operationType = OperationType.None;
 		
 		while (x > 0 || y > 0)
 		{
@@ -227,32 +232,32 @@ public class Text
 			if (diagonal <= left && diagonal <= above && diagonal <= current)
 			{
 				if (diagonal < current)
-					change = addToChangeSummary(Change.Substitution, change);
+					operationType = addToOperationSummary(OperationType.Substitution, operationType);
 				
 				x = x-1;
 				y = y-1;
 			}
 			else if (left <= above && left <= current)
 			{
-				change = addToChangeSummary(Change.Insertion, change);
+				operationType = addToOperationSummary(OperationType.Insertion, operationType);
 				x = x-1;
 			}
 			else
 			{
-				change = addToChangeSummary(Change.Deletion, change);
+				operationType = addToOperationSummary(OperationType.Deletion, operationType);
 				y = y-1;
 			}
 		}
 		
-		return change;
+		return operationType;
 	}
 	
 	
-	private static Change addToChangeSummary(Change newChange, Change summary)
+	private static OperationType addToOperationSummary(OperationType newOperation, OperationType summary)
 	{
-		if (summary == null || summary == Change.None)
-			return newChange;
-		if (newChange == summary)
+		if (summary == null || summary == OperationType.None)
+			return newOperation;
+		if (newOperation == summary)
 			return summary;
 		
 		switch (summary)
@@ -260,45 +265,45 @@ public class Text
 			case InDelSub :
 				return summary;
 			case Insertion :
-				if (newChange == Change.Deletion)
-					return Change.InDel;
-				if (newChange == Change.Substitution)
-					return Change.InSub;
+				if (newOperation == OperationType.Deletion)
+					return OperationType.InDel;
+				if (newOperation == OperationType.Substitution)
+					return OperationType.InSub;
 				break;
 			case Deletion :
-				if (newChange == Change.Insertion)
-					return Change.InDel;
-				if (newChange == Change.Substitution)
-					return Change.SubDel;
+				if (newOperation == OperationType.Insertion)
+					return OperationType.InDel;
+				if (newOperation == OperationType.Substitution)
+					return OperationType.SubDel;
 				break;
 			case Substitution :
-				if (newChange == Change.Insertion)
-					return Change.InSub;
-				if (newChange == Change.Deletion)
-					return Change.SubDel;
+				if (newOperation == OperationType.Insertion)
+					return OperationType.InSub;
+				if (newOperation == OperationType.Deletion)
+					return OperationType.SubDel;
 				break;
 			case InDel :
-				if (newChange == Change.Insertion)
+				if (newOperation == OperationType.Insertion)
 					return summary;
-				if (newChange == Change.Deletion)
+				if (newOperation == OperationType.Deletion)
 					return summary;
-				if (newChange == Change.Substitution)
-					return Change.InDelSub;
+				if (newOperation == OperationType.Substitution)
+					return OperationType.InDelSub;
 				break;
 			case InSub :
-				if (newChange == Change.Insertion)
+				if (newOperation == OperationType.Insertion)
 					return summary;
-				if (newChange == Change.Deletion)
-					return Change.InDelSub;
-				if (newChange == Change.Substitution)
+				if (newOperation == OperationType.Deletion)
+					return OperationType.InDelSub;
+				if (newOperation == OperationType.Substitution)
 					return summary;
 				break;
 			case SubDel :
-				if (newChange == Change.Insertion)
-					return Change.InDelSub;
-				if (newChange == Change.Deletion)
+				if (newOperation == OperationType.Insertion)
+					return OperationType.InDelSub;
+				if (newOperation == OperationType.Deletion)
 					return summary;
-				if (newChange == Change.Substitution)
+				if (newOperation == OperationType.Substitution)
 					return summary;
 				break;
 			default :
@@ -306,5 +311,11 @@ public class Text
 		}
 		
 		return summary;
+	}
+	
+	
+	public static class Operation
+	{
+		
 	}
 }
