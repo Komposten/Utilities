@@ -4,6 +4,7 @@
 -CODE: Renamed updateChange() to addToChangeSummary().
 -CODE: Replaced "change" in parameters, method names, etc. in Text with "operation".
 -CODE: Renamed Text.Change to Text.OperationType.
+-CODE: Refactored the "illegal state checks" in Text to checkState(String).
 
 2018-04-07
 -FEATURE: Added Text.getEditDistanceChangeType().

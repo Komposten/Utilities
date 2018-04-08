@@ -79,6 +79,7 @@ public class Text
 	 */
 	public static int editDistance(String string1, String string2, boolean saveMatrix)
 	{
+		
 		int length1 = (string1 == null ? 0 : string1.length());
 		int length2 = (string2 == null ? 0 : string2.length());
 
@@ -192,6 +193,7 @@ public class Text
 		SubDel,
 		InDelSub
 	}
+	}
 
 
 	/**
@@ -213,6 +215,7 @@ public class Text
 					"getEditDistanceOperationSummary() can only be called after a call to "
 					+ "editDistance(String, String, boolean) with saveMatrix == true!");
 		}
+		checkState("getEditDistanceOperationSummary()");
 		
 		int x = editDistanceMatrix.length-1;
 		int y = editDistanceMatrix[0].length-1;
@@ -251,6 +254,10 @@ public class Text
 		
 		return operationType;
 	}
+
+
+
+	private static void checkState(String callerName)
 	
 	
 	private static OperationType addToOperationSummary(OperationType newOperation, OperationType summary)

@@ -1,6 +1,6 @@
 package test.komposten.utilities.tools;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -51,7 +51,7 @@ public class TextTest
 	
 	
 	@Test(expected = IllegalStateException.class)
-	public void testGetEditDistanceChangeTypeIllegalState()
+	public void testGetEditDistanceOperationSummaryIllegalState()
 	{
 		Text.editDistance("cat", "dog", false);
 		Text.getEditDistanceOperationSummary();
@@ -59,7 +59,7 @@ public class TextTest
 	
 	
 	@Test
-	public void testGetEditDistanceChangeType()
+	public void testGetEditDistanceOperationSummary()
 	{
 		//Test all types of changes.
 		Text.editDistance("in", "ins", true);
