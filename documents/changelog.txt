@@ -1,3 +1,6 @@
+2018-04-14
+-CODE: Text.Operation's fields are now public final.
+
 2018-04-08
 -FEATURE: Text.editDistance(String, String, boolean) now properly creates the matrix is saveMatrix == true and either string is null/empty.
 -FEATURE: Added Text.getEditDistanceOperations() (+ unit tests for it) and Text.Operation.

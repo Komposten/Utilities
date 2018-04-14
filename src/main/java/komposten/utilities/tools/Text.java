@@ -9,7 +9,12 @@ import java.util.List;
 /**
  * A class to perform different operations concerning text.
  * 
- * @version <b>1.3.0</b> <br />
+ * @version <b>1.3.1</b> <br />
+ *          <ul>
+ *          <li>Operation's fields are now <code>public final</code></li>
+ *          </ul>
+ *          <b>Older</b> <br />
+ *          1.3.0 <br />
  *          <ul>
  *          <li><code>editDistance(String, String, boolean)</code> now properly creates the matrix if <code>saveMatrix == true</code> and either string is null/empty.</li>
  *          <li>Renamed <code>getEditDistanceChangeType()</code> to <code>getEditDistanceChangeSummary()</code>.</li>
@@ -20,7 +25,6 @@ import java.util.List;
  *          <li>Added <code>getEditDistanceOperations()</code> and <code>Operation</code>.</li>
  *          <li><code>getEditDistanceOperationSummary()</code> now uses <code>getEditDistanceOperations()</code> to get a list of operations, and stores the result for future calls.</li>
  *          </ul>
- *          <b>Older</b> <br />
  *          1.2.0 <br />
  *          <ul>
  *          <li>Added <code>getEditDistanceChangeType()</code>.</li>
@@ -363,9 +367,9 @@ public class Text
 	
 	public static class Operation
 	{
-		int index;
-		char character;
-		OperationType operationType;
+		public final int index;
+		public final char character;
+		public final OperationType operationType;
 		
 		public Operation(int index, char character, OperationType operationType)
 		{
