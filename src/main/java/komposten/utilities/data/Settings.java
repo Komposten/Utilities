@@ -1,4 +1,4 @@
-package komposten.utilities.tools;
+package komposten.utilities.data;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 Jakob Hjelm 
  */
-package komposten.utilities.tools;
+package komposten.utilities.data;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

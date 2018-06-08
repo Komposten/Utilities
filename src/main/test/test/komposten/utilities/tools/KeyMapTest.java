@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
-import komposten.utilities.tools.KeyMap;
+import komposten.utilities.data.KeyMap;
 
 public class KeyMapTest
 {

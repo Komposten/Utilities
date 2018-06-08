@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import komposten.utilities.tools.IntPair;
+import komposten.utilities.data.IntPair;
 
 public class IntPairTest
 {

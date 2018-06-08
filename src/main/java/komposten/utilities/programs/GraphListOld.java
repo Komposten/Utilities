@@ -17,8 +17,8 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Map.Entry;
 
+import komposten.utilities.data.IntPair;
 import komposten.utilities.tools.FileOperations;
-import komposten.utilities.tools.IntPair;
 import komposten.utilities.tools.Regex;
 
 public class GraphListOld

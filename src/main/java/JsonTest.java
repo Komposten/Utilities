@@ -1,7 +1,7 @@
 
 
-import komposten.utilities.tools.JSONObject;
-import komposten.utilities.tools.JSONReader;
+import komposten.utilities.data.JSONObject;
+import komposten.utilities.data.JSONReader;
 
 
 public class JsonTest

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015 Jakob Hjelm 
  */
-package komposten.utilities.tools;
+package komposten.utilities.data;
 
 
 

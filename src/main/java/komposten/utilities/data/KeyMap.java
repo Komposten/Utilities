@@ -1,12 +1,14 @@
 /*
  * Copyright (c) 2014 Jakob Hjelm 
  */
-package komposten.utilities.tools;
+package komposten.utilities.data;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import komposten.utilities.tools.FileOperations;
 
 
 /**

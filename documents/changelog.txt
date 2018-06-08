@@ -1,5 +1,6 @@
 2018-06-08
 -CODE: Added MultiList and MultiListTest.
+-CODE: Moved classes representing data structures from the .tools package to .data.
 
 2018-04-14
 -CODE: Text.Operation's fields are now public final.

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2017 Jakob Hjelm 
  */
-package komposten.utilities.tools;
+package komposten.utilities.data;
 
 /**
  * This class represents a pair of objects, similar to {@link java.util.Map.Entry}.

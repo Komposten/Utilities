@@ -21,10 +21,10 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
 
+import komposten.utilities.data.IntPair;
+import komposten.utilities.data.JSONObject;
+import komposten.utilities.data.JSONReader;
 import komposten.utilities.tools.FileOperations;
-import komposten.utilities.tools.IntPair;
-import komposten.utilities.tools.JSONObject;
-import komposten.utilities.tools.JSONReader;
 import komposten.utilities.tools.Regex;
 
 public class GraphList

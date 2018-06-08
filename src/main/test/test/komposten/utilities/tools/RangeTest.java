@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import komposten.utilities.tools.Range;
+import komposten.utilities.data.Range;
 
 
 public class RangeTest

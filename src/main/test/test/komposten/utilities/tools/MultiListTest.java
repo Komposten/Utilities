@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 import org.junit.Before;
 import org.junit.Test;
 
-import komposten.utilities.tools.MultiList;
+import komposten.utilities.data.MultiList;
 
 public class MultiListTest
 {
