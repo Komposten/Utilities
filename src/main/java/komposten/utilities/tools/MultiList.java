@@ -7,12 +7,32 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 
-public class MultiList<T> implements List<T>
+/**
+ * This is an <i>unmodifiable</i> list that effectively "combines" multiple
+ * lists. Unlike using e.g. {@link List#addAll(Collection)},
+ * <code>MultiList</code> does not actually merge the lists. Instead it keeps
+ * them separate, but provides all standard facilities to iterate over them
+ * (e.g. {@link #get(int)}, {@link #listIterator()}, {@link #indexOf(Object)},
+ * etc.) as if they were just a single list. This means that this implementation
+ * can "merge" any number of lists instantly. <br />
+ * Additionally, since the underlying lists are not merged, they all keep their
+ * respective list types, and all changes to them are reflected by the
+ * <code>MultiList</code>. <br />
+ * <br />
+ * <code>MultiList</code> is unmodifiable since adding or removing values is
+ * nonintuitive and could lead to unintended side effects. The reason for this
+ * is that it there is no way to know which of the backing lists would be
+ * affected by such an operation, so weird changes could appear in different
+ * parts of the program without apparent reason.
+ * 
+ * @author Jakob Hjelm
+ */
+public class MultiList<E> implements List<E>
 {
-	private final List<List<T>> lists;
+	private final List<List<E>> lists;
 
 
-	public MultiList(List<List<T>> lists)
+	public MultiList(List<List<E>> lists)
 	{
 		this.lists = lists;
 	}
@@ -23,7 +43,7 @@ public class MultiList<T> implements List<T>
 	{
 		int sum = 0;
 
-		for (List<T> list : lists)
+		for (List<E> list : lists)
 			sum += list.size();
 
 		return sum;
@@ -33,7 +53,7 @@ public class MultiList<T> implements List<T>
 	@Override
 	public boolean isEmpty()
 	{
-		for (List<T> list : lists)
+		for (List<E> list : lists)
 		{
 			if (!list.isEmpty())
 				return false;
@@ -45,7 +65,7 @@ public class MultiList<T> implements List<T>
 	@Override
 	public boolean contains(Object o)
 	{
-		for (List<T> list : lists)
+		for (List<E> list : lists)
 		{
 			if (list.contains(o))
 				return true;
@@ -67,21 +87,21 @@ public class MultiList<T> implements List<T>
 
 
 	@Override
-	public Iterator<T> iterator()
+	public Iterator<E> iterator()
 	{
 		return listIterator();
 	}
 
 
 	@Override
-	public ListIterator<T> listIterator()
+	public ListIterator<E> listIterator()
 	{
 		return listIterator(0);
 	}
 
 
 	@Override
-	public ListIterator<T> listIterator(int index)
+	public ListIterator<E> listIterator(int index)
 	{
 		positionCheck(index);
 		return new ListItr(index);
@@ -111,17 +131,17 @@ public class MultiList<T> implements List<T>
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <E> E[] toArray(E[] a)
+	public <T> T[] toArray(T[] a)
 	{
     int size = size();
 		if (a.length < size)
     {
-      a = (E[])java.lang.reflect.Array.newInstance(
+      a = (T[])java.lang.reflect.Array.newInstance(
                           a.getClass().getComponentType(), size);
     }
     
     int index = 0;
-    for (List<T> list : lists)
+    for (List<E> list : lists)
 		{
 			System.arraycopy(list.toArray(), 0, a, index, list.size());
 			index += list.size();
@@ -137,7 +157,7 @@ public class MultiList<T> implements List<T>
 
 
 	@Override
-	public boolean add(T e)
+	public boolean add(E e)
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -151,14 +171,14 @@ public class MultiList<T> implements List<T>
 
 
 	@Override
-	public boolean addAll(Collection<? extends T> c)
+	public boolean addAll(Collection<? extends E> c)
 	{
 		throw new UnsupportedOperationException();
 	}
 
 
 	@Override
-	public boolean addAll(int index, Collection<? extends T> c)
+	public boolean addAll(int index, Collection<? extends E> c)
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -186,12 +206,12 @@ public class MultiList<T> implements List<T>
 
 
 	@Override
-	public T get(int index)
+	public E get(int index)
 	{
 		rangeCheck(index);
 		
 		int temp = 0;
-		for (List<T> list : lists)
+		for (List<E> list : lists)
 		{
 			if (index < temp + list.size())
 				return list.get(index - temp);
@@ -211,21 +231,21 @@ public class MultiList<T> implements List<T>
 
 
 	@Override
-	public T set(int index, T element)
+	public E set(int index, E element)
 	{
 		throw new UnsupportedOperationException();
 	}
 
 
 	@Override
-	public void add(int index, T element)
+	public void add(int index, E element)
 	{
 		throw new UnsupportedOperationException();
 	}
 
 
 	@Override
-	public T remove(int index)
+	public E remove(int index)
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -235,7 +255,7 @@ public class MultiList<T> implements List<T>
 	public int indexOf(Object o)
 	{
 		int offset = 0;
-		for (List<T> list : lists)
+		for (List<E> list : lists)
 		{
 			int index = list.indexOf(o);
 			if (index >= 0)
@@ -267,17 +287,17 @@ public class MultiList<T> implements List<T>
 
 
 	@Override
-	public List<T> subList(int fromIndex, int toIndex)
+	public List<E> subList(int fromIndex, int toIndex)
 	{
 		throw new UnsupportedOperationException();
 	}
 	
 	
-	private class ListItr implements ListIterator<T>
+	private class ListItr implements ListIterator<E>
 	{
 		private int position;
 		private int listIndex;
-		private ListIterator<T> listIterator;
+		private ListIterator<E> listIterator;
 
 
 		public ListItr(int index)
@@ -287,7 +307,7 @@ public class MultiList<T> implements List<T>
 			int offset = 0;
 			for (int i = 0; i < lists.size(); i++)
 			{
-				List<T> list = lists.get(i);
+				List<E> list = lists.get(i);
 				
 				if (index <= offset + list.size())
 				{
@@ -313,7 +333,7 @@ public class MultiList<T> implements List<T>
 
 
 		@Override
-		public T next()
+		public E next()
 		{
 			if (!hasNext())
 				throw new NoSuchElementException();
@@ -344,7 +364,7 @@ public class MultiList<T> implements List<T>
 
 
 		@Override
-		public T previous()
+		public E previous()
 		{
 			if (!hasPrevious())
 				throw new NoSuchElementException();
@@ -357,7 +377,7 @@ public class MultiList<T> implements List<T>
 			else if (listIndex > 0)
 			{
 				listIndex--;
-				List<T> previousList = lists.get(listIndex);
+				List<E> previousList = lists.get(listIndex);
 				listIterator = previousList.listIterator(previousList.size());
 				return previous();
 			}
@@ -390,14 +410,14 @@ public class MultiList<T> implements List<T>
 
 
 		@Override
-		public void set(T e)
+		public void set(E e)
 		{
 			throw new UnsupportedOperationException();
 		}
 
 
 		@Override
-		public void add(T e)
+		public void add(E e)
 		{
 			throw new UnsupportedOperationException();
 		}
