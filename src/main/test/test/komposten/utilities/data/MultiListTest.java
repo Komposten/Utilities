@@ -1,4 +1,4 @@
-package test.komposten.utilities.tools;
+package test.komposten.utilities.data;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
