@@ -321,7 +321,8 @@ public class MultiList<E> implements List<E>
 				}
 			}
 			
-			listIterator = lists.get(listIndex).listIterator(index);
+			if (!lists.isEmpty())
+				listIterator = lists.get(listIndex).listIterator(index);
 		}
 
 

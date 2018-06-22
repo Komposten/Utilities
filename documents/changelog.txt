@@ -1,3 +1,7 @@
+2018-06-03
+-CODE: Fixed NullPointerException in MultiList.ListItr if the MultiList contains no lists.
+
+
 2018-06-08
 -CODE: Added MultiList and MultiListTest.
 -CODE: Moved classes representing data structures from the .tools package to .data.

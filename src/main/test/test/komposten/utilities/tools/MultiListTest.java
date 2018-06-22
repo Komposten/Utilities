@@ -282,6 +282,28 @@ public class MultiListTest
 	{
 		list.listIterator().set(5);
 	}
+	
+	
+	@Test
+	public void testIteratorIfEmpty()
+	{
+		ListIterator<Integer> iterator = listEmpty.listIterator();
+		assertFalse(iterator.hasNext());
+		assertFalse(iterator.hasPrevious());
+		
+		ArrayList<Integer> newList = new ArrayList<>();
+		listEmptyContent.add(newList);
+
+		iterator = listEmpty.listIterator();
+		assertFalse(iterator.hasNext());
+		assertFalse(iterator.hasPrevious());
+		
+		newList.add(5);
+
+		iterator = listEmpty.listIterator();
+		assertTrue(iterator.hasNext());
+		assertFalse(iterator.hasPrevious());
+	}
 
 	
 	//List modifications
