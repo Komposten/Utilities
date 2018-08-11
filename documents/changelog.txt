@@ -1,3 +1,8 @@
+2018-08-11
+-FEATURE: Added set() to ObjectPair and IntPair.
+-CODE: ObjectPair.equals() now uses .equals()-comparison instead of ==.
+
+
 2018-06-03
 -CODE: Fixed NullPointerException in MultiList.ListItr if the MultiList contains no lists.
 -CODE: Moved the tests for the data structure-classes to the .data package.

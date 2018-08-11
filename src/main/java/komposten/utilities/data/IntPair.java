@@ -5,7 +5,7 @@ package komposten.utilities.data;
 
 /**
  * @author Komposten
- * @version 1.1.1
+ * @version 1.2.1
  */
 public final class IntPair
 {
@@ -14,8 +14,13 @@ public final class IntPair
   
   public IntPair(int first, int second)
   {
-    first_  = first;
-    second_ = second;
+  	set(first, second);
+  }
+  
+  public void set(int first, int second)
+  {
+  	first_ = first;
+  	second_ = second;
   }
 
   public void setFirst (int f) { first_  = f; }
