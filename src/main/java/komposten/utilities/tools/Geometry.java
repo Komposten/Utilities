@@ -122,7 +122,7 @@ public class Geometry
 			if (x1 < minX) xError = x1 + " < " + minX;
 			else if (x1 > maxX) xError = x1 + " > " + maxX;
 			if (y1 < minY) yError = y1 + " < " + minY;
-			else if (y1 < maxY) yError = y1 + " > " + maxY;
+			else if (y1 > maxY) yError = y1 + " > " + maxY;
 
 			String msg = "The vector origin (x1, y1) must fall within the rectangle (";
 
