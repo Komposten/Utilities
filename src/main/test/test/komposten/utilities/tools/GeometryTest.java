@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import komposten.utilities.data.ObjectPair;
+import komposten.utilities.data.FloatPair;
 import komposten.utilities.tools.Geometry;
 
 public class GeometryTest
@@ -13,8 +13,8 @@ public class GeometryTest
 	@Test
 	public void testClampVector()
 	{
-		ObjectPair<Float, Float> expected = new ObjectPair<Float, Float>(0f, 0f);
-		ObjectPair<Float, Float> actual = null;
+		FloatPair expected = new FloatPair(0f, 0f);
+		FloatPair actual = null;
 		
 		//Test no clamp needed
 		expected.set(5f, 5f);

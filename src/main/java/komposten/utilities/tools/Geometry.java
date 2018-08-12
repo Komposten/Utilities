@@ -5,7 +5,7 @@ package komposten.utilities.tools;
 
 import com.badlogic.gdx.math.Polygon;
 
-import komposten.utilities.data.ObjectPair;
+import komposten.utilities.data.FloatPair;
 
 
 /**
@@ -28,7 +28,7 @@ import komposten.utilities.data.ObjectPair;
  */
 public class Geometry
 {
-	private static ObjectPair<Float, Float> vector = new ObjectPair<Float, Float>(0f, 0f);
+	private static FloatPair vector = new FloatPair(0, 0);
 
 
 	private Geometry() {}
@@ -99,15 +99,15 @@ public class Geometry
 	 * @param minY The minimum allowed Y-value.
 	 * @param maxX The maximum allowed X-value.
 	 * @param maxY The maximum allowed Y-value.
-	 * @return An {@link ObjectPair ObjectPair<Float, Float>} containing the
-	 *         clamped vector's end-point. The <code>ObjectPair</code> is cached
-	 *         by <code>Geometry</code> and will ge reused for future calls to
+	 * @return A {@link FloatPair} containing the
+	 *         clamped vector's end-point. The <code>FloatPair</code> is cached
+	 *         by <code>Geometry</code> and will be reused in future calls to
 	 *         this method.
 	 * @throws IllegalArgumentException If <code>minX >= maxX</code>,
 	 *           <code>minY >= maxY</code>, or if <code>(x1, y1)</code> is outside
 	 *           the rectangle.
 	 */
-	public static ObjectPair<Float, Float> clampVector(float x1, float y1,
+	public static FloatPair clampVector(float x1, float y1,
 			float x2, float y2, float minX, float minY, float maxX, float maxY) throws IllegalArgumentException
 	{
 		if (minX >= maxX)
