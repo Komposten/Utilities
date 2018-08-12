@@ -8,12 +8,12 @@ import java.util.Objects;
 /**
  * This class represents a pair of objects, similar to {@link java.util.Map.Entry}.
  * @author Komposten
- * @version 1.2.0
+ * @version 1.2.1
  */
 public final class ObjectPair<F, S>
 {
-	private F first_;
-	private S second_;
+	private F first;
+	private S second;
 
 
 	public ObjectPair(F first, S second)
@@ -24,71 +24,85 @@ public final class ObjectPair<F, S>
 	
 	public void set(F first, S second)
 	{
-		first_ = first;
-		second_ = second;
+		this.first = first;
+		this.second = second;
 	}
 
 
 	public void setFirst(F f)
 	{
-		first_ = f;
+		first = f;
 	}
 
 
 	public void setSecond(S s)
 	{
-		second_ = s;
+		second = s;
 	}
 
 
 	public F getFirst()
 	{
-		return first_;
+		return first;
 	}
 
 
 	public S getSecond()
 	{
-		return second_;
+		return second;
 	}
 	
 	
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(first_, second_);
+		return Objects.hash(first, second);
 	}
 
 
 	@Override
 	public boolean equals(Object obj)
 	{
+		if (obj == this)
+			return true;
+		
 		if (obj == null)
-		{
 			return false;
-		}
-
-		if (obj.getClass() == getClass())
-		{
-			ObjectPair<?, ?> object = (ObjectPair<?, ?>) obj;
-			
-			if (object.getFirst().equals(getFirst()) && object.getSecond().equals(getSecond()))
-			{
-				return true;
-			}
-
+		
+		if (obj.getClass() != getClass())
 			return false;
+
+		ObjectPair<?, ?> object = (ObjectPair<?, ?>) obj;
+		
+		if (first == null)
+		{
+			if (object.first != null)
+				return false;
 		}
 		else
 		{
-			return super.equals(obj);
+			if (!first.equals(object.first))
+				return false;
 		}
-	}
 
+		if (second == null)
+		{
+			if (object.second != null)
+				return false;
+		}
+		else
+		{
+			if (!second.equals(object.second))
+				return false;
+		}
+		
+		return true;
+	}
+	
 
 	@Override
 	public String toString()
 	{
-		return "(" + first_ + "; " + second_ + ")";
+		return "(" + first + "; " + second + ")";
 	}
 }

@@ -5,6 +5,7 @@
 -CODE: Added a proper ObjectPair.hashCode() implementation.
 -CODE: Replaced IntPair.hashCode() with a better and more standard implementation.
 -CODE: Geometry.clampVector() now uses a FloatPair instead of ObjectPair (to avoid auto-boxing of floats).
+-CODE: Updated ObjectPair.equals() to handle null values.
 
 2018-08-11
 -FEATURE: Added set() to ObjectPair and IntPair.
