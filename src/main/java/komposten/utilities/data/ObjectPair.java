@@ -3,10 +3,12 @@
  */
 package komposten.utilities.data;
 
+import java.util.Objects;
+
 /**
  * This class represents a pair of objects, similar to {@link java.util.Map.Entry}.
  * @author Komposten
- * @version 1.1.0
+ * @version 1.2.0
  */
 public final class ObjectPair<F, S>
 {
@@ -49,6 +51,13 @@ public final class ObjectPair<F, S>
 	{
 		return second_;
 	}
+	
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(first_, second_);
+	}
 
 
 	@Override
@@ -63,7 +72,6 @@ public final class ObjectPair<F, S>
 		{
 			ObjectPair<?, ?> object = (ObjectPair<?, ?>) obj;
 			
-			//TODO ObjectPair; Override hashCode().
 			if (object.getFirst().equals(getFirst()) && object.getSecond().equals(getSecond()))
 			{
 				return true;

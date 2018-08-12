@@ -1,6 +1,9 @@
 2018-08-12
 -FEATURE: Added Geometry.clampVector(float, float, float, float, float, float, float, float).
+-FEATURE: Added FloatPair.
 -CODE: Added GeometryTest (not complete).
+-CODE: Added a proper ObjectPair.hashCode() implementation.
+-CODE: Replaced IntPair.hashCode() with a better and more standard implementation.
 
 2018-08-11
 -FEATURE: Added set() to ObjectPair and IntPair.

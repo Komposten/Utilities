@@ -4,13 +4,14 @@
 package komposten.utilities.data;
 
 /**
+ * This is an implementation identical to {@link ObjectPair}, but based on primitive ints.
  * @author Komposten
- * @version 1.2.1
+ * @version 1.3.1
  */
 public final class IntPair
 {
-  private int first_;
-  private int second_;
+  private int first;
+  private int second;
   
   public IntPair(int first, int second)
   {
@@ -19,15 +20,15 @@ public final class IntPair
   
   public void set(int first, int second)
   {
-  	first_ = first;
-  	second_ = second;
+  	this.first = first;
+  	this.second = second;
   }
 
-  public void setFirst (int f) { first_  = f; }
-  public void setSecond(int s) { second_ = s; }
+  public void setFirst (int f) { first  = f; }
+  public void setSecond(int s) { second = s; }
   
-  public int  getFirst ()      { return first_;  }
-  public int  getSecond()      { return second_; }
+  public int getFirst () { return first;  }
+  public int getSecond() { return second; }
   
   @Override
   public boolean equals(Object obj)
@@ -51,20 +52,10 @@ public final class IntPair
   @Override
   public int hashCode()
   {
-    int hashCode;
-    
-    if (Math.abs(first_) < Short.MAX_VALUE &&
-        Math.abs(second_) < Short.MAX_VALUE)
-    {
-      hashCode = first_ >= second_ ? first_*first_ + first_ + second_ : first_ + second_*second_;
-    }
-    else
-    {
-      int a = first_  / 2;
-      int b = second_ / 2;
-      
-      hashCode = a >= b ? a*a + a + b : a + b*b;
-    }
+    int hashCode = 1;
+
+    hashCode = 37 * hashCode + first;
+    hashCode = 37 * hashCode + second;
     
     return hashCode;
   }
@@ -72,6 +63,6 @@ public final class IntPair
   @Override
   public String toString()
   {
-    return "(" + first_ + "; " + second_ + ")";
+    return "(" + first + "; " + second + ")";
   }
 }
