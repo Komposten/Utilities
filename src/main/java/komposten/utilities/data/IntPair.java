@@ -53,9 +53,10 @@ public final class IntPair
   public int hashCode()
   {
     int hashCode = 1;
+    int prime = 31;
 
-    hashCode = 37 * hashCode + first;
-    hashCode = 37 * hashCode + second;
+		hashCode = prime * hashCode + first;
+    hashCode = prime * hashCode + second;
     
     return hashCode;
   }

@@ -53,12 +53,13 @@ public final class FloatPair
   public int hashCode()
   {
     int hashCode = 1;
+    int prime = 31;
 
     int firstInt = Float.floatToIntBits(first);
     int secondInt = Float.floatToIntBits(second);
 
-    hashCode = 37 * hashCode + firstInt;
-    hashCode = 37 * hashCode + secondInt;
+		hashCode = prime * hashCode + firstInt;
+    hashCode = prime * hashCode + secondInt;
     
     return hashCode;
   }
