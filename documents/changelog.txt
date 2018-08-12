@@ -6,6 +6,9 @@
 -CODE: Replaced IntPair.hashCode() with a better and more standard implementation.
 -CODE: Geometry.clampVector() now uses a FloatPair instead of ObjectPair (to avoid auto-boxing of floats).
 -CODE: Updated ObjectPair.equals() to handle null values.
+-CODE: Renamed JSONObject.hasElement() to .hasMember().
+-CODE: Renamed JSONObject.removeElement() to .removeMember().
+-CODE: Renamed the JSONObject.addXXXPair()-methods to .addMember().
 
 2018-08-11
 -FEATURE: Added set() to ObjectPair and IntPair.

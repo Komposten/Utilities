@@ -648,12 +648,12 @@ public class GraphList
   {
     JSONObject wrapper = new JSONObject();
 
-    wrapper.addStringPair("stepX", Integer.toString(gridStepX_));
-    wrapper.addStringPair("stepY", Integer.toString(gridStepY_));
-    wrapper.addStringPair("unitX", Integer.toString(unitX_));
-    wrapper.addStringPair("unitY", Integer.toString(unitY_));
-    wrapper.addStringPair("labelX", labelX_);
-    wrapper.addStringPair("labelY", labelY_);
+    wrapper.addMember("stepX", Integer.toString(gridStepX_));
+    wrapper.addMember("stepY", Integer.toString(gridStepY_));
+    wrapper.addMember("unitX", Integer.toString(unitX_));
+    wrapper.addMember("unitY", Integer.toString(unitY_));
+    wrapper.addMember("labelX", labelX_);
+    wrapper.addMember("labelY", labelY_);
     
     JSONObject[] dataArray = new JSONObject[data_.size()];
     
@@ -662,16 +662,16 @@ public class GraphList
     {
       JSONObject data = new JSONObject();
       
-      data.addStringPair("name", entry.getKey());
-      data.addStringPair("width", Integer.toString(entry.getValue().width));
-      data.addStringPair("height", Integer.toString(entry.getValue().height));
-      data.addStringPair("colour", Integer.toString(entry.getValue().colour.getRGB()));
-      data.addArrayPair ("coords", entry.getValue().coords.toArray());
+      data.addMember("name", entry.getKey());
+      data.addMember("width", Integer.toString(entry.getValue().width));
+      data.addMember("height", Integer.toString(entry.getValue().height));
+      data.addMember("colour", Integer.toString(entry.getValue().colour.getRGB()));
+      data.addMember ("coords", entry.getValue().coords.toArray());
       
       dataArray[index++] = data;
     }
     
-    wrapper.addArrayPair("data", dataArray);
+    wrapper.addMember("data", dataArray);
     
     return wrapper;
   }

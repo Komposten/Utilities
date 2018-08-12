@@ -8,20 +8,26 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-
+//TODO JSONObject; Add support for numbers, nulls and booleans as values.
 /**
  * A data structure that describes a JSON object ("JavaScript Object Notation
  * object"). The data can be converted to a formatted or minified string by
  * calling {@link #toString(boolean)} (e.g. for writing to files). <br />
  * To load existing JSON files, see {@link JSONReader}.
  * 
- * @version <b>1.2.1</b> <br />
+ * @version <b>1.2.2</b> <br />
+ *          <ul>
+ *          <li>Renamed hasElement() to hasMember() for consistency in naming.</li>
+ *          <li>Renamed removeElement() to removeMember() for consistency in naming.</li>
+ *          <li>Renamed the addXXXPair()-methods to a unified addMember().</li>
+ *          </ul>
+ *          <b>Older</b> <br />
+ *          1.2.1 <br />
  *          <ul>
  *          <li>Renamed toMultiLineString() to toString().</li>
  *          <li>Added a "minify" parameter to toString(), to allow creation of
  *          more compressed JSON data.</li>
  *          </ul>
- *          <b>Older</b> <br />
  *          1.2.0 <br />
  *          <ul>
  *          <li>Added <code>cleanUpSpaces()</code> to improve performance of
@@ -83,13 +89,12 @@ public class JSONObject
   }
   
   
-  
   /**
    * Adds a <code>key:String</code> pair to this object.
    * @param identifier
    * @param value
    */
-  public void addStringPair(String identifier, String value)
+  public void addMember(String identifier, String value)
   {
     members.put(identifier, value);
   }
@@ -101,7 +106,7 @@ public class JSONObject
    * @param identifier
    * @param object
    */
-  public void addObjectPair(String identifier, JSONObject object)
+  public void addMember(String identifier, JSONObject object)
   {
     if (object == this)
       throw new IllegalArgumentException("A JSONObject cannot be added to itself!");
@@ -119,7 +124,7 @@ public class JSONObject
 	 *          as strings (using <code>toString()</code>), unless they are of
 	 *          type <code>JSONObject</code>s or <code>Object[]</code>.
 	 */
-  public void addArrayPair(String identifier, Object[] array)
+  public void addMember(String identifier, Object[] array)
   {
     members.put(identifier, array);
   }
@@ -127,20 +132,21 @@ public class JSONObject
   
   
   /**
-   * Removes the element with the specified identifier.
-   * @param identifier
-   * @return The value of the element that was removed.
+   * Removes the member with the specified identifier.
+   * @param identifier The identifier for the member to remove.
+   * @return The value of the member that was removed, or <code>null</code> if there was no such member.
    */
-  public Object removeElement(String identifier)
+  public Object removeMember(String identifier)
   {
   	return members.remove(identifier);
   }
   
   
   /**
-   * Checks if the <code>JSONObject</code> contains an element with the specified identifier.
+   * Checks if the <code>JSONObject</code> contains a member with the specified identifier.
+   * @param identifier The identifier for the member to remove.
    */
-  public boolean hasElement(String identifier)
+  public boolean hasMember(String identifier)
   {
   	return members.containsKey(identifier);
   }
