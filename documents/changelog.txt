@@ -1,3 +1,7 @@
+2018-08-12
+-FEATURE: Added Geometry.clampVector(float, float, float, float, float, float, float, float).
+-CODE: Added GeometryTest (not complete).
+
 2018-08-11
 -FEATURE: Added set() to ObjectPair and IntPair.
 -CODE: ObjectPair.equals() now uses .equals()-comparison instead of ==.
