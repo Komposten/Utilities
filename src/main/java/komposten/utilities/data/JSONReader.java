@@ -14,6 +14,7 @@ import java.util.Scanner;
 import komposten.utilities.tools.MathOps;
 
 
+//FIXME JSONReader; Throw exceptions if the code JSON is broken (e.g. an object or array is never closed).
 /**
  * JSONReader is a tool that reads files with a JSON-format ("JavaScript Object
  * Notation") and creates {@link JSONObject}s from them.
@@ -137,43 +138,37 @@ public class JSONReader
   
   private Object[] parsePair(String jsonPair)
   {
-    try
-    {
-      Object[] pairData = new Object[2];
-  
-      jsonPair = jsonPair.replaceAll("^\\s*,\\s*", "");
-      jsonPair = jsonPair.replaceAll("\\s*,\\s*$", "");
-      
-      String   identifier = jsonPair.substring(0, jsonPair.indexOf(':')).trim();
-      String   value      = jsonPair.substring(jsonPair.indexOf(':')+1).trim();
-      
-      pairData[0] = identifier.replace("\"", "");
-      
-      if (value.startsWith("["))
-      {
-        pairData[1] = parseArray(value);
-      }
-      else if (value.startsWith("{"))
-      {
-        pairData[1] = parseObject(value);
-      }
-      else if (value.startsWith("\""))
-      {
-        pairData[1] = value.replace("\"", "");
-      }
-      else
-      {
-      	pairData[1] = parsePrimitiveValue(value);
-      }
-      
-      return pairData;
-    }
-    catch (IndexOutOfBoundsException e)
-    {
-      System.err.println("Invalid JSON member: " + jsonPair);
-      
-      return new Object[2];
-    }
+  	Object[] pairData = new Object[2];
+
+  	jsonPair = jsonPair.replaceAll("^\\s*,?\\s*", "");
+  	jsonPair = jsonPair.replaceAll("\\s*,?\\s*$", "");
+
+  	if (!jsonPair.matches("\"[^:]+\"\\s*:\\s*[^:]+"))
+  		throw new IllegalArgumentException("'" + jsonPair + "' is not a valid key:value pair!");
+
+  	String   identifier = jsonPair.substring(0, jsonPair.indexOf(':')).trim();
+  	String   value      = jsonPair.substring(jsonPair.indexOf(':')+1).trim();
+
+  	pairData[0] = identifier.replace("\"", "");
+
+  	if (value.startsWith("["))
+  	{
+  		pairData[1] = parseArray(value);
+  	}
+  	else if (value.startsWith("{"))
+  	{
+  		pairData[1] = parseObject(value);
+  	}
+  	else if (value.startsWith("\""))
+  	{
+  		pairData[1] = value.replace("\"", "");
+  	}
+  	else
+  	{
+  		pairData[1] = parsePrimitiveValue(value);
+  	}
+
+  	return pairData;
   }
 
 
