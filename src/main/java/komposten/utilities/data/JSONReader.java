@@ -163,26 +163,7 @@ public class JSONReader
       }
       else
       {
-      	if (isLong(value))
-      	{
-      		pairData[1] = Long.parseLong(value);
-      	}
-      	else if (isDouble(value))
-      	{
-      		pairData[1] = Double.parseDouble(value);
-      	}
-      	else if (isBoolean(value))
-      	{
-      		pairData[1] = Boolean.parseBoolean(value);
-      	}
-      	else if (isNull(value))
-      	{
-      		pairData[1] = null;
-      	}
-      	else
-      	{
-      		throw new IllegalArgumentException("The value '" + value + "' (from '" + jsonPair + "') is not a Json object, array, string, number, boolean or null!");
-      	}
+      	pairData[1] = parsePrimitiveValue(value);
       }
       
       return pairData;
@@ -194,6 +175,31 @@ public class JSONReader
       return new Object[2];
     }
   }
+
+
+	private Object parsePrimitiveValue(String value)
+	{
+		if (isLong(value))
+		{
+			return Long.parseLong(value);
+		}
+		else if (isDouble(value))
+		{
+			return Double.parseDouble(value);
+		}
+		else if (isBoolean(value))
+		{
+			return Boolean.parseBoolean(value);
+		}
+		else if (isNull(value))
+		{
+			return null;
+		}
+		else
+		{
+			throw new IllegalArgumentException("The value '" + value + "' is not a Json object, array, string, number, boolean or null!");
+		}
+	}
   
   
   private boolean isLong(String value)
@@ -251,7 +257,7 @@ public class JSONReader
     	}
     	else
     	{
-    		//Found a comma (i.e. the end of a key:value-pair!
+    		//Found a comma (i.e. the end of a value)!
         Object element = parseArrayElement(jsonArray.substring(i, end));
         
         arrayList.add(element);
@@ -281,9 +287,13 @@ public class JSONReader
     {
       element = parseObject(jsonArrayElement);
     }
-    else
+    else if (jsonArrayElement.startsWith("\""))
     {
       element = jsonArrayElement.replace("\"", "");
+    }
+    else
+    {
+    	element = parsePrimitiveValue(jsonArrayElement);
     }
 
     return element;
