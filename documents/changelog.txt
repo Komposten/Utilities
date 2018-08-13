@@ -1,6 +1,7 @@
 2018-08-13
 -FEATURE: Added isDouble(String) to MathOps.
 -FEATURE: Added support for numbers, booleans and nulls to JSONObject (and JSONReader).
+-FEATURE: Added hashCode() and equals() to JSONObject.
 
 2018-08-12
 -FEATURE: Added Geometry.clampVector(float, float, float, float, float, float, float, float).

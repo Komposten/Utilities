@@ -3,6 +3,7 @@
  */
 package komposten.utilities.data;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,13 +16,18 @@ import java.util.Set;
  * calling {@link #toString(boolean)} (e.g. for writing to files). <br />
  * To load existing JSON files, see {@link JSONReader}.
  * 
- * @version <b>1.2.2</b> <br />
+ * @version <b>1.3.0</b> <br />
+ *          <ul>
+ *          <li>Added hashCode() and equals().</li>
+ *          <li>Added support for numbers, booleans and nulls.</li>
+ *          </ul>
+ *          <b>Older</b> <br />
+ *          1.2.2 <br />
  *          <ul>
  *          <li>Renamed hasElement() to hasMember() for consistency in naming.</li>
  *          <li>Renamed removeElement() to removeMember() for consistency in naming.</li>
  *          <li>Renamed the addXXXPair()-methods to a unified addMember().</li>
  *          </ul>
- *          <b>Older</b> <br />
  *          1.2.1 <br />
  *          <ul>
  *          <li>Renamed toMultiLineString() to toString().</li>
@@ -412,5 +418,75 @@ public class JSONObject
   	{
   		return line;
   	}
+  }
+  
+  
+  @Override
+  public int hashCode()
+  {
+  	int prime = 31;
+  	int hashCode = 1;
+  	
+  	for (Entry<String, Object> member : getMembers())
+		{
+  		Object value = member.getValue();
+  		int valueHash;
+  		
+  		if (value == null)
+  			valueHash = 0;
+  		else if (value.getClass().isArray())
+  			valueHash = Arrays.deepHashCode((Object[])value);
+  		else
+  			valueHash = value.hashCode();
+  		
+  		hashCode = prime * hashCode + valueHash;
+		}
+  	
+  	return hashCode;
+  }
+  
+  
+  @Override
+  public boolean equals(Object obj)
+  {
+  	if (obj == this)
+  		return true;
+  	if (obj == null)
+  		return false;
+  	if (getClass() != obj.getClass())
+  		return false;
+  	
+  	JSONObject other = (JSONObject)obj;
+  	
+  	if (other.getMembers().size() != getMembers().size())
+  		return false;
+  	
+  	for (Entry<String, Object> member : getMembers())
+  	{
+  		if (!other.hasMember(member.getKey()))
+  			return false;
+  		
+  		Object value = member.getValue();
+  		Object otherValue = other.getMemberByName(member.getKey());
+  		
+  		if (value == otherValue)
+  			continue;
+  		if (value == null || otherValue == null)
+  			return false;
+  		if (value.getClass() != otherValue.getClass())
+  			return false;
+  		
+  		if (value.getClass().isArray())
+  		{
+  			if (!Arrays.deepEquals((Object[])value, (Object[])otherValue))
+  				return false;
+  		}
+  		else if (!value.equals(otherValue))
+  		{
+  			return false;
+  		}
+  		
+  	}
+  	return true;
   }
 }
