@@ -4,14 +4,19 @@
 package komposten.utilities.tools;
 
 import java.text.DecimalFormat;
+import java.util.regex.Pattern;
 
 /**
  * @version
- * <b>1.5.0</b><br />
+ * <b>1.6.0</b><br />
+ * <ul>
+ * <li>Added isDouble(String).</li>
+ * </ul>
+ * <b>Older</b><br />
+ * 1.5.0<br />
  * <ul>
  * <li>Added dotProduct(double[], double[])</li>
  * </ul>
- * <b>Older</b><br />
  * 1.4.0<br />
  * <ul>
  * <li>isPOT() now use a (100x) faster approach based on bitwise operations.
@@ -35,12 +40,33 @@ import java.text.DecimalFormat;
  */
 public class MathOps
 {
+	public static final String doubleRegex = "[\\x00-\\x20]*[+-]?(NaN|Infinity|((((\\p{Digit}+)(\\.)?((\\p{Digit}+)?)([eE][+-]?(\\p{Digit}+))?)|(\\.((\\p{Digit}+))([eE][+-]?(\\p{Digit}+))?)|(((0[xX](\\p{XDigit}+)(\\.)?)|(0[xX](\\p{XDigit}+)?(\\.)(\\p{XDigit}+)))[pP][+-]?(\\p{Digit}+)))[fFdD]?))[\\x00-\\x20]*";
+	
   private static DecimalFormat format_;
+  private static final Pattern DOUBLE_PATTERN;
   
   static
   {
     format_ = new DecimalFormat("#.##");
+    DOUBLE_PATTERN = Pattern.compile(doubleRegex);
   }
+  
+  
+	/**
+	 * Checks if the specified string contains a valid double. See
+	 * {@link Double#valueOf(String)} for the regular expression that is used.
+	 * 
+	 * @param string The string to check.
+	 * @return <code>true</code> if and only if the specified string contains a
+	 *         double in a valid format, false otherwise. Note:
+	 *         <code>Infinity</code> and <code>NaN</code> are treated as valid
+	 *         doubles!
+	 */
+  public static boolean isDouble(String string)
+  {
+  	return DOUBLE_PATTERN.matcher(string).matches();
+  }
+  
   
   public static int round(double d)
   {
