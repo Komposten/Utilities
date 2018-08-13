@@ -375,23 +375,4 @@ public class JSONReader
     
     return -1;
   }
-  
-  
-  
-  public static void main(String[] args)
-  {
-    JSONReader reader = new JSONReader();
-    
-    JSONObject object = reader.readFile("test files/json/BIO217.json");
-    
-    System.out.println("Result of reading formatted file:");
-    System.out.println(object.toString(false));
-    System.out.println("----------------------------");
-    
-    object = reader.readFile("test files/json/BIO217_mini.json");
-    
-    System.out.println("Result of reading minified file:");
-    System.out.println(object.toString(false));
-    System.out.println("----------------------------");
-  }
 }
