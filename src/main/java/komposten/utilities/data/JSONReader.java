@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import komposten.utilities.tools.MathOps;
+
 
 /**
  * JSONReader is a tool that reads files with a JSON-format ("JavaScript Object
@@ -155,9 +157,32 @@ public class JSONReader
       {
         pairData[1] = parseObject(value);
       }
-      else
+      else if (value.startsWith("\""))
       {
         pairData[1] = value.replace("\"", "");
+      }
+      else
+      {
+      	if (isLong(value))
+      	{
+      		pairData[1] = Long.parseLong(value);
+      	}
+      	else if (isDouble(value))
+      	{
+      		pairData[1] = Double.parseDouble(value);
+      	}
+      	else if (isBoolean(value))
+      	{
+      		pairData[1] = Boolean.parseBoolean(value);
+      	}
+      	else if (isNull(value))
+      	{
+      		pairData[1] = null;
+      	}
+      	else
+      	{
+      		throw new IllegalArgumentException("The value '" + value + "' (from '" + jsonPair + "') is not a Json object, array, string, number, boolean or null!");
+      	}
       }
       
       return pairData;
@@ -168,6 +193,30 @@ public class JSONReader
       
       return new Object[2];
     }
+  }
+  
+  
+  private boolean isLong(String value)
+  {
+  	return value.matches("[+-]?\\d+[lL]?");
+  }
+  
+  
+  private boolean isDouble(String value)
+  {
+  	return MathOps.isDouble(value);
+  }
+  
+  
+  private boolean isBoolean(String value)
+  {
+  	return value.matches("(true|false)");
+  }
+  
+  
+  private boolean isNull(String value)
+  {
+  	return value.toLowerCase().equals("null");
   }
   
   

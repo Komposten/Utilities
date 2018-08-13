@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-//TODO JSONObject; Add support for numbers, nulls and booleans as values.
+//FIXME JSONObject; It is currently possible to add a JSONObject to itself by wrapping it in an array!
 /**
  * A data structure that describes a JSON object ("JavaScript Object Notation
  * object"). The data can be converted to a formatted or minified string by
@@ -89,20 +89,58 @@ public class JSONObject
   }
   
   
-  /**
-   * Adds a <code>key:String</code> pair to this object.
-   * @param identifier
-   * @param value
-   */
+	/**
+	 * Adds a <code>key:String</code> pair to this object. If a previous value was
+	 * associated with the specified identifier that value is overwritten.
+	 * 
+	 * @param identifier
+	 * @param value
+	 */
   public void addMember(String identifier, String value)
   {
     members.put(identifier, value);
   }
   
   
+  /**
+   * Adds a <code>key:long</code> pair to this object. If a previous value was
+	 * associated with the specified identifier that value is overwritten.
+   * @param identifier
+   * @param value
+   */
+  public void addMember(String identifier, long value)
+  {
+  	members.put(identifier, value);
+  }
+  
   
   /**
-   * Adds a <code>key:JSONObject</code> pair to this object.
+   * Adds a <code>key:double</code> pair to this object. If a previous value was
+	 * associated with the specified identifier that value is overwritten.
+   * @param identifier
+   * @param value
+   */
+  public void addMember(String identifier, double value)
+  {
+  	members.put(identifier, value);
+  }
+  
+  
+  /**
+   * Adds a <code>key:boolean</code> pair to this object. If a previous value was
+	 * associated with the specified identifier that value is overwritten.
+   * @param identifier
+   * @param value
+   */
+  public void addMember(String identifier, boolean value)
+  {
+  	members.put(identifier, value);
+  }
+  
+  
+  /**
+   * Adds a <code>key:JSONObject</code> pair to this object. If a previous value was
+	 * associated with the specified identifier that value is overwritten.
    * @param identifier
    * @param object
    */
@@ -115,9 +153,9 @@ public class JSONObject
   }
   
   
-  
   /**
-	 * Adds a <code>key:Object[]</code> pair to this object.
+	 * Adds a <code>key:Object[]</code> pair to this object. If a previous value was
+	 * associated with the specified identifier that value is overwritten.
 	 * 
 	 * @param identifier
 	 * @param array An array of objects. All elements in the array will be treated
@@ -130,12 +168,29 @@ public class JSONObject
   }
   
   
+	/**
+	 * Adds a <code>key:null</code> pair to this object. If a previous value was
+	 * associated with the specified identifier that value is overwritten. This is
+	 * effectively the same as calling <code>addMember(identifier, null)</code>.
+	 * @param identifier 
+	 */
+  public void addNullMember(String identifier)
+  {
+  	members.put(identifier, null);
+  }
   
-  /**
-   * Removes the member with the specified identifier.
-   * @param identifier The identifier for the member to remove.
-   * @return The value of the member that was removed, or <code>null</code> if there was no such member.
-   */
+  
+  
+	/**
+	 * Removes the member with the specified identifier. Since a member's value
+	 * can be <code>null</code> it means that if <code>null</code> is returned, it
+	 * can mean either that the member is <code>null</code> or does not exist. Use
+	 * {@link #hasMember(String)} do distinguish between these two.
+	 * 
+	 * @param identifier The identifier for the member to remove.
+	 * @return The value of the member that was removed, or <code>null</code> if
+	 *         there was no such member.
+	 */
   public Object removeMember(String identifier)
   {
   	return members.remove(identifier);
@@ -149,6 +204,22 @@ public class JSONObject
   public boolean hasMember(String identifier)
   {
   	return members.containsKey(identifier);
+  }
+  
+  
+  /**
+	 * Checks if the specified member is <code>null</code> or not.
+	 * 
+	 * @param identifier
+	 * @return <code>true</code> if and only if the specified member is
+	 *         <code>null</code>. If the member has any other value or <i>does not
+	 *         exist</i>, <code>false</code> is returned!
+	 */
+  public boolean isMemberNull(String identifier)
+  {
+  	if (!hasMember(identifier))
+  		return false;
+  	return members.get(identifier) == null;
   }
 
   
@@ -256,12 +327,19 @@ public class JSONObject
         if (index < object.members.size() - 1)
           stringBuilder.append(formatLine(",", tabLevel + 2, minify));
       }
-      else
+      else if (pair.getValue() instanceof String)
       {
         if (index < object.members.size() - 1)
           stringBuilder.append(formatLine("\"" + pair.getKey() + "\":\"" + pair.getValue() + "\",", tabLevel + 2, minify));
         else
           stringBuilder.append(formatLine("\"" + pair.getKey() + "\":\"" + pair.getValue() + "\"", tabLevel + 2, minify));
+      }
+      else
+      {
+      	if (index < object.members.size() - 1)
+      		stringBuilder.append(formatLine("\"" + pair.getKey() + "\":" + pair.getValue() + ",", tabLevel + 2, minify));
+      	else
+      		stringBuilder.append(formatLine("\"" + pair.getKey() + "\":" + pair.getValue(), tabLevel + 2, minify));
       }
       
       index++;
@@ -298,12 +376,19 @@ public class JSONObject
         if (i < array.length - 1)
           stringBuilder.append(formatLine(",", tabLevel + 2, minify));
       }
-      else
+      else if (element instanceof String)
       {
         if (i < array.length - 1)
           stringBuilder.append(formatLine("\"" + element.toString() + "\",", tabLevel + 2, minify));
         else
           stringBuilder.append(formatLine("\"" + element.toString() + "\"", tabLevel + 2, minify));
+      }
+      else
+      {
+        if (i < array.length - 1)
+          stringBuilder.append(formatLine("" + element + ",", tabLevel + 2, minify));
+        else
+          stringBuilder.append(formatLine("" + element + "", tabLevel + 2, minify));
       }
     }
 
