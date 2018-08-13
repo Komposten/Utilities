@@ -1,0 +1,1 @@
+{"aString":"string","aLong":123,"aDouble":123.456,"aBoolean":true,"anObject":{"subObject":"some string"},"anArray":["string",123,123.456,true,{"subObject":"some string"},[0],null],"aNull":null}

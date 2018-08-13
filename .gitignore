@@ -47,6 +47,6 @@ Thumbs.db
 
 # other
 .src
-*.json
+#*.json
 log.txt
 highscore.txt
