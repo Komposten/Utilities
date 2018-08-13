@@ -77,6 +77,31 @@ public class JSONObjectTest
 	}
 	
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddArrayWithItselfIn()
+	{
+		Object[] array = { jsonObject };
+		jsonObject.addMember("array", array);
+	}
+	
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddObjectWithItselfIn()
+	{
+		jsonObject2.addMember("first", jsonObject);
+		jsonObject.addMember("second", jsonObject2);
+	}
+	
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddArrayWithObjectWithItselfIn()
+	{
+		Object[] array = { jsonObject2 };
+		jsonObject2.addMember("first", jsonObject);
+		jsonObject.addMember("second", array);
+	}
+	
+	
 	@Test
 	public void testRemoveMember()
 	{

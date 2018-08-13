@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-//FIXME JSONObject; It is currently possible to add a JSONObject to itself by wrapping it in an array!
 /**
  * A data structure that describes a JSON object ("JavaScript Object Notation
  * object"). The data can be converted to a formatted or minified string by
@@ -20,6 +19,7 @@ import java.util.Set;
  *          <ul>
  *          <li>Added hashCode() and equals().</li>
  *          <li>Added support for numbers, booleans and nulls.</li>
+ *          <li>Added containsThis(), to prevent an object from being added to itself.</li>
  *          </ul>
  *          <b>Older</b> <br />
  *          1.2.2 <br />
@@ -152,7 +152,7 @@ public class JSONObject
    */
   public void addMember(String identifier, JSONObject object)
   {
-    if (object == this)
+    if (object == this || (object != null && containsThis(object)))
       throw new IllegalArgumentException("A JSONObject cannot be added to itself!");
     
     members.put(identifier, object);
@@ -170,6 +170,9 @@ public class JSONObject
 	 */
   public void addMember(String identifier, Object[] array)
   {
+  	if (array != null && containsThis(array))
+  		throw new IllegalArgumentException("A JSONObject cannot be added to itself!");
+  	
     members.put(identifier, array);
   }
   
@@ -184,6 +187,54 @@ public class JSONObject
   {
   	members.put(identifier, null);
   }
+  
+  
+  private boolean containsThis(Object[] array)
+  {
+  	for (Object object : array)
+		{
+  		if (object == this)
+  			return true;
+			if (containsThis(object))
+				return true;
+		}
+  	
+  	return false;
+  }
+  
+  
+  private boolean containsThis(JSONObject object)
+  {
+  	for (Object value : object.members.values())
+  	{
+  		if (value == this)
+  			return true;
+			if (containsThis(value))
+				return true;
+  	}
+  	
+  	return false;
+  }
+
+
+	private boolean containsThis(Object object)
+	{
+		if (object != null)
+		{
+			if (object.getClass().isArray())
+			{
+				if (containsThis((Object[])object))
+					return true;
+			}
+			else if (object instanceof JSONObject)
+			{
+				if (containsThis((JSONObject)object))
+					return true;
+			}
+		}
+		
+		return false;
+	}
   
   
   
