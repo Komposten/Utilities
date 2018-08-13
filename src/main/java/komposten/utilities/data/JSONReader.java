@@ -143,7 +143,7 @@ public class JSONReader
   	jsonPair = jsonPair.replaceAll("^\\s*,?\\s*", "");
   	jsonPair = jsonPair.replaceAll("\\s*,?\\s*$", "");
 
-  	if (!jsonPair.matches("\"[^:]+\"\\s*:\\s*[^:]+"))
+  	if (!jsonPair.matches("\"[^:\"]+\"\\s*:\\s*.+"))
   		throw new IllegalArgumentException("'" + jsonPair + "' is not a valid key:value pair!");
 
   	String   identifier = jsonPair.substring(0, jsonPair.indexOf(':')).trim();

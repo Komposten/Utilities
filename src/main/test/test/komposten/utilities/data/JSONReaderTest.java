@@ -16,13 +16,16 @@ public class JSONReaderTest
 	@Before
 	public void createExpected()
 	{
+		JSONObject subObject = new JSONObject();
+		subObject.addMember("subObject", "some string");
+		
 		expected = new JSONObject();
 		expected.addMember("aString", "string");
 		expected.addMember("aLong", 123l);
 		expected.addMember("aDouble", 123.456d);
 		expected.addMember("aBoolean", true);
-		expected.addMember("anObject", new JSONObject());
-		expected.addMember("anArray", new Object[] {"string", 123l, 123.456d, true, new JSONObject(), new Object[] {0}, null});
+		expected.addMember("anObject", subObject);
+		expected.addMember("anArray", new Object[] {"string", 123l, 123.456d, true, subObject, new Object[] {0}, null});
 		expected.addNullMember("aNull");
 	}
 	

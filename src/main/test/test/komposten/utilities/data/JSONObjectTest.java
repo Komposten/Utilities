@@ -20,7 +20,7 @@ public class JSONObjectTest
 
 	private void fillObject(JSONObject jsonObject)
 	{
-		jsonObject.addMember("aString", "string");
+		jsonObject.addMember("aString", "string 1");
 		jsonObject.addMember("aLong", 123l);
 		jsonObject.addMember("aDouble", 123.456d);
 		jsonObject.addMember("aBoolean", true);
@@ -60,7 +60,7 @@ public class JSONObjectTest
 	{
 		fillObject(jsonObject);
 
-		assertEquals("string", jsonObject.getMemberByName("aString"));
+		assertEquals("string 1", jsonObject.getMemberByName("aString"));
 		assertEquals(123l, jsonObject.getMemberByName("aLong"));
 		assertEquals(123.456d, jsonObject.getMemberByName("aDouble"));
 		assertEquals(true, jsonObject.getMemberByName("aBoolean"));
@@ -142,7 +142,7 @@ public class JSONObjectTest
 		fillObject(jsonObject);
 		
 		String expected = "{"
-				+ "\"aString\":\"string\","
+				+ "\"aString\":\"string 1\","
 				+ "\"aLong\":123,"
 				+ "\"aDouble\":123.456,"
 				+ "\"aBoolean\":true,"
@@ -164,7 +164,7 @@ public class JSONObjectTest
 		fillObject(jsonObject);
 		
 		String expected = "{\n"
-				+ "  \"aString\":\"string\",\n"
+				+ "  \"aString\":\"string 1\",\n"
 				+ "  \"aLong\":123,\n"
 				+ "  \"aDouble\":123.456,\n"
 				+ "  \"aBoolean\":true,\n"
