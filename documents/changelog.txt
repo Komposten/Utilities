@@ -1,3 +1,7 @@
+2018-08-31
+-FEATURE: Added Graph and Graph.findElementaryCycles(int[][], boolean).
+-CODE: Added GraphTest.
+
 2018-08-13
 -FEATURE: Added isDouble(String) to MathOps.
 -FEATURE: Added support for numbers, booleans and nulls to JSONObject (and JSONReader).
