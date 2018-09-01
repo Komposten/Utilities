@@ -1,3 +1,6 @@
+2018-09-01
+-FEATURE: Added Graph.abortCurrentOperations().
+
 2018-08-31
 -FEATURE: Added Graph and Graph.findElementaryCycles(int[][], boolean).
 -CODE: Added GraphTest.
