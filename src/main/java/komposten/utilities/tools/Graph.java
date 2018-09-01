@@ -17,6 +17,7 @@ import java.util.Stack;
  * <b>1.1.0</b> <br />
  * <ul>
  * <li>Added <code>abortCurrentOperations()</code>.</li>
+ * <li>Added <code>addOperation()</code> and <code>removeOperation()</code>.</li>
  * </ul>
  * <b>Older</b> <br />
  * 1.0.0 <br />
@@ -52,7 +53,7 @@ public class Graph
 	 */
 	public static int[][] findElementaryCircuits(int[][] adjacencyLists, boolean useCopyOfArray)
 	{
-		executingOperations++;
+		addOperation();
 		//TODO Graph; Check if first dividing the graph into Strongly Connected Components is a viable optimisation!
 		List<int[]> circuits = new ArrayList<>();
 		Stack<Integer> stack = new Stack<>();
@@ -119,12 +120,12 @@ public class Graph
 			for (int i = 0; i < circuits.size(); i++)
 				circuitArray[i] = circuits.get(i);
 			
-			executingOperations--;
+			removeOperation();
 			return circuitArray;
 		}
 		else
 		{
-			executingOperations--;
+			removeOperation();
 			return null;
 		}
 	}
@@ -220,5 +221,23 @@ public class Graph
 	{
 		if (executingOperations > 0)
 			abortCurrentOperations = true;
+	}
+	
+	
+	private static void addOperation()
+	{
+		executingOperations++;
+	}
+	
+	
+	private static void removeOperation()
+	{
+		executingOperations--;
+		
+		if (executingOperations <= 0)
+		{
+			executingOperations = 0;
+			abortCurrentOperations = false;
+		}
 	}
 }
