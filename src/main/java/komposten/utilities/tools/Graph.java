@@ -37,24 +37,31 @@ public class Graph
 	private static int executingOperations = 0;
 	private static boolean abortCurrentOperations = false;
 	
+	
 	/**
-	 * Finds all distinct (but see limitation 2) elementary circuits in a graph. This code is based on
-	 * <a href="https://doi.org/10.1137/0204007">Donald B. Johnson's algorithm</a>.
-	 * <br />
+	 * Finds all distinct (but see limitation 2) elementary circuits in a graph.
+	 * This code is based on <a href="https://doi.org/10.1137/0204007">Donald B.
+	 * Johnson's algorithm</a>. <br />
 	 * <br />
 	 * <b>Limitations:</b>
 	 * <ol>
-	 * <li>Loops (an edge between a vertex and itself) are counted as circuits.</li>
-	 * <li>Duplicate circuits <i>will</i> occur if there are multiple edges between two vertices!</li>
+	 * <li>Loops (an edge between a vertex and itself) are counted as
+	 * circuits.</li>
+	 * <li>Duplicate circuits <i>will</i> occur if there are multiple edges
+	 * between two vertices!</li>
 	 * </ol>
 	 * Operation can be aborted using {@link #abortCurrentOperations()}.
 	 * 
 	 * @param adjancencyLists Adjancency list that describes all edges from all
-	 *                        vertices in in the graph.
-	 * @param useCopyOfArray If <code>adjacencyList</code> should be copied before being
-	 * used to ensure that the original array remains unaltered.
-	 * @return An array containing all distinct elementary circuits in the provided
-	 *         graph, or <code>null</code> if and only if execution was {@link #abortCurrentOperations() aborted}.
+	 *          vertices in in the graph.
+	 * @param useCopyOfArray If <code>adjacencyList</code> should be copied before
+	 *          being used to ensure that the original array remains unaltered.
+	 * @param listener A {@link CircuitListener} to notify when the circuit count
+	 *          updates (see
+	 *          {@link #circuit(int, int, Stack, int[][], Map, boolean[], List, int[], CircuitListener)}).
+	 * @return An array containing all distinct elementary circuits in the
+	 *         provided graph, or <code>null</code> if and only if execution was
+	 *         {@link #abortCurrentOperations() aborted}.
 	 */
 	public static int[][] findElementaryCircuits(int[][] adjacencyLists, boolean useCopyOfArray, CircuitListener listener)
 	{
@@ -143,11 +150,18 @@ public class Graph
 	 * @param s The root vertex of the current stack.
 	 * @param stack The current stack of vertices.
 	 * @param A_G The adjacency list.
-	 * @param B Used to prevent duplicates of cycles. See Johnson's paper for more information.
-	 * @param blocked An array with all "blocked" vertices. This prevents nodes from occurring more than once in a cycle.
+	 * @param B Used to prevent duplicates of cycles. See Johnson's paper for more
+	 *          information.
+	 * @param blocked An array with all "blocked" vertices. This prevents nodes
+	 *          from occurring more than once in a cycle.
 	 * @param circuits A list containing all circuits that have been found so far.
-	 * @param lastCircuitCount The circuit count the last time the {@link CircuitListener listener} was notified.
-	 * @param listener A {@link CircuitListener} to notify when the circuit count updates.
+	 * @param lastCircuitCount The circuit count the last time the
+	 *          {@link CircuitListener listener} was notified. The listener is
+	 *          notified whenever the amount of circuits since the last
+	 *          notification is greater than 10% of the current circuit count:
+	 *          <code>currentCount - lastNotificationCount > currentCount * 0.1</code>.
+	 * @param listener A {@link CircuitListener} to notify when the circuit count
+	 *          updates.
 	 * @return <code>true</code> if a circuit was found.
 	 */
 	private static boolean circuit(int v, int s, Stack<Integer> stack, int[][] A_G, Map<Integer, List<Integer>> B, boolean[] blocked, List<int[]> circuits, int[] lastCircuitCount, CircuitListener listener)
