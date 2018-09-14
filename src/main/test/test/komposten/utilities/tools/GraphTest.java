@@ -48,7 +48,7 @@ public class GraphTest
 		
 		adjacencyLists[3*k+2] = new int[] { 2*k+1 };
 		
-		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false);
+		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null);
 		assertEquals(3*k, circuits.length);
 	}
 	
@@ -61,7 +61,7 @@ public class GraphTest
 		adjacencyLists[1] = new int[] { 2, 1 };
 		adjacencyLists[2] = new int[] { };
 		
-		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false);
+		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null);
 		assertEquals(1, circuits.length);
 	}
 	
@@ -74,7 +74,7 @@ public class GraphTest
 		adjacencyLists[1] = new int[] { 2, 2 };
 		adjacencyLists[2] = new int[] { 0 };
 		
-		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false);
+		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null);
 		assertEquals(2, circuits.length);
 	}
 	
@@ -90,7 +90,7 @@ public class GraphTest
 		adjacencyLists[4] = new int[] { 5 };
 		adjacencyLists[5] = new int[] { 3 };
 		
-		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false);
+		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null);
 		assertEquals(2, circuits.length);
 	}
 	
@@ -106,7 +106,7 @@ public class GraphTest
 		adjacencyLists[4] = new int[] { 5 };
 		adjacencyLists[5] = new int[] { 3 };
 		
-		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false);
+		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null);
 		assertEquals(2, circuits.length);
 	}
 	
@@ -130,7 +130,7 @@ public class GraphTest
 		copy[4] = new int[] { 5 };
 		copy[5] = new int[] { 3 };
 		
-		Graph.findElementaryCircuits(adjacencyLists, true);
+		Graph.findElementaryCircuits(adjacencyLists, true, null);
 		boolean equal = true;
 		for (int i = 0; i < adjacencyLists.length; i++)
 		{
@@ -142,7 +142,7 @@ public class GraphTest
 		}
 		assertTrue("The arrays should be equal since findElementaryCircuits() should use a copy!", equal);
 		
-		Graph.findElementaryCircuits(adjacencyLists, false);
+		Graph.findElementaryCircuits(adjacencyLists, false, null);
 		equal = true;
 		for (int i = 0; i < adjacencyLists.length; i++)
 		{

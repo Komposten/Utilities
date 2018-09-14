@@ -1,3 +1,9 @@
+2018-09-14
+-FEATURE: Added CircuitListener to Graph.
+-FEATURE: Graph.findElementaryCycles() now notifies a CircuitListener when the circuit count updates (optional).
+-CODE: Added JavaDoc to Graph.circuit().
+
+
 2018-09-01
 -FEATURE: Added Graph.abortCurrentOperations().
 -CODE: Added Graph.addOperation() and .removeOperation().

@@ -14,12 +14,18 @@ import java.util.Stack;
 /**
  * This class holds methods for operations on mathematical graphs.
  * @version
- * <b>1.1.0</b> <br />
+ * <b>1.2.0</b> <br />
+ * <ul>
+ * <li>Added <code>CircuitListener</code>.</li>
+ * <li>Added a <code>CircuitListener</code> parameter to <code>findElementaryCircuits()</code>.
+ * <li>Added JavaDoc to <code>circuit()</code>.
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.1.0> <br />
  * <ul>
  * <li>Added <code>abortCurrentOperations()</code>.</li>
  * <li>Added <code>addOperation()</code> and <code>removeOperation()</code>.</li>
  * </ul>
- * <b>Older</b> <br />
  * 1.0.0 <br />
  * <ul>
  * <li>Added <code>findElementaryCircuits(), circuit()</code> and <code>unblock()</code>.</li>
@@ -30,7 +36,6 @@ public class Graph
 {
 	private static int executingOperations = 0;
 	private static boolean abortCurrentOperations = false;
-	
 	
 	/**
 	 * Finds all distinct (but see limitation 2) elementary circuits in a graph. This code is based on
@@ -51,13 +56,14 @@ public class Graph
 	 * @return An array containing all distinct elementary circuits in the provided
 	 *         graph, or <code>null</code> if and only if execution was {@link #abortCurrentOperations() aborted}.
 	 */
-	public static int[][] findElementaryCircuits(int[][] adjacencyLists, boolean useCopyOfArray)
+	public static int[][] findElementaryCircuits(int[][] adjacencyLists, boolean useCopyOfArray, CircuitListener listener)
 	{
 		addOperation();
 		//TODO Graph; Check if first dividing the graph into Strongly Connected Components is a viable optimisation!
 		List<int[]> circuits = new ArrayList<>();
 		Stack<Integer> stack = new Stack<>();
 		Map<Integer, List<Integer>> B = new HashMap<>(); //Stores information about parts of the graph with no elementary cycles.
+		int[] lastCircuitCount = { 0 };
 		
 		if (useCopyOfArray)
 		{
@@ -89,7 +95,7 @@ public class Graph
 						B.get(i).clear();
 				}
 
-				circuit(root, root, stack, adjacencyLists, B, blocked, circuits);
+				circuit(root, root, stack, adjacencyLists, B, blocked, circuits, lastCircuitCount, listener);
 				
 				B.remove(root);
 				for (int i = 0; i < adjacencyLists.length; i++)
@@ -130,8 +136,21 @@ public class Graph
 		}
 	}
 
-
-	private static boolean circuit(int v, int s, Stack<Integer> stack, int[][] A_G, Map<Integer, List<Integer>> B, boolean[] blocked, List<int[]> circuits)
+	
+	/**
+	 * 
+	 * @param v The vertex to look at.
+	 * @param s The root vertex of the current stack.
+	 * @param stack The current stack of vertices.
+	 * @param A_G The adjacency list.
+	 * @param B Used to prevent duplicates of cycles. See Johnson's paper for more information.
+	 * @param blocked An array with all "blocked" vertices. This prevents nodes from occurring more than once in a cycle.
+	 * @param circuits A list containing all circuits that have been found so far.
+	 * @param lastCircuitCount The circuit count the last time the {@link CircuitListener listener} was notified.
+	 * @param listener A {@link CircuitListener} to notify when the circuit count updates.
+	 * @return <code>true</code> if a circuit was found.
+	 */
+	private static boolean circuit(int v, int s, Stack<Integer> stack, int[][] A_G, Map<Integer, List<Integer>> B, boolean[] blocked, List<int[]> circuits, int[] lastCircuitCount, CircuitListener listener)
 	{
 		if (abortCurrentOperations) return false;
 		boolean f = false;
@@ -151,10 +170,16 @@ public class Graph
 				circuit[stack.size()] = s;
 				circuits.add(circuit);
 				f = true;
+				
+				if (listener != null && circuits.size() - lastCircuitCount[0] > circuits.size() * 0.1)
+				{
+					lastCircuitCount[0] = circuits.size();
+					listener.onNewCircuitCount(lastCircuitCount[0]);
+				}
 			}
 			else if (!blocked[w])
 			{
-				if (circuit(w, s, stack, A_G, B, blocked, circuits))
+				if (circuit(w, s, stack, A_G, B, blocked, circuits, lastCircuitCount, listener))
 					f = true;
 			}
 		}
@@ -190,7 +215,7 @@ public class Graph
 		return f;
 	}
 
-
+	
 	private static void unblock(int u, boolean[] blocked, Map<Integer, List<Integer>> B)
 	{
 		blocked[u] = false;
@@ -239,5 +264,17 @@ public class Graph
 			executingOperations = 0;
 			abortCurrentOperations = false;
 		}
+	}
+	
+	
+	public static interface CircuitListener
+	{
+		/**
+		 * Called by {@link Graph#findElementaryCircuits(int[][], boolean)} when the
+		 * circuit count has been updated.
+		 * 
+		 * @param newCount The new total amount of circuits that has been found.
+		 */
+		public void onNewCircuitCount(int newCount);
 	}
 }
