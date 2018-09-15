@@ -14,10 +14,20 @@ public class GraphTest
 	@Test
 	public void testFindElementaryCircuits()
 	{
-		/* The following graph is based on Fig. 1 in Johnson's paper (https://doi.org/10.1137/0204007)
-		 * and represents a worst-case scenario for Tarjan's algorithm.
-		 */
 		int k = 10;
+		int[][] adjacencyLists = createDefaultGraph(k);
+		
+		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null);
+		assertEquals(3*k, circuits.length);
+	}
+
+
+	/**
+	 * Creates a graph based on Fig. 1 in Johnson's paper (https://doi.org/10.1137/0204007)
+	 * and represents a worst-case scenario for Tarjan's algorithm.
+	 */
+	private int[][] createDefaultGraph(int k)
+	{
 		int[][] adjacencyLists = new int[3*k+3][];
 		
 		adjacencyLists[0] = new int[k];
@@ -47,9 +57,7 @@ public class GraphTest
 		}
 		
 		adjacencyLists[3*k+2] = new int[] { 2*k+1 };
-		
-		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null);
-		assertEquals(3*k, circuits.length);
+		return adjacencyLists;
 	}
 	
 	
@@ -153,5 +161,35 @@ public class GraphTest
 			}
 		}
 		assertFalse("The arrays should not be equal since findElementaryCircuits() should use the original!", equal);
+	}
+	
+	
+	@Test
+	public void testFindVerticesInElementaryCircuits()
+	{
+		int k = 3;
+		int[][] adjacencyLists = createDefaultGraph(k);
+		
+		int[] verticesInCircuits = Graph.findVerticesInElementaryCircuits(adjacencyLists, null);
+		assertEquals(adjacencyLists.length, verticesInCircuits.length);
+	}
+	
+	
+	@Test
+	public void testFindVerticesInElementaryCircuits2()
+	{
+		int[][] adjacencyLists = new int[9][];
+		adjacencyLists[0] = new int[] { 1 };
+		adjacencyLists[1] = new int[] { 2, 8 };
+		adjacencyLists[2] = new int[] { 0, 3 };
+		adjacencyLists[3] = new int[] { 4 };
+		adjacencyLists[4] = new int[] { 5, 6 };
+		adjacencyLists[5] = new int[] { 3 };
+		adjacencyLists[6] = new int[] { 7 };
+		adjacencyLists[7] = new int[] {  };
+		adjacencyLists[8] = new int[] {  };
+		
+		int[] verticesInCircuits = Graph.findVerticesInElementaryCircuits(adjacencyLists, null);
+		assertEquals(6, verticesInCircuits.length);
 	}
 }

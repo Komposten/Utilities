@@ -1,3 +1,6 @@
+2018-09-15
+-FEATURE: Added Graph.findVerticesInElementaryCircuits(). 
+
 2018-09-14
 -FEATURE: Added CircuitListener to Graph.
 -FEATURE: Graph.findElementaryCycles() now notifies a CircuitListener when the circuit count updates (optional).
