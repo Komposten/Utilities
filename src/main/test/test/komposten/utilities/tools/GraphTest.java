@@ -46,7 +46,7 @@ public class GraphTest
 		adjacencyLists[6] = new int[] { 5 };
 		adjacencyLists[7] = new int[] { 4, 6, 7 };
 		
-		int[][] components = Graph.findStronglyConnectedComponents(adjacencyLists);
+		int[][] components = Graph.findStronglyConnectedComponents(adjacencyLists, null);
 		
 		assertEquals(4, components.length);
 		
@@ -213,35 +213,5 @@ public class GraphTest
 			}
 		}
 		assertFalse("The arrays should not be equal since findElementaryCircuits() should use the original!", equal);
-	}
-	
-	
-	@Test
-	public void testFindVerticesInElementaryCircuits()
-	{
-		int k = 3;
-		int[][] adjacencyLists = createDefaultGraph(k);
-		
-		int[] verticesInCircuits = Graph.findVerticesInElementaryCircuits(adjacencyLists, null);
-		assertEquals(adjacencyLists.length, verticesInCircuits.length);
-	}
-	
-	
-	@Test
-	public void testFindVerticesInElementaryCircuits2()
-	{
-		int[][] adjacencyLists = new int[9][];
-		adjacencyLists[0] = new int[] { 1 };
-		adjacencyLists[1] = new int[] { 2, 8 };
-		adjacencyLists[2] = new int[] { 0, 3 };
-		adjacencyLists[3] = new int[] { 4 };
-		adjacencyLists[4] = new int[] { 5, 6 };
-		adjacencyLists[5] = new int[] { 3 };
-		adjacencyLists[6] = new int[] { 7 };
-		adjacencyLists[7] = new int[] {  };
-		adjacencyLists[8] = new int[] {  };
-		
-		int[] verticesInCircuits = Graph.findVerticesInElementaryCircuits(adjacencyLists, null);
-		assertEquals(6, verticesInCircuits.length);
 	}
 }
