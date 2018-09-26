@@ -10,6 +10,58 @@ import komposten.utilities.tools.Graph;
 
 public class GraphTest
 {
+	@Test
+	public void testFindStronglyConnectedComponents()
+	{
+		int k = 10;
+		int[][] adjacencyLists = createDefaultGraph(k);
+		
+		int[][] components = Graph.findStronglyConnectedComponents(adjacencyLists);
+		assertEquals(1, components.length);
+		
+		int[] indexList = new int[adjacencyLists.length];
+		for (int i = 0; i < indexList.length; i++)
+		{
+			indexList[i] = i;
+		}
+		Arrays.sort(components[0]);
+		
+		assertArrayEquals(indexList, components[0]);
+	}
+	
+	
+	@Test
+	public void testFindStronglyConnectedComponentsMultipleComponents()
+	{
+		//The graph used here is based on the graph in the Wikipedia article about
+		//Tarjan's strongly connected components algorithm.
+		int[][] adjacencyLists = new int[8][];
+		
+		adjacencyLists[0] = new int[] { 1 };
+		adjacencyLists[1] = new int[] { 2 };
+		adjacencyLists[2] = new int[] { 0 };
+		adjacencyLists[3] = new int[] { 1, 2, 4 };
+		adjacencyLists[4] = new int[] { 3, 5 };
+		adjacencyLists[5] = new int[] { 2, 6 };
+		adjacencyLists[6] = new int[] { 5 };
+		adjacencyLists[7] = new int[] { 4, 6, 7 };
+		
+		int[][] components = Graph.findStronglyConnectedComponents(adjacencyLists);
+		
+		assertEquals(4, components.length);
+		
+		int[][] expectedComponents = new int[4][];
+		expectedComponents[0] = new int[] { 0, 1, 2 };
+		expectedComponents[1] = new int[] { 5, 6 };
+		expectedComponents[2] = new int[] { 3, 4 };
+		expectedComponents[3] = new int[] { 7 };
+		
+		for (int[] component : components)
+			Arrays.sort(component);
+		
+		assertArrayEquals(expectedComponents, components);
+	}
+	
 
 	@Test
 	public void testFindElementaryCircuits()
@@ -24,7 +76,7 @@ public class GraphTest
 
 	/**
 	 * Creates a graph based on Fig. 1 in Johnson's paper (https://doi.org/10.1137/0204007)
-	 * and represents a worst-case scenario for Tarjan's algorithm.
+	 * and represents a worst-case scenario for Tarjan's algorithm for finding circuits.
 	 */
 	private int[][] createDefaultGraph(int k)
 	{

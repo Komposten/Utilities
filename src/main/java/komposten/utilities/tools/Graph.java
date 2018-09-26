@@ -4,6 +4,7 @@
 package komposten.utilities.tools;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,12 +15,17 @@ import java.util.Stack;
 /**
  * This class holds methods for operations on mathematical graphs.
  * @version
- * <b>1.3.0</b> <br />
+ * <b>1.4.0</b> <br />
+ * <ul>
+ * <li>Added <code>findStronglyConnectedComponents()</code>.</li>
+ * <li>Added <code>strongConnect()</code>.
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.3.0 <br />
  * <ul>
  * <li>Added <code>findVerticesInElementaryCircuits()</code>.</li>
  * <li>Added <code>findFirstCircuit()</code>.
  * </ul>
- * <b>Older</b> <br />
  * 1.2.0 <br />
  * <ul>
  * <li>Added <code>CircuitListener</code>.</li>
@@ -39,8 +45,97 @@ import java.util.Stack;
  */
 public class Graph
 {
+	//TODO Graph; Create an "Operation" interface with an abort() function. Move all SCC and circuit finding code into sub-classes of Operation (so that each instance can keep its own arrays etc. without passing them around everywhere).
 	private static int executingOperations = 0;
 	private static boolean abortCurrentOperations = false;
+	
+	
+	/**
+	 * Finds all strongly connected components in a graph.
+	 * This code is based on <a href="https://doi.org/10.1137/0201010">Tarjan's algorithm</a>. <br />
+	 * Operation can be aborted using {@link #abortCurrentOperations()}.
+	 * 
+	 * @param adjancencyLists Adjacency list that describes all edges from all
+	 *          vertices in in the graph.
+	 * @return An array containing all strongly connected components in the
+	 *         provided graph, or <code>null</code> if and only if execution was
+	 *         {@link #abortCurrentOperations() aborted}.
+	 */
+	public static int[][] findStronglyConnectedComponents(int[][] adjacencyLists)
+	{
+		addOperation();
+		
+		List<int[]> connectedComponents = new ArrayList<>();
+		int vertexCount = adjacencyLists.length;
+		int[] indices = new int[vertexCount];
+		int[] lowlink = new int[vertexCount];
+		boolean[] onstack = new boolean[vertexCount];
+		
+		Arrays.fill(indices, -1);
+		Arrays.fill(lowlink, -1);
+		
+		int[] index = { 0 };
+		Stack<Integer> stack = new Stack<>();
+		
+		for (int i = 0; i < adjacencyLists.length; i++)
+		{
+			if (abortCurrentOperations)
+				break;
+			
+			if (indices[i] == -1)
+				strongConnect(i, index, indices, lowlink, onstack, stack, adjacencyLists, connectedComponents);
+		}
+		
+		if (abortCurrentOperations)
+		{
+			removeOperation();
+			return null;
+		}
+		else
+		{
+			int[][] result = connectedComponents.toArray(new int[connectedComponents.size()][]);
+			removeOperation();
+			return result;
+		}
+	}
+	
+	
+	private static void strongConnect(int vertex, int[] index, int[] indices, int[] lowlink, boolean[] onstack, Stack<Integer> stack, int[][] adjacencyLists, List<int[]> connectedComponents)
+	{
+		indices[vertex] = index[0];
+		lowlink[vertex] = index[0];
+		index[0]++;
+		
+		stack.push(vertex);
+		onstack[vertex] = true;
+		
+		for (int w : adjacencyLists[vertex])
+		{
+			if (indices[w] == -1)
+			{
+				strongConnect(w, index, indices, lowlink, onstack, stack, adjacencyLists, connectedComponents);
+				lowlink[vertex] = Math.min(lowlink[vertex], lowlink[w]);
+			}
+			else if (onstack[w])
+			{
+				lowlink[vertex] = Math.min(lowlink[vertex], indices[w]);
+			}
+		}
+		
+		if (lowlink[vertex] == indices[vertex])
+		{
+			List<Integer> scc = new ArrayList<>();
+			int w = -1;
+			do
+			{
+				w = stack.pop();
+				onstack[w] = false;
+				scc.add(w);
+			}
+			while (w != vertex);
+			connectedComponents.add(scc.stream().mapToInt(i -> i).toArray());
+		}
+	}
 	
 	
 	/**
