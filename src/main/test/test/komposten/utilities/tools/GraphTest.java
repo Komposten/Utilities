@@ -16,7 +16,7 @@ public class GraphTest
 		int k = 10;
 		int[][] adjacencyLists = createDefaultGraph(k);
 		
-		int[][] components = Graph.findStronglyConnectedComponents(adjacencyLists);
+		int[][] components = Graph.findStronglyConnectedComponents(adjacencyLists, null);
 		assertEquals(1, components.length);
 		
 		int[] indexList = new int[adjacencyLists.length];

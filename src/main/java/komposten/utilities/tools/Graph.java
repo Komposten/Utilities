@@ -18,19 +18,21 @@ import java.util.Stack;
  * <b>1.4.0</b> <br />
  * <ul>
  * <li>Added <code>findStronglyConnectedComponents()</code>.</li>
- * <li>Added <code>strongConnect()</code>.
+ * <li>Added <code>strongConnect()</code>.</li>
+ * <li>Added a parameter to <code>CircuitListener.onNextVertex()</code> that says how many vertices have been processed.</li>
+ * <li>Removed <code>findVerticesInElementaryCircuits()</code> and <code>findFirstCircuit()</code>.</li>
  * </ul>
  * <b>Older</b> <br />
  * 1.3.0 <br />
  * <ul>
  * <li>Added <code>findVerticesInElementaryCircuits()</code>.</li>
- * <li>Added <code>findFirstCircuit()</code>.
+ * <li>Added <code>findFirstCircuit()</code>.</li>
  * </ul>
  * 1.2.0 <br />
  * <ul>
  * <li>Added <code>CircuitListener</code>.</li>
- * <li>Added a <code>CircuitListener</code> parameter to <code>findElementaryCircuits()</code>.
- * <li>Added JavaDoc to <code>circuit()</code>.
+ * <li>Added a <code>CircuitListener</code> parameter to <code>findElementaryCircuits()</code>.</li>
+ * <li>Added JavaDoc to <code>circuit()</code>.</li>
  * </ul>
  * 1.1.0 <br />
  * <ul>
@@ -57,11 +59,12 @@ public class Graph
 	 * 
 	 * @param adjancencyLists Adjacency list that describes all edges from all
 	 *          vertices in in the graph.
+	 * @param listener A {@link CircuitListener} to notify for each vertex that has been analysed.
 	 * @return An array containing all strongly connected components in the
 	 *         provided graph, or <code>null</code> if and only if execution was
 	 *         {@link #abortCurrentOperations() aborted}.
 	 */
-	public static int[][] findStronglyConnectedComponents(int[][] adjacencyLists)
+	public static int[][] findStronglyConnectedComponents(int[][] adjacencyLists, CircuitListener listener)
 	{
 		addOperation();
 		
@@ -83,7 +86,7 @@ public class Graph
 				break;
 			
 			if (indices[i] == -1)
-				strongConnect(i, index, indices, lowlink, onstack, stack, adjacencyLists, connectedComponents);
+				strongConnect(i, index, indices, lowlink, onstack, stack, adjacencyLists, connectedComponents, listener);
 		}
 		
 		if (abortCurrentOperations)
@@ -100,11 +103,14 @@ public class Graph
 	}
 	
 	
-	private static void strongConnect(int vertex, int[] index, int[] indices, int[] lowlink, boolean[] onstack, Stack<Integer> stack, int[][] adjacencyLists, List<int[]> connectedComponents)
+	private static void strongConnect(int vertex, int[] index, int[] indices, int[] lowlink, boolean[] onstack, Stack<Integer> stack, int[][] adjacencyLists, List<int[]> connectedComponents, CircuitListener listener)
 	{
 		indices[vertex] = index[0];
 		lowlink[vertex] = index[0];
 		index[0]++;
+		
+		if (listener != null)
+			listener.onNextVertex(vertex, index[0], indices.length);
 		
 		stack.push(vertex);
 		onstack[vertex] = true;
@@ -113,7 +119,7 @@ public class Graph
 		{
 			if (indices[w] == -1)
 			{
-				strongConnect(w, index, indices, lowlink, onstack, stack, adjacencyLists, connectedComponents);
+				strongConnect(w, index, indices, lowlink, onstack, stack, adjacencyLists, connectedComponents, listener);
 				lowlink[vertex] = Math.min(lowlink[vertex], lowlink[w]);
 			}
 			else if (onstack[w])
@@ -353,130 +359,6 @@ public class Graph
 	
 	
 	/**
-	 * Finds all distinct vertices which are involved in at least one elementary circuit in a graph.
-	 * This code is loosely based on <a href="https://doi.org/10.1137/0204007">Donald B.
-	 * Johnson's algorithm</a>. <br />
-	 * <br />
-	 * Operation can be aborted using {@link #abortCurrentOperations()}.
-	 * 
-	 * @param adjancencyLists Adjancency list that describes all edges from all
-	 *          vertices in in the graph.
-	 * @param listener A {@link CircuitListener} to notify when the circuit count
-	 *          updates (see
-	 *          {@link #circuit(int, int, Stack, int[][], Map, boolean[], List, int[], CircuitListener)}).
-	 * @return An array containing all distinct elementary circuits in the
-	 *         provided graph, or <code>null</code> if and only if execution was
-	 *         {@link #abortCurrentOperations() aborted}.
-	 */
-	public static int[] findVerticesInElementaryCircuits(int[][] adjacencyLists, CircuitListener listener)
-	{
-		addOperation();
-		boolean[] checkedVertices = new boolean[adjacencyLists.length];
-		List<Integer> verticesInCircuit = new ArrayList<>();
-		
-		Stack<Integer> stack = new Stack<>();
-		int vertexCount = adjacencyLists.length;
-		boolean[] blocked = new boolean[vertexCount];
-		
-		for (int vertex = 0; vertex < vertexCount; vertex++)
-		{
-			if (abortCurrentOperations)
-				break;
-			if (checkedVertices[vertex])
-				continue;
-			if (listener != null)
-				listener.onNextVertex(vertex+1, vertexCount);
-			checkedVertices[vertex] = true;
-			
-			stack.clear();
-			int[] circuit = findFirstCircuit(vertex, vertex, stack, adjacencyLists, blocked);
-			
-			if (circuit != null)
-			{
-				verticesInCircuit.add(vertex);
-				
-				for (int i : circuit)
-				{
-					if (abortCurrentOperations)
-						break;
-					
-					if (!checkedVertices[i])
-					{
-						checkedVertices[i] = true;
-						verticesInCircuit.add(i);
-					}
-				}
-			}
-		}
-		
-		if (!abortCurrentOperations)
-		{
-			int[] resultArray = new int[verticesInCircuit.size()];
-			for (int i = 0; i < resultArray.length; i++)
-				resultArray[i] = verticesInCircuit.get(i);
-			
-			removeOperation();
-			return resultArray;
-		}
-		else
-		{
-			removeOperation();
-			return null;
-		}
-	}
-
-	
-	/**
-	 * 
-	 * @param v The vertex to look at.
-	 * @param s The root vertex of the current stack.
-	 * @param stack The current stack of vertices.
-	 * @param A_G The adjacency list.
-	 * @param blocked An array with all "blocked" vertices. This prevents nodes
-	 *          from occurring more than once in a cycle.
-	 * @return The circuit that was found, or <code>null</code> if there was no circuit.
-	 */
-	private static int[] findFirstCircuit(int v, int s, Stack<Integer> stack, int[][] A_G, boolean[] blocked)
-	{
-		if (abortCurrentOperations) return null;
-		stack.push(v);
-		blocked[v] = true;
-		
-		int[] result = null;
-
-		for (int w : A_G[v])
-		{
-			if (abortCurrentOperations) break;
-			if (w == -1) continue;
-			
-			if (w == s)
-			{
-				int[] circuit = new int[stack.size()+1];
-				for (int i = 0; i < stack.size(); i++)
-					circuit[i] = stack.get(i);
-				circuit[stack.size()] = s;
-				result = circuit;
-				break;
-			}
-			else if (!blocked[w])
-			{
-				int[] circuit = findFirstCircuit(w, s, stack, A_G, blocked);
-				if (circuit != null)
-				{
-					result = circuit;
-					break;
-				}
-			}
-		}
-		
-		blocked[v] = false;
-		stack.pop();
-
-		return result;
-	}
-	
-	
-	/**
 	 * Aborts all current operations mid-execution.
 	 * The general use-case is e.g. if a method takes too long to execute
 	 * so the calling code wants to abort it (maybe due to user input).
@@ -517,11 +399,12 @@ public class Graph
 		public void onNewCircuitCount(int newCount);
 		
 		/**
-		 * Called by {@link Graph#findVerticesInElementaryCircuits(int[][], CircuitListener)}
+		 * Called by {@link Graph#findStronglyConnectedComponents(int[][], CircuitListener)}
 		 * when it moves to the next vertex.
 		 * @param vertex The vertex that will be analysed next (starting from 1).
+		 * @param processedVertices The number of vertices that have already been processed.
 		 * @param vertexCount The total vertex count.
 		 */
-		public void onNextVertex(int vertex, int vertexCount);
+		public void onNextVertex(int vertex, int processedVertices, int vertexCount);
 	}
 }
