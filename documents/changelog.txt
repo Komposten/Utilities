@@ -1,5 +1,6 @@
 2018-09-26
 -CODE: Changed Java version to 1.8.
+-CODE: Fixed null pointer exception if null is sent instead of a listener to Graph.findVerticesInElementaryCircuits().
 
 2018-09-15
 -FEATURE: Added Graph.findVerticesInElementaryCircuits(). 

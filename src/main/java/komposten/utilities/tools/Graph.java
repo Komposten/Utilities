@@ -58,7 +58,7 @@ public class Graph
 	 * </ol>
 	 * Operation can be aborted using {@link #abortCurrentOperations()}.
 	 * 
-	 * @param adjancencyLists Adjancency list that describes all edges from all
+	 * @param adjancencyLists Adjacency list that describes all edges from all
 	 *          vertices in in the graph.
 	 * @param useCopyOfArray If <code>adjacencyList</code> should be copied before
 	 *          being used to ensure that the original array remains unaltered.
@@ -289,7 +289,8 @@ public class Graph
 				break;
 			if (checkedVertices[vertex])
 				continue;
-			listener.onNextVertex(vertex+1, vertexCount);
+			if (listener != null)
+				listener.onNextVertex(vertex+1, vertexCount);
 			checkedVertices[vertex] = true;
 			
 			stack.clear();
