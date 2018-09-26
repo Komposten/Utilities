@@ -1,3 +1,6 @@
+2018-09-26
+-CODE: Changed Java version to 1.8.
+
 2018-09-15
 -FEATURE: Added Graph.findVerticesInElementaryCircuits(). 
 
