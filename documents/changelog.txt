@@ -1,6 +1,7 @@
 2018-09-26
 -FEATURE: Added Graph.findStronglyConnectedComponents.
 -FEATURE: Removed Graph.findVerticesInElementaryCircuits() (replaced by Graph.findStronglyConnectedComponents()).
+-FEATURE: Added Graph.findElementaryCircuits(int, int[][], CircuitListener).
 -CODE: Changed Java version to 1.8.
 -CODE: Fixed null pointer exception if null is sent instead of a listener to Graph.findVerticesInElementaryCircuits().
 -CODE: Changed CircuitListener.onNextVertex() to have a parameter that says how many vertices have been processed.

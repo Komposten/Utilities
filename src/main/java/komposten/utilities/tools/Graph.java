@@ -21,6 +21,7 @@ import java.util.Stack;
  * <li>Added <code>strongConnect()</code>.</li>
  * <li>Added a parameter to <code>CircuitListener.onNextVertex()</code> that says how many vertices have been processed.</li>
  * <li>Removed <code>findVerticesInElementaryCircuits()</code> and <code>findFirstCircuit()</code>.</li>
+ * <li>Added <code>findElementaryCircuits(int, int[][], CircuitListener)</code>.</li>
  * </ul>
  * <b>Older</b> <br />
  * 1.3.0 <br />
@@ -242,6 +243,61 @@ public class Graph
 			
 			removeOperation();
 			return circuitArray;
+		}
+		else
+		{
+			removeOperation();
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Finds all distinct (but see limitation 2) elementary circuits containing 
+	 * the specified vertex in a graph.
+	 * This code is based on <a href="https://doi.org/10.1137/0204007">Donald B.
+	 * Johnson's algorithm</a>. <br />
+	 * <br />
+	 * <b>Limitations:</b>
+	 * <ol>
+	 * <li>Loops (an edge between a vertex and itself) are counted as
+	 * circuits.</li>
+	 * <li>Duplicate circuits <i>will</i> occur if there are multiple edges
+	 * between two vertices!</li>
+	 * <li>Circuits containing more than 2 vertices may be counted twice (once in each direction).</li>
+	 * </ol>
+	 * Operation can be aborted using {@link #abortCurrentOperations()}.
+	 * 
+	 * @param vertex The vertex to find circuits for.
+	 * @param adjancencyLists Adjacency list that describes all edges from all
+	 *          vertices in in the graph.
+	 * @param listener A {@link CircuitListener} to notify when the circuit count
+	 *          updates (see
+	 *          {@link #circuit(int, int, Stack, int[][], Map, boolean[], List, int[], CircuitListener)}).
+	 * @return An array containing all distinct elementary circuits in the
+	 *         provided graph which the specified vertex is part of,
+	 *         or <code>null</code> if and only if execution was
+	 *         {@link #abortCurrentOperations() aborted}.
+	 */
+	public static int[][] findElementaryCircuits(int vertex, int[][] adjacencyLists, CircuitListener listener)
+	{
+		addOperation();
+		
+		List<int[]> circuits = new ArrayList<>();
+		Stack<Integer> stack = new Stack<>();
+		Map<Integer, List<Integer>> B = new HashMap<>();
+		int[] lastCircuitCount = { 0 };
+		boolean[] blocked = new boolean[adjacencyLists.length];
+		
+		circuit(vertex, vertex, stack, adjacencyLists, B, blocked, circuits, lastCircuitCount, listener);
+		
+		if (!abortCurrentOperations)
+		{
+			int[][] cirucitArray = new int[circuits.size()][];
+			cirucitArray = circuits.toArray(cirucitArray);
+			
+			removeOperation();
+			return cirucitArray;
 		}
 		else
 		{

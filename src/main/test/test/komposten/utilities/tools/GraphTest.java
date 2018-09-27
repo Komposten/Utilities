@@ -172,6 +172,20 @@ public class GraphTest
 	
 	
 	@Test
+	public void testFindElementaryCircuitsForVertex()
+	{
+		int k = 10;
+		int[][] adjacencyLists = createDefaultGraph(k);
+		
+		int[][] circuits = Graph.findElementaryCircuits(0, adjacencyLists, null);
+		assertEquals(k, circuits.length);
+		
+		circuits = Graph.findElementaryCircuits(2*k+1, adjacencyLists, null);
+		assertEquals(2*k, circuits.length);
+	}
+	
+	
+	@Test
 	public void testFindElementaryCircuitsCopyArray()
 	{
 		int[][] adjacencyLists = new int[6][];
