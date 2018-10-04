@@ -1,3 +1,6 @@
+2018-10-04
+-CODE: FileOperations.loadConfigFile() now uses BufferedReader wrapped in a Scanner instead of a simple scanner.
+
 2018-09-26
 -FEATURE: Added Graph.findStronglyConnectedComponents.
 -FEATURE: Removed Graph.findVerticesInElementaryCircuits() (replaced by Graph.findStronglyConnectedComponents()).

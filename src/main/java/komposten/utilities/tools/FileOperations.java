@@ -3,10 +3,12 @@
  */
 package komposten.utilities.tools;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -25,13 +27,17 @@ import komposten.utilities.exceptions.InvalidStateException;
 /**
  * A class to perform different operations regarding files, like writing data or creating, copying and deleting files.
  * @version
- * <b>1.2.7</b> <br />
+ * <b>1.2.8</b> <br />
+ * <ul>
+ * <li><code>loadConfigFile(File, boolean)</code> now uses a BufferedReader wrapped in a Scanner instead of a pure Scanner.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.2.7 <br />
  * <ul>
  * <li>Added the parameter <code>maintainDataOrder</code> to <code>loadConfigFile(File, boolean)</code>.</li>
  * <li><code>loadConfigFile(File, boolean)</code> now returns a Map instead of a HashMap.
  * <li>Added <code>getNameWithoutExtension(File)</code>.</li>
  * </ul>
- * <b>Older</b> <br />
  * 1.2.6 <br />
  * <ul>
  * <li>Added <code>getFileExtension(File)</code>.</li>
@@ -350,7 +356,7 @@ public final class FileOperations
     String              key;
     String              value;
     
-    reader = new Scanner(file);
+    reader = new Scanner(new BufferedReader(new FileReader(file)));
     
     while (reader.hasNext())
     {
