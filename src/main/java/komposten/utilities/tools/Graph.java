@@ -15,7 +15,13 @@ import java.util.Stack;
 /**
  * This class holds methods for operations on mathematical graphs.
  * @version
- * <b>1.4.0</b> <br />
+ * <b>1.5.0</b> <br />
+ * <ul>
+ * <li>Added <code>Result</code>.</li>
+ * <li><code>findStronglyConnectedComponents()</code> and both <code>findElementaryCircuits()</code> not return a Result.</li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.4.0 <br />
  * <ul>
  * <li>Added <code>findStronglyConnectedComponents()</code>.</li>
  * <li>Added <code>strongConnect()</code>.</li>
@@ -23,7 +29,6 @@ import java.util.Stack;
  * <li>Removed <code>findVerticesInElementaryCircuits()</code> and <code>findFirstCircuit()</code>.</li>
  * <li>Added <code>findElementaryCircuits(int, int[][], CircuitListener)</code>.</li>
  * </ul>
- * <b>Older</b> <br />
  * 1.3.0 <br />
  * <ul>
  * <li>Added <code>findVerticesInElementaryCircuits()</code>.</li>
@@ -65,7 +70,7 @@ public class Graph
 	 *         provided graph, or <code>null</code> if and only if execution was
 	 *         {@link #abortCurrentOperations() aborted}.
 	 */
-	public static int[][] findStronglyConnectedComponents(int[][] adjacencyLists, CircuitListener listener)
+	public static Result findStronglyConnectedComponents(int[][] adjacencyLists, CircuitListener listener)
 	{
 		addOperation();
 		
@@ -90,17 +95,10 @@ public class Graph
 				strongConnect(i, index, indices, lowlink, onstack, stack, adjacencyLists, connectedComponents, listener);
 		}
 		
-		if (abortCurrentOperations)
-		{
-			removeOperation();
-			return null;
-		}
-		else
-		{
-			int[][] result = connectedComponents.toArray(new int[connectedComponents.size()][]);
-			removeOperation();
-			return result;
-		}
+		int[][] result = connectedComponents.toArray(new int[connectedComponents.size()][]);
+		removeOperation();
+		
+		return new Result(result, abortCurrentOperations);
 	}
 	
 	
@@ -171,7 +169,7 @@ public class Graph
 	 *         provided graph, or <code>null</code> if and only if execution was
 	 *         {@link #abortCurrentOperations() aborted}.
 	 */
-	public static int[][] findElementaryCircuits(int[][] adjacencyLists, boolean useCopyOfArray, CircuitListener listener)
+	public static Result findElementaryCircuits(int[][] adjacencyLists, boolean useCopyOfArray, CircuitListener listener)
 	{
 		addOperation();
 		//TODO Graph; Check if first dividing the graph into Strongly Connected Components is a viable optimisation!
@@ -233,22 +231,15 @@ public class Graph
 				root = vertexCount;
 			}
 		}
+
+		int[][] circuitArray = new int[circuits.size()][];
 		
-		if (!abortCurrentOperations)
-		{
-			int[][] circuitArray = new int[circuits.size()][];
-			
-			for (int i = 0; i < circuits.size(); i++)
-				circuitArray[i] = circuits.get(i);
-			
-			removeOperation();
-			return circuitArray;
-		}
-		else
-		{
-			removeOperation();
-			return null;
-		}
+		for (int i = 0; i < circuits.size(); i++)
+			circuitArray[i] = circuits.get(i);
+		
+		removeOperation();
+		
+		return new Result(circuitArray, abortCurrentOperations);
 	}
 	
 	
@@ -279,7 +270,7 @@ public class Graph
 	 *         or <code>null</code> if and only if execution was
 	 *         {@link #abortCurrentOperations() aborted}.
 	 */
-	public static int[][] findElementaryCircuits(int vertex, int[][] adjacencyLists, CircuitListener listener)
+	public static Result findElementaryCircuits(int vertex, int[][] adjacencyLists, CircuitListener listener)
 	{
 		addOperation();
 		
@@ -291,19 +282,11 @@ public class Graph
 		
 		circuit(vertex, vertex, stack, adjacencyLists, B, blocked, circuits, lastCircuitCount, listener);
 		
-		if (!abortCurrentOperations)
-		{
-			int[][] cirucitArray = new int[circuits.size()][];
-			cirucitArray = circuits.toArray(cirucitArray);
-			
-			removeOperation();
-			return cirucitArray;
-		}
-		else
-		{
-			removeOperation();
-			return null;
-		}
+		int[][] cirucitArray = new int[circuits.size()][];
+		cirucitArray = circuits.toArray(cirucitArray);
+		
+		removeOperation();
+		return new Result(cirucitArray, abortCurrentOperations);
 	}
 
 	
@@ -462,5 +445,18 @@ public class Graph
 		 * @param vertexCount The total vertex count.
 		 */
 		public void onNextVertex(int vertex, int processedVertices, int vertexCount);
+	}
+	
+	
+	public static class Result
+	{
+		public final int[][] data;
+		public final boolean wasAborted;
+		
+		public Result(int[][] circuits, boolean wasAborted)
+		{
+			this.data = circuits;
+			this.wasAborted = wasAborted;
+		}
 	}
 }

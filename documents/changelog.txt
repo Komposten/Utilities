@@ -1,3 +1,7 @@
+2018-10-15
+-FEATURE: Added Graph.Result.
+-CODE: Graph.findStronglyConnectedComponents() and both findElementaryCircuits() now return a Result (to allow returning of found circuits/components even when aborted).
+
 2018-10-04
 -CODE: FileOperations.loadConfigFile() now uses BufferedReader wrapped in a Scanner instead of a simple scanner.
 

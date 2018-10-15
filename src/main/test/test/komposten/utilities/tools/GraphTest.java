@@ -16,7 +16,7 @@ public class GraphTest
 		int k = 10;
 		int[][] adjacencyLists = createDefaultGraph(k);
 		
-		int[][] components = Graph.findStronglyConnectedComponents(adjacencyLists, null);
+		int[][] components = Graph.findStronglyConnectedComponents(adjacencyLists, null).data;
 		assertEquals(1, components.length);
 		
 		int[] indexList = new int[adjacencyLists.length];
@@ -46,7 +46,7 @@ public class GraphTest
 		adjacencyLists[6] = new int[] { 5 };
 		adjacencyLists[7] = new int[] { 4, 6, 7 };
 		
-		int[][] components = Graph.findStronglyConnectedComponents(adjacencyLists, null);
+		int[][] components = Graph.findStronglyConnectedComponents(adjacencyLists, null).data;
 		
 		assertEquals(4, components.length);
 		
@@ -69,7 +69,7 @@ public class GraphTest
 		int k = 10;
 		int[][] adjacencyLists = createDefaultGraph(k);
 		
-		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null);
+		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null).data;
 		assertEquals(3*k, circuits.length);
 	}
 
@@ -121,7 +121,7 @@ public class GraphTest
 		adjacencyLists[1] = new int[] { 2, 1 };
 		adjacencyLists[2] = new int[] { };
 		
-		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null);
+		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null).data;
 		assertEquals(1, circuits.length);
 	}
 	
@@ -134,7 +134,7 @@ public class GraphTest
 		adjacencyLists[1] = new int[] { 2, 2 };
 		adjacencyLists[2] = new int[] { 0 };
 		
-		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null);
+		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null).data;
 		assertEquals(2, circuits.length);
 	}
 	
@@ -150,7 +150,7 @@ public class GraphTest
 		adjacencyLists[4] = new int[] { 5 };
 		adjacencyLists[5] = new int[] { 3 };
 		
-		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null);
+		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null).data;
 		assertEquals(2, circuits.length);
 	}
 	
@@ -166,7 +166,7 @@ public class GraphTest
 		adjacencyLists[4] = new int[] { 5 };
 		adjacencyLists[5] = new int[] { 3 };
 		
-		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null);
+		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null).data;
 		assertEquals(2, circuits.length);
 	}
 	
@@ -177,10 +177,10 @@ public class GraphTest
 		int k = 10;
 		int[][] adjacencyLists = createDefaultGraph(k);
 		
-		int[][] circuits = Graph.findElementaryCircuits(0, adjacencyLists, null);
+		int[][] circuits = Graph.findElementaryCircuits(0, adjacencyLists, null).data;
 		assertEquals(k, circuits.length);
 		
-		circuits = Graph.findElementaryCircuits(2*k+1, adjacencyLists, null);
+		circuits = Graph.findElementaryCircuits(2*k+1, adjacencyLists, null).data;
 		assertEquals(2*k, circuits.length);
 	}
 	
