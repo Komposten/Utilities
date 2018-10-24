@@ -127,6 +127,20 @@ public class GraphTest
 	
 	
 	@Test
+	public void testFindElementaryCircuitsBidirected()
+	{
+		int[][] adjacencyLists = new int[4][];
+		adjacencyLists[0] = new int[] { 1, 3 };
+		adjacencyLists[1] = new int[] { 2, 0 };
+		adjacencyLists[2] = new int[] { 3, 1 };
+		adjacencyLists[3] = new int[] { 0, 2 };
+		
+		int[][] circuits = Graph.findElementaryCircuits(adjacencyLists, false, null).data;
+		assertEquals(6, circuits.length); //4 circuits from 010, 121, 232, 303. 2 from 01230 and 03210.
+	}
+	
+	
+	@Test
 	public void testFindElementaryCircuitsWithDuplicateEdges()
 	{
 		int[][] adjacencyLists = new int[3][];

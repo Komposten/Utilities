@@ -154,7 +154,6 @@ public class Graph
 	 * circuits.</li>
 	 * <li>Duplicate circuits <i>will</i> occur if there are multiple edges
 	 * between two vertices!</li>
-	 * <li>Circuits containing more than 2 vertices may be counted twice (once in each direction).</li>
 	 * </ol>
 	 * Operation can be aborted using {@link #abortCurrentOperations()}.
 	 * 
@@ -255,7 +254,6 @@ public class Graph
 	 * circuits.</li>
 	 * <li>Duplicate circuits <i>will</i> occur if there are multiple edges
 	 * between two vertices!</li>
-	 * <li>Circuits containing more than 2 vertices may be counted twice (once in each direction).</li>
 	 * </ol>
 	 * Operation can be aborted using {@link #abortCurrentOperations()}.
 	 * 
