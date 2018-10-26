@@ -1,3 +1,8 @@
+2018-10-26
+-FEATURE: Added pom.xml
+-OTHER: Changed test file path to src/test/java to follow Maven conventions.
+-OTHER: Updated .gitignore to ignore build/ and target/ directories.
+
 2018-10-24
 -CODE: Removed an incorrect statement from Graph.findElementaryCircuits()'s JavaDoc.
 -CODE: Added a test case for a bidirectional cycle in Graph.findElementaryCircuits().

@@ -1,0 +1,28 @@
+<project name="Utilities" default="dist">
+	<property name="src" location="src\main\java"/>
+	<property name="res" location="src\main\resources"/>
+	<property name="test" location="src\main\test"/>
+	<property name="build" location="build\build"/>
+	<property name="dist" location="build\dist"/>
+	
+	<target name="init">
+		<mkdir dir="${build}" />
+	</target>
+		
+	<target name="compile" depends="init" description="compile the source">
+		<javac includeantruntime="false" srcdir="${src}" destdir="${build}" source="1.8" target="1.8"/>
+		<javac includeantruntime="false" srcdir="${test}" destdir="${build}" source="1.8" target="1.8"/>
+		<copy todir="${build}">
+			<fileset dir="${res}" />
+		</copy>
+	</target>
+	
+	<target name="dist" depends="compile" description="build distribution">
+		<mkdir dir="${dist}"/>
+		<jar jarfile="${dist}" basedir="${build}"/>
+	</target>
+	
+	<target name="clean" description="clean up">
+		<delete dir="${build}" />
+	</target>
+</project>

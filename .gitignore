@@ -9,6 +9,8 @@
 .metadata
 .gradle
 bin/
+build/
+target/
 libs/
 doc/
 documents/
