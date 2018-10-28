@@ -14,7 +14,7 @@ public class ExtensionFileFilterTest
 	@Test
 	public void testAcceptOneExtension()
 	{
-		ExtensionFileFilter filter = new ExtensionFileFilter(".txt");
+		ExtensionFileFilter filter = new ExtensionFileFilter(false, ".txt");
 		
 		assertTrue(filter.accept(new File("folder/file.txt")));
 		assertFalse(filter.accept(new File("folder/file.csv")));
@@ -24,7 +24,7 @@ public class ExtensionFileFilterTest
 	@Test
 	public void testAcceptMultipleExtensions()
 	{
-		ExtensionFileFilter filter = new ExtensionFileFilter(".txt", ".csv", ".exe");
+		ExtensionFileFilter filter = new ExtensionFileFilter(false, ".txt", ".csv", ".exe");
 		
 		assertTrue(filter.accept(new File("folder/file.txt")));
 		assertTrue(filter.accept(new File("folder/file.csv")));
@@ -36,7 +36,7 @@ public class ExtensionFileFilterTest
 	@Test
 	public void testAcceptNoPeriod()
 	{
-		ExtensionFileFilter filter = new ExtensionFileFilter("txt");
+		ExtensionFileFilter filter = new ExtensionFileFilter(false, "txt");
 		
 		assertTrue(filter.accept(new File("folder/file.txt")));
 	}
@@ -54,7 +54,7 @@ public class ExtensionFileFilterTest
 	@Test
 	public void testAcceptFileWithoutExtensions()
 	{
-		ExtensionFileFilter filter = new ExtensionFileFilter(".txt");
+		ExtensionFileFilter filter = new ExtensionFileFilter(false, ".txt");
 		
 		File file = new File("folder/file");
 		assertFalse(filter.accept(file));
@@ -67,12 +67,31 @@ public class ExtensionFileFilterTest
 	@Test
 	public void testSetAcceptedExtensions()
 	{
-		ExtensionFileFilter filter = new ExtensionFileFilter(".txt", ".csv");
+		ExtensionFileFilter filter = new ExtensionFileFilter(false, ".txt", ".csv");
 		
 		filter.setAcceptedExtensions(".exe", ".ttf");
 		assertFalse(filter.accept(new File("folder/file.txt")));
 		assertFalse(filter.accept(new File("folder/file.csv")));
 		assertTrue(filter.accept(new File("folder/file.exe")));
 		assertTrue(filter.accept(new File("folder/file.ttf")));
+	}
+	
+	
+	@Test
+	public void testAcceptFolders()
+	{
+		ExtensionFileFilter filter = new ExtensionFileFilter(true, ".txt");
+		
+		assertTrue(filter.accept(new File("/")));
+	}
+	
+	
+	@Test
+	public void testSetAcceptFolders()
+	{
+		ExtensionFileFilter filter = new ExtensionFileFilter(true, ".txt");
+		
+		filter.setAcceptFolders(false);
+		assertFalse(filter.accept(new File("/")));
 	}
 }

@@ -1,5 +1,6 @@
 2018-10-28
 -FEATURE: ExtensionFileFilter can now be set to accept files without an extension (by passing an empty String as an extension).
+-FEATURE: Added acceptFolders to ExtensionFileFilter.
 -CODE: Re-factored ExtensionFileFilter.accept() and .ExtensionFileFilter(String...).
 -CODE: Fixed ExtensionFileFilter.setAcceptedExtensions() not prepending periods when necessary.
 -CODE: Added ExtensionFileFilterTest.
