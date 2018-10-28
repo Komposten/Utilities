@@ -1,3 +1,10 @@
+2018-10-28
+-FEATURE: ExtensionFileFilter can now be set to accept files without an extension (by passing an empty String as an extension).
+-CODE: Re-factored ExtensionFileFilter.accept() and .ExtensionFileFilter(String...).
+-CODE: Fixed ExtensionFileFilter.setAcceptedExtensions() not prepending periods when necessary.
+-CODE: Added ExtensionFileFilterTest.
+-OTHER: Added JavaDoc to ExtensionFileFilter.
+
 2018-10-26
 -FEATURE: Added pom.xml
 -OTHER: Changed test file path to src/test/java to follow Maven conventions.
