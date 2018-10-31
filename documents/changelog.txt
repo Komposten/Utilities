@@ -1,3 +1,7 @@
+2018-10-31
+-FEATURE: Added FileOperations.getFileExtension(File, boolean).
+-FEATURE: Added FileOperations.getNameWithoutExtension(File, boolean).
+
 2018-10-28
 -FEATURE: ExtensionFileFilter can now be set to accept files without an extension (by passing an empty String as an extension).
 -FEATURE: Added acceptFolders to ExtensionFileFilter.

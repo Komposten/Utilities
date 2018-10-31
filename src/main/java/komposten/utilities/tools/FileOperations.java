@@ -27,11 +27,16 @@ import komposten.utilities.exceptions.InvalidStateException;
 /**
  * A class to perform different operations regarding files, like writing data or creating, copying and deleting files.
  * @version
- * <b>1.2.8</b> <br />
+ * <b>1.2.9</b> <br />
+ * <ul>
+ * <li>Added <code>getFileExtension(File, boolean).</code></li>
+ * <li>Added <code>getNameWithoutExtension(File, boolean).</code></li>
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.2.8 <br />
  * <ul>
  * <li><code>loadConfigFile(File, boolean)</code> now uses a BufferedReader wrapped in a Scanner instead of a pure Scanner.</li>
  * </ul>
- * <b>Older</b> <br />
  * 1.2.7 <br />
  * <ul>
  * <li>Added the parameter <code>maintainDataOrder</code> to <code>loadConfigFile(File, boolean)</code>.</li>
@@ -546,38 +551,90 @@ public final class FileOperations
   }
   
   
-  /**
-   * @param file
-   * @return The extension of the file (e.g. <code>.txt</code>), or an empty string if <code>file</code> has no extension or is a folder.
-   */
+	/**
+	 * @param file
+	 * @return The extension of the specified file. An empty string is returned if
+	 *         the file has no extension. <code>null</code> is returned if the
+	 *         specified <code>File</code> denotes a folder or a file that does
+	 *         not exist.
+	 */
   public static String getFileExtension(File file)
   {
-  	if (file.isFile())
+  	return getFileExtension(file, false);
+  }
+  
+  
+  /**
+	 * @param file
+	 * @param acceptNonexistantFile Whether or not non-existant files (i.e.
+	 *          <code>file.exists() == false)</code>) should be accepted. If
+	 *          <code>true</code>, non-existant files will be treated like normal
+	 *          files (i.e. the extension or an empty string is returned). If
+	 *          <code>false</code>, non-existant files will be treated like
+	 *          folders (i.e. <code>null</code> is returned).
+	 * @param file
+	 * @return The extension of the specified file. An empty string is returned if
+	 *         the file has no extension. <code>null</code> is returned if the
+	 *         specified <code>File</code> denotes a folder or does not exist and
+	 *         <code>acceptNonexistantFile == false</code>.
+	 */
+  public static String getFileExtension(File file, boolean acceptNonexistantFile)
+  {
+  	if (file.isFile() || (!file.exists() && acceptNonexistantFile))
   	{
 	    int dotIndex = file.getName().lastIndexOf('.');
 	    
 	    if (dotIndex >= 0)
 	      return file.getName().substring(dotIndex);
+	    else
+	    	return "";
   	}
   	
-    return "";
+    return null;
+  }
+  
+  
+	/**
+	 * @param file
+	 * @return The name of the specified file without its extension. If
+	 *         <code>file</code> refers to a folder or has no extension,
+	 *         <code>file.getName()</code> is returned.
+	 * @throws IllegalArgumentException If the file does not exist or if it's
+	 *           neither a file nor a folder.
+	 */
+  public static String getNameWithoutExtension(File file)
+  {
+  	return getNameWithoutExtension(file, false);
   }
   
   
   /**
-   * @param file
-   * @return The name of the file (or folder) without its extension.
-   */
-  public static String getNameWithoutExtension(File file)
+	 * @param file
+	 * @return The name of the specified file without its extension. If
+	 *         <code>file</code> refers to a folder or has no extension,
+	 *         <code>file.getName()</code> is returned.
+	 * @throws IllegalArgumentException If the file does not exist and
+	 *           <code>acceptNonexistantFile == false</code>, or if
+	 *           <code>file</code> is neither a file nor a folder.
+	 */
+  public static String getNameWithoutExtension(File file, boolean acceptNonexistantFile)
   {
+  	if (!file.exists() && !acceptNonexistantFile)
+  		throw new IllegalArgumentException(file + " does not exist, and acceptNonexistantFile == false!");
+  	
+  	if (file.isDirectory())
+  		return file.getName();
+  	
   	if (file.isFile())
   	{
 	    int dotIndex = file.getName().lastIndexOf('.');
 	    
 	    if (dotIndex >= 0)
 	      return file.getName().substring(0, dotIndex);
+	    else
+	    	return file.getName();
   	}
   	
-    return file.getName();
+    throw new IllegalArgumentException(file + " is neither a file nor a folder!");
   }
 }
