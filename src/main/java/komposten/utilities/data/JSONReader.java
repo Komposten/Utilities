@@ -14,21 +14,27 @@ import java.util.Scanner;
 import komposten.utilities.tools.MathOps;
 
 
+//CURRENT JSONReader; Split JSONReader into JSONReader and JSONParser, and update the unit tests. 
 //FIXME JSONReader; Throw exceptions if the code JSON is broken (e.g. an object or array is never closed).
+//FIXME JSONReader; Keep an int that keeps track of the current cursor position so that it can be known where errors occur.
 /**
  * JSONReader is a tool that reads files with a JSON-format ("JavaScript Object
  * Notation") and creates {@link JSONObject}s from them.
  * 
- * @version <b>1.1.0</b> <br />
+ * @version <b>1.2.0</b> <br />
+ *          <ul>
+ *          <li>Added readString(String)</li>
+ *          </ul>
+ *          <b>Older</b> <br />
+ *          1.1.0 <br />
  *          <ul>
  *          <li>Re-factored <code>parseObject()</code> and
  *          <code>parseArray()</code>. The old version was overly complex, and
  *          couldn't handle all scenarios.</li>
  *          </ul>
- *          <b>Older</b> <br />
  *          1.0.0 <br />
  *          <ul>
- *          <li>Initial version, reading of JSON files. and retrieval of
+ *          <li>Initial version, reading of JSON files and retrieval of
  *          members.</li>
  *          </ul>
  * 
@@ -71,9 +77,9 @@ public class JSONReader
       scanner = new Scanner(new BufferedReader(new FileReader(jsonFile)));
       
       while (scanner.hasNextLine())
-        builder.append(scanner.nextLine().trim() + "\n");
+        builder.append(scanner.nextLine().trim());
       
-      jsonObject = parseObject(builder.toString());
+      jsonObject = readString(builder.toString());
     }
     catch (FileNotFoundException e)
     {
@@ -87,6 +93,21 @@ public class JSONReader
     }
     
     return jsonObject;
+  }
+  
+  
+  /**
+   * Reads the provided JSON-formatted string and stores its data in a {@link JSONObject}.
+   * @param jsonString A string containing a JSON object.
+   * @return A <code>JSONObject</code> representing the JSON data in the string, or
+   *         <code>null</code> if the string is <code>null</code>.
+   */
+  public JSONObject readString(String jsonString)
+  {
+  	if (jsonString == null)
+  		return null;
+  	
+  	return parseObject(jsonString);
   }
   
   
