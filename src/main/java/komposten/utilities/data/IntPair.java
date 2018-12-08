@@ -4,9 +4,9 @@
 package komposten.utilities.data;
 
 /**
- * This is an implementation identical to {@link ObjectPair}, but based on primitive ints.
+ * This is an implementation more or less identical to {@link ObjectPair}, but based on primitive ints. <br />
  * @author Komposten
- * @version 1.3.1
+ * @version 1.4.0
  */
 public final class IntPair
 {
@@ -24,15 +24,26 @@ public final class IntPair
   	this.second = second;
   }
 
-  public void setFirst (int f) { first  = f; }
+  public void setFirst (int f) { first = f; }
   public void setSecond(int s) { second = s; }
-  
-  public int getFirst () { return first;  }
+  public int getFirst () { return first; }
   public int getSecond() { return second; }
+  
+  /** This is a wrapper for {@link #setFirst(int)} */
+  public void setX(int x) { first = x; }
+  /** This is a wrapper for {@link #setSecond(int)} */
+  public void setY(int y) { second = y; }
+  /** This is a wrapper for {@link #getFirst()}. */
+  public int getX() { return getFirst(); }
+  /** This is a wrapper for {@link #getSecond()}. */
+  public int getY() { return getSecond(); }
   
   @Override
   public boolean equals(Object obj)
   {
+  	if (obj == this)
+  		return true;
+  	
     if (obj == null)
       return false;
     

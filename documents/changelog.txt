@@ -1,3 +1,7 @@
+2018-12-08
+-FEATURE: Added getX() and getY() to IntPair and FloatPair.
+-CODE: Added ObjectPairTest and FloatPairTest.
+
 2018-11-06
 -FEATURE: Added JSONReader.readString().
 -CODE: JSONReader.readFile() no longer reads the file into a multi-line string, since the newlines were removed by the parser anyway.

@@ -4,9 +4,9 @@
 package komposten.utilities.data;
 
 /**
- * This is an implementation identical to {@link ObjectPair}, but based on primitive floats.
+ * This is an implementation more or less identical to {@link ObjectPair}, but based on primitive floats.
  * @author Komposten
- * @version 1.0.0
+ * @version 1.1.0
  */
 public final class FloatPair
 {
@@ -24,15 +24,26 @@ public final class FloatPair
   	this.second = second;
   }
 
-  public void setFirst (float f) { first  = f; }
+  public void setFirst (float f) { first = f; }
   public void setSecond(float s) { second = s; }
-  
-  public float getFirst () { return first;  }
+  public float getFirst () { return first; }
   public float getSecond() { return second; }
+  
+  /** This is a wrapper for {@link #setFirst(float)} */
+  public void setX(float x) { first = x; }
+  /** This is a wrapper for {@link #setSecond(float)} */
+  public void setY(float y) { second = y; }
+  /** This is a wrapper for {@link #getFirst()}. */
+  public float getX() { return getFirst(); }
+  /** This is a wrapper for {@link #getSecond()}. */
+  public float getY() { return getSecond(); }
   
   @Override
   public boolean equals(Object obj)
   {
+  	if (obj == this)
+  		return true;
+  	
     if (obj == null)
       return false;
     
