@@ -1,3 +1,6 @@
+2019-01-02
+-CODE: Fixed FileOperations.getNameWithoutExtension(file, true) not working for non-existent files.
+
 2018-12-08
 -FEATURE: Added getX() and getY() to IntPair and FloatPair.
 -CODE: Added ObjectPairTest and FloatPairTest.

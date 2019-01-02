@@ -610,6 +610,9 @@ public final class FileOperations
   
   /**
 	 * @param file
+	 * @param acceptNonexistentFile <code>true</code> if non-existent files (i.e.
+	 * <code>file.exists() == false</code>) should be accepted (and treated like files),
+	 * <code>false</code> otherwise.
 	 * @return The name of the specified file without its extension. If
 	 *         <code>file</code> refers to a folder or has no extension,
 	 *         <code>file.getName()</code> is returned.
@@ -617,15 +620,15 @@ public final class FileOperations
 	 *           <code>acceptNonexistantFile == false</code>, or if
 	 *           <code>file</code> is neither a file nor a folder.
 	 */
-  public static String getNameWithoutExtension(File file, boolean acceptNonexistantFile)
+  public static String getNameWithoutExtension(File file, boolean acceptNonexistentFile)
   {
-  	if (!file.exists() && !acceptNonexistantFile)
+  	if (!file.exists() && !acceptNonexistentFile)
   		throw new IllegalArgumentException(file + " does not exist, and acceptNonexistantFile == false!");
   	
   	if (file.isDirectory())
   		return file.getName();
   	
-  	if (file.isFile())
+  	if (file.isFile() || (!file.exists() && acceptNonexistentFile))
   	{
 	    int dotIndex = file.getName().lastIndexOf('.');
 	    
