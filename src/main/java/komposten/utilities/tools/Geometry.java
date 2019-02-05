@@ -62,7 +62,7 @@ public class Geometry
 	 */
 	public static float[] createArc(float startAngle, float arcAngle, float radius, int segments)
 	{
-		float[] polygon = new float[segments*2];
+		float[] polygon = new float[(segments+1)*2];
 		float   angle   = arcAngle / segments;
 		
 		for (int i = 0; i <= segments; i++)
