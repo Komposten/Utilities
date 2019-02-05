@@ -47,7 +47,8 @@ public class Geometry
 	 */
 	public static float[] createCircle(float radius, int segments)
 	{
-		return createArc(0, (float) (2*Math.PI), radius, segments);
+		float radPerSegment = (float) ((2*Math.PI) / segments);
+		return createArc(0, radPerSegment*(segments-1), radius, segments-1);
 	}
 	
 	
@@ -64,7 +65,7 @@ public class Geometry
 		float[] polygon = new float[segments*2];
 		float   angle   = arcAngle / segments;
 		
-		for (int i = 0; i < segments; i++)
+		for (int i = 0; i <= segments; i++)
 		{
 			polygon[i*2  ] = (float) (radius*Math.cos(startAngle + angle*i));
 			polygon[i*2+1] = (float) (radius*Math.sin(startAngle + angle*i));
