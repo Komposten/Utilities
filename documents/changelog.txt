@@ -1,3 +1,6 @@
+2019-02-05
+-FEATURE: Added Geometry.createArc(float, float, float, int).
+
 2019-01-02
 -CODE: Fixed FileOperations.getNameWithoutExtension(file, true) not working for non-existent files.
 

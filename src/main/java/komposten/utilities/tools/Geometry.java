@@ -9,16 +9,20 @@ import komposten.utilities.data.FloatPair;
 
 
 /**
- * This class holds methods for different geometrical operations.
+ * This class holds methods for different geometric operations.
  * <br />
  * <br />
- * <b>Note:</b> Some methods on this class requires LibGDX.
+ * <b>Note:</b> Some methods on this class require LibGDX.
  * @version
- * <b>1.1.0</b> <br />
+ * <b>1.2.0</b> <br />
+ * <ul>
+ * <li>Added <code>createArc(float, float, float, int)</code>.
+ * </ul>
+ * <b>Older</b> <br />
+ * 1.1.0 <br />
  * <ul>
  * <li>Added <code>clampVector(float, float, float, float, float, float, float, float)</code>.
  * </ul>
- * <b>Older</b> <br />
  * 1.0.0 <br />
  * <ul>
  * <li>Added <code>createCircle(float, int)</code>.
@@ -39,18 +43,33 @@ public class Geometry
 	 * @param radius The radius of the circle.
 	 * @param segments The amount of segments.
 	 * @return An array containing the points for a circular polygon.
+	 * @see #createArc(float, float, float, int)
 	 */
 	public static float[] createCircle(float radius, int segments)
 	{
+		return createArc(0, (float) (2*Math.PI), radius, segments);
+	}
+	
+	
+	/**
+	 * Creates an array with the points of an arc polygon.
+	 * @param startAngle The angle to start the arc at.
+	 * @param arcAngle The angle the arc covers.
+	 * @param radius The radius of the circle the arc is from.
+	 * @param segments The amount of segments.
+	 * @return An array containing the points for an arc polygon.
+	 */
+	public static float[] createArc(float startAngle, float arcAngle, float radius, int segments)
+	{
 		float[] polygon = new float[segments*2];
-		float   angle   = (float) (2*Math.PI / segments);
-
+		float   angle   = arcAngle / segments;
+		
 		for (int i = 0; i < segments; i++)
 		{
-			polygon[i*2  ] = (float) (radius*Math.cos(angle*i));
-			polygon[i*2+1] = (float) (radius*Math.sin(angle*i));
+			polygon[i*2  ] = (float) (radius*Math.cos(startAngle + angle*i));
+			polygon[i*2+1] = (float) (radius*Math.sin(startAngle + angle*i));
 		}
-
+		
 		return polygon;
 	}
 
