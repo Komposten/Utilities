@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2018 Jakob Hjelm
+ * Copyright 2017, 2018, 2019 Jakob Hjelm
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,7 +131,7 @@ public class DefaultLogFormatter implements LogFormatter
 	}
 
 
-	private String formatLogLevel(Level logLevel)
+	protected String formatLogLevel(Level logLevel)
 	{
 		return logLevel.getName().toUpperCase();
 	}
@@ -149,7 +149,7 @@ public class DefaultLogFormatter implements LogFormatter
 			return "";
 		
 		StringBuilder string = new StringBuilder();
-		string.append(messageIndent + throwable.toString());
+		string.append(messageIndent + formatMessage(throwable.toString()));
 		
 		if (includeStackTrace)
 		{
