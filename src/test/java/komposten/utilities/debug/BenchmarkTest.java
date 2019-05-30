@@ -1,4 +1,4 @@
-package test.komposten.utilities.debug;
+package komposten.utilities.debug;
 
 import static org.junit.Assert.*;
 

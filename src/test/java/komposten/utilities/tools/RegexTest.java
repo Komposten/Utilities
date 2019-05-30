@@ -1,4 +1,4 @@
-package test.komposten.utilities.tools;
+package komposten.utilities.tools;
 
 import static org.junit.Assert.assertEquals;
 
