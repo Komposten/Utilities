@@ -9,33 +9,49 @@ import komposten.utilities.tools.MathOps;
 
 public class BenchmarkTest
 {
+	private static final int DELAY = 100;
+
 	@Test
 	public void testBenchmarkOnce()
 	{
-		long time = Benchmark.benchmarkOnce(() -> sleep(100));
-		
-		assertTrue(MathOps.isInInterval(time, 90000000, 110000000, true));
+		DelayedTask task = new DelayedTask();
+		long time = Benchmark.benchmarkOnce(task) / 1000000;
+
+		assertEquals(1, task.executions);
+		assertTrue(MathOps.isInInterval(time, DELAY, DELAY * 2, true));
 	}
-	
+
 
 	@Test
 	public void testBenchmark()
 	{
-		long time = Benchmark.benchmark(() -> sleep(100), 2);
-		
-		assertTrue(MathOps.isInInterval(time, 180000000, 220000000, true));
+		DelayedTask task = new DelayedTask();
+		long time = Benchmark.benchmark(task, 2) / 1000000;
+
+		assertEquals(2, task.executions);
+		assertTrue(MathOps.isInInterval(time, DELAY * 2, DELAY * 3, true));
 	}
-	
-	
-	private void sleep(long time)
-	{
-		try
-		{
-			Thread.sleep(time);
+
+	private static class DelayedTask implements Runnable {
+		public int executions;
+
+		@Override
+		public void run() {
+			executions++;
+			sleep(DELAY);
 		}
-		catch (InterruptedException e)
+
+
+		private void sleep(long time)
 		{
-			
+			try
+			{
+				Thread.sleep(time);
+			}
+			catch (InterruptedException e)
+			{
+				throw new RuntimeException("I was rudely awoken!", e);
+			}
 		}
 	}
 }
