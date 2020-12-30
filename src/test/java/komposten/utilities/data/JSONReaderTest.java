@@ -72,9 +72,9 @@ public class JSONReaderTest
 	public void testReadWithDifferentEncoding() {
 		JSONReader reader = new JSONReader();
 		JSONObject actual = reader.readFile("test files/json/jsonReaderTestUtf8.json", StandardCharsets.ISO_8859_1);
-		assertNotEquals("едц", actual.getMemberByName("aString"));
+		assertNotEquals("\u00e5\u00e4\u00F6", actual.getMemberByName("aString"));
 		
 		actual = reader.readFile("test files/json/jsonReaderTestUtf8.json", StandardCharsets.UTF_8);
-		assertEquals("едц", actual.getMemberByName("aString"));
+		assertEquals("\u00e5\u00e4\u00F6", actual.getMemberByName("aString"));
 	}
 }
