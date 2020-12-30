@@ -18,8 +18,9 @@ package komposten.utilities.data;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -59,6 +60,7 @@ public class JSONReader
 	/**
 	 * Reads the provided JSON-formatted file and stores its data in a
 	 * {@link JSONObject}.
+   * The system's default charset is assumed when reading the file.
 	 * 
 	 * @return A <code>JSONObject</code> representing the JSON data in the file,
 	 *         or <code>null</code> if the file at <code>jsonFilePath</code> does
@@ -68,6 +70,25 @@ public class JSONReader
 	{
 		return readFile(new File(jsonFilePath));
 	}
+	
+	
+	public JSONObject readFile(String jsonFilePath, Charset charset)
+	{
+		return readFile(new File(jsonFilePath), charset);
+	}
+	
+
+  /**
+   * Reads the provided JSON-formatted file and stores its data in a
+   * {@link JSONObject}.
+   * The system's default charset is assumed when reading the file.
+   * @return A <code>JSONObject</code> representing the JSON data in the file, or
+   *         <code>null</code> if the file does not exist, is a directory or
+   *         is <code>null</code>.
+   */
+	public JSONObject readFile(File jsonFile) {
+		return readFile(jsonFile, Charset.defaultCharset());
+	}
 
   
   /**
@@ -76,7 +97,7 @@ public class JSONReader
    *         <code>null</code> if the file does not exist, is a directory or
    *         is <code>null</code>.
    */
-  public JSONObject readFile(File jsonFile)
+  public JSONObject readFile(File jsonFile, Charset charset)
   {
     if (jsonFile == null || !jsonFile.exists() || jsonFile.isDirectory())
       return null;
@@ -87,14 +108,14 @@ public class JSONReader
     
     try
     {
-      scanner = new Scanner(new BufferedReader(new FileReader(jsonFile)));
+      scanner = new Scanner(new BufferedReader(new FileReader(jsonFile, charset)));
       
       while (scanner.hasNextLine())
         builder.append(scanner.nextLine().trim());
       
       jsonObject = readString(builder.toString());
     }
-    catch (FileNotFoundException e)
+    catch (IOException e)
     {
     	System.err.println("Could not find or read the file \"" + jsonFile + "\", returning an empty object!");
     	jsonObject = new JSONObject();

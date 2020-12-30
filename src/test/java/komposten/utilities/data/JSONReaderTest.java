@@ -1,13 +1,13 @@
 package komposten.utilities.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import komposten.utilities.data.JSONObject;
-import komposten.utilities.data.JSONReader;
 
 public class JSONReaderTest
 {
@@ -65,5 +65,16 @@ public class JSONReaderTest
 	{
 		JSONReader reader = new JSONReader();
 		reader.readFile("test files/json/jsonReaderTestInvalidValue.json");
+	}
+	
+	
+	@Test
+	public void testReadWithDifferentEncoding() {
+		JSONReader reader = new JSONReader();
+		JSONObject actual = reader.readFile("test files/json/jsonReaderTestUtf8.json", StandardCharsets.ISO_8859_1);
+		assertNotEquals("едц", actual.getMemberByName("aString"));
+		
+		actual = reader.readFile("test files/json/jsonReaderTestUtf8.json", StandardCharsets.UTF_8);
+		assertEquals("едц", actual.getMemberByName("aString"));
 	}
 }
